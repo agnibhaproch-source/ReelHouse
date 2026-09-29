@@ -6,6 +6,7 @@ import { kidsParams, searchMulti } from '@/lib/tmdb/endpoints';
 import { withMeta } from '@/lib/tmdb/meta';
 import { MovieDetailSchema, MovieListSchema, GenreListSchema } from '@/lib/tmdb/schemas';
 import { PREFS_COOKIES } from '@/lib/rows';
+import { KIDS_EXCLUDED_GENRES } from '@/lib/tmdb/genres';
 
 const LIST_TO_DISCOVER: Record<string, string> = {
   'trending/movie/day': 'popularity.desc',
@@ -47,7 +48,11 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ path: strin
     } else if (path === 'genre/movie/list') {
       body = await tmdbFetch(`/${path}`, {}, { schema: GenreListSchema, revalidate: REVALIDATE.genres, language });
     } else {
-      const list = await tmdbFetch(`/${path}`, params, { schema: MovieListSchema, revalidate: REVALIDATE.lists, language });
+      const raw = await tmdbFetch(`/${path}`, params, { schema: MovieListSchema, revalidate: REVALIDATE.lists, language });
+      // Defence in depth for kids profiles: every list response drops adult/excluded genres.
+      const list = kids
+        ? { ...raw, results: raw.results.filter((m) => !m.adult && !m.genre_ids.some((g) => (KIDS_EXCLUDED_GENRES as readonly number[]).includes(g))) }
+        : raw;
       body = wantMeta ? { ...list, results: await withMeta(list.results) } : list;
     }
     return NextResponse.json(body, {

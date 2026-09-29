@@ -26,10 +26,9 @@ export const metadata: Metadata = {
   title: { default: `${SITE_NAME} — cinematic movie discovery`, template: `%s — ${SITE_NAME}` },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  openGraph: { type: 'website', siteName: SITE_NAME, locale: 'en_US', images: ['/og/default.png'] },
+  openGraph: { type: 'website', siteName: SITE_NAME, locale: 'en_US' },
   twitter: { card: 'summary_large_image' },
   alternates: { canonical: '/' },
-  icons: { icon: '/icon.svg' },
   formatDetection: { telephone: false },
 };
 

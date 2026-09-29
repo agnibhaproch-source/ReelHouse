@@ -552,3 +552,12 @@ html.intro-seen [data-preloader] {
 html.gl-grain .grain {
   display: none;
 }
+
+/* Auth poster wall */
+@keyframes wall-up {
+  to { transform: translateY(-50%); }
+}
+@keyframes wall-down {
+  from { transform: translateY(-50%); }
+  to { transform: translateY(0); }
+}

@@ -105,7 +105,9 @@ export function Cursor() {
         setVisible(true);
       }
     };
+    let wander = false;
     const onOver = (e: PointerEvent) => {
+      wander = e.target instanceof Element && Boolean(e.target.closest('[data-cursor-wander]'));
       const { mode: m, label: l } = modeFor(e.target);
       useCursorStore.getState().setMode(m, l);
     };
@@ -125,8 +127,9 @@ export function Cursor() {
       last = t;
       const k = (tau: number) => 1 - Math.exp(-dt / tau);
       const mg = magnetRef.current;
-      const tx = mg ? mg.x + mg.width / 2 : p.x;
-      const ty = mg ? mg.y + mg.height / 2 : p.y;
+      const drift = wander && !mg ? 46 : 0;
+      const tx = mg ? mg.x + mg.width / 2 : p.x + Math.sin(t / 700) * drift;
+      const ty = mg ? mg.y + mg.height / 2 : p.y + Math.cos(t / 900) * drift;
 
       dot.x += (p.x - dot.x) * k(TAU.dot);
       dot.y += (p.y - dot.y) * k(TAU.dot);
