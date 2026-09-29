@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useEffect } from 'react';
 import { AlertCircle, CheckCircle2, Info, WifiOff } from 'lucide-react';
 import { useToastStore, type Toast as ToastT } from '@/stores/toast';

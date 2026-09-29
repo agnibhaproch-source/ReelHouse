@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { TmdbImage as TmdbImageT } from '@/lib/tmdb/types';
 import { DUR, EASES } from '@/lib/tokens';

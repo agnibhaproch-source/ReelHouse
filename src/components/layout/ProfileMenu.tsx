@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useEffect, useId, useRef, useState } from 'react';
 import { LogIn, LogOut, Settings, Users, Bookmark } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';

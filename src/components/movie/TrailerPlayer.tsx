@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { SkipForward, Volume2, VolumeX, X, RotateCw } from 'lucide-react';

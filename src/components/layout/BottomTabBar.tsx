@@ -1,6 +1,6 @@
 'use client';
 
-import { m } from 'motion/react';
+import * as m from 'motion/react-m';
 import { usePathname } from 'next/navigation';
 import { Bookmark, Home, Search, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';

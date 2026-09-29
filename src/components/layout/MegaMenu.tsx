@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { ChevronDown } from 'lucide-react';

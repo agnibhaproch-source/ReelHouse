@@ -1,22 +1,29 @@
-import { z } from 'zod';
+import * as z from 'zod/mini';
+
+// zod/mini keeps the login/signup bundle small (the full zod build is ~88 KB gzip).
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /** Shared client/server auth schemas (spec 50). */
 export const EmailSchema = z
   .string()
-  .trim()
-  .min(1, 'Enter your email address.')
-  .email('That doesn’t look like an email address.');
+  .check(
+    z.trim(),
+    z.minLength(1, 'Enter your email address.'),
+    z.regex(EMAIL_RE, 'That doesn’t look like an email address.'),
+  );
 
 export const PasswordSchema = z
   .string()
-  .min(8, 'Use at least 8 characters.')
-  .max(72, 'Keep it under 72 characters.')
-  .regex(/[A-Za-z]/, 'Include at least one letter.')
-  .regex(/\d/, 'Include at least one number.');
+  .check(
+    z.minLength(8, 'Use at least 8 characters.'),
+    z.maxLength(72, 'Keep it under 72 characters.'),
+    z.regex(/[A-Za-z]/, 'Include at least one letter.'),
+    z.regex(/\d/, 'Include at least one number.'),
+  );
 
 export const LoginSchema = z.object({
   email: EmailSchema,
-  password: z.string().min(1, 'Enter your password.'),
+  password: z.string().check(z.minLength(1, 'Enter your password.')),
 });
 export const SignupSchema = z.object({ email: EmailSchema, password: PasswordSchema });
 export const MagicSchema = z.object({ email: EmailSchema });

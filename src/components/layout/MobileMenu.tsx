@@ -1,11 +1,13 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { gsap, SplitText } from '@/lib/gsap';
+import { gsap } from '@/lib/gsap';
+import { loadSplitText } from '@/lib/split';
 import { DUR, EASES } from '@/lib/tokens';
 import { useUiStore } from '@/stores/ui';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
@@ -37,22 +39,27 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
     if (!open) return;
     stop();
     const el = panel.current;
-    let split: SplitText | null = null;
-    if (el && !isReducedNow()) {
-      split = SplitText.create(el.querySelectorAll('[data-split]'), {
-        type: 'lines',
-        mask: 'lines',
-        aria: 'none',
+    let split: { revert: () => void } | null = null;
+    let cancelled = false;
+    if (el && !isReducedNow())
+      void loadSplitText().then((SplitText) => {
+        if (cancelled) return;
+        const s = SplitText.create(el.querySelectorAll('[data-split]'), {
+          type: 'lines',
+          mask: 'lines',
+          aria: 'none',
+        });
+        split = s;
+        gsap.from(s.lines, {
+          yPercent: 110,
+          duration: DUR.slow,
+          ease: 'reel',
+          stagger: 0.04,
+          delay: 0.15,
+        });
       });
-      gsap.from(split.lines, {
-        yPercent: 110,
-        duration: DUR.slow,
-        ease: 'reel',
-        stagger: 0.04,
-        delay: 0.15,
-      });
-    }
     return () => {
+      cancelled = true;
       start();
       split?.revert();
     };

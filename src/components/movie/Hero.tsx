@@ -10,7 +10,8 @@ import {
   type PointerEvent,
 } from 'react';
 import { Info } from 'lucide-react';
-import { gsap, SplitText, useGSAP } from '@/lib/gsap';
+import { gsap, useGSAP } from '@/lib/gsap';
+import { loadSplitText } from '@/lib/split';
 import { DUR } from '@/lib/tokens';
 import { cn, formatRuntime } from '@/lib/utils';
 import { SIZES } from '@/lib/tmdb/images';
@@ -53,7 +54,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
 
   // Intro timeline — after the preloader / page transition (L1 moments never overlap).
   useGSAP(
-    () => {
+    (context) => {
       const el = root.current;
       if (!el || !slide) return;
       const img = el.querySelector('[data-hero-media]');
@@ -65,31 +66,43 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       gsap.set(logo, { clipPath: 'inset(0% 100% 0% 0%)' });
       gsap.set(buttons, { opacity: 0, scale: 0.8 });
       gsap.set(overview, { opacity: 0 });
-      const cancel = whenIntroReady(() => {
-        const split = overview
-          ? SplitText.create(overview, { type: 'lines', mask: 'lines', aria: 'none' })
-          : null;
-        const tl = gsap.timeline();
-        tl.to(img, { scale: 1, duration: 1.8, ease: 'reel' }, 0)
-          .to(
-            logo,
-            { clipPath: 'inset(0% 0% 0% 0%)', duration: DUR.cinematic, ease: 'projector' },
-            0.2,
-          )
-          .set(overview, { opacity: 1 }, 0.5);
-        if (split)
-          tl.from(
-            split.lines,
-            { yPercent: 110, duration: DUR.slow, ease: 'reel', stagger: 0.06 },
-            0.5,
-          );
-        tl.to(
-          buttons,
-          { opacity: 1, scale: 1, duration: DUR.base, ease: 'snap', stagger: 0.06 },
-          0.8,
-        );
-      });
-      return cancel;
+      const splitReady = loadSplitText();
+      let cancelled = false;
+      const cancelIntro = whenIntroReady(
+        () =>
+          void splitReady.then(
+            (SplitText) =>
+              !cancelled &&
+              context.add(() => {
+                const split = overview
+                  ? SplitText.create(overview, { type: 'lines', mask: 'lines', aria: 'none' })
+                  : null;
+                const tl = gsap.timeline();
+                tl.to(img, { scale: 1, duration: 1.8, ease: 'reel' }, 0)
+                  .to(
+                    logo,
+                    { clipPath: 'inset(0% 0% 0% 0%)', duration: DUR.cinematic, ease: 'projector' },
+                    0.2,
+                  )
+                  .set(overview, { opacity: 1 }, 0.5);
+                if (split)
+                  tl.from(
+                    split.lines,
+                    { yPercent: 110, duration: DUR.slow, ease: 'reel', stagger: 0.06 },
+                    0.5,
+                  );
+                tl.to(
+                  buttons,
+                  { opacity: 1, scale: 1, duration: DUR.base, ease: 'snap', stagger: 0.06 },
+                  0.8,
+                );
+              }),
+          ),
+      );
+      return () => {
+        cancelled = true;
+        cancelIntro();
+      };
     },
     { scope: root, dependencies: [reduced] },
   );

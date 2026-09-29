@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useState } from 'react';
 import { Flag, Heart, Pencil, Trash2 } from 'lucide-react';
 import type { TmdbReview } from '@/lib/tmdb/types';
@@ -16,7 +17,12 @@ import { Avatar } from '@/components/ui/Avatar';
 import { StarRating } from '@/components/ui/StarRating';
 import { SplitHeading } from '@/components/motion/SplitHeading';
 import { EmptyState } from '@/components/layout/EmptyState';
-import { ReviewSheet } from './ReviewSheet';
+import dynamic from 'next/dynamic';
+
+// Form + zod load only when someone writes a review (spec 61).
+const ReviewSheet = dynamic(() => import('./ReviewSheet').then((m) => m.ReviewSheet), {
+  ssr: false,
+});
 
 const dateFmt = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
@@ -119,6 +125,8 @@ interface Props {
 export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
   const [tab, setTab] = useState<'site' | 'tmdb'>('site');
   const [sheet, setSheet] = useState<{ open: boolean; editing?: SiteReview }>({ open: false });
+  const [sheetUsed, setSheetUsed] = useState(false);
+  if (sheet.open && !sheetUsed) setSheetUsed(true);
   const { profileId } = useSession();
   const { data: site = [] } = useSiteReviews(movieId);
   const { remove, like, report } = useReviewMutations(movieId);
@@ -248,13 +256,15 @@ export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
           </ul>
         )}
       </TabPanel>
-      <ReviewSheet
-        movieId={movieId}
-        title={title}
-        open={sheet.open}
-        editing={sheet.editing}
-        onClose={() => setSheet({ open: false })}
-      />
+      {sheetUsed && (
+        <ReviewSheet
+          movieId={movieId}
+          title={title}
+          open={sheet.open}
+          editing={sheet.editing}
+          onClose={() => setSheet({ open: false })}
+        />
+      )}
     </section>
   );
 }

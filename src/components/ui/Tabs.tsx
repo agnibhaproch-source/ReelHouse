@@ -1,6 +1,6 @@
 'use client';
 
-import { m } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useId, useRef, type KeyboardEvent, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { SPRING } from '@/lib/tokens';

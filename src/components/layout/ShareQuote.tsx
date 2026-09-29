@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Quote } from 'lucide-react';

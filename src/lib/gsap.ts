@@ -2,19 +2,17 @@
 
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
-import { CustomEase } from 'gsap/CustomEase';
 import { useGSAP } from '@gsap/react';
 import { EASES, DUR } from './tokens';
+import { bezier } from './bezier';
 
 let registered = false;
 
+/** Registers ScrollTrigger + the named token eases (projector, reel, shutter, snap). */
 export function registerGsap(): void {
   if (registered || typeof window === 'undefined') return;
-  gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase, useGSAP);
-  for (const [name, [a, b, c, d]] of Object.entries(EASES)) {
-    CustomEase.create(name, `M0,0 C${a},${b} ${c},${d} 1,1`);
-  }
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+  for (const [name, curve] of Object.entries(EASES)) gsap.registerEase(name, bezier(curve));
   gsap.defaults({ ease: 'reel', duration: DUR.base });
   ScrollTrigger.config({ ignoreMobileResize: true });
   registered = true;
@@ -22,4 +20,4 @@ export function registerGsap(): void {
 
 registerGsap();
 
-export { gsap, ScrollTrigger, SplitText, CustomEase, useGSAP };
+export { gsap, ScrollTrigger, useGSAP };

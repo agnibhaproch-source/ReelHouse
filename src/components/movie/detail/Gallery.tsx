@@ -7,7 +7,7 @@ import { SIZES, tmdbImage } from '@/lib/tmdb/images';
 import { useMotionPrefs } from '@/hooks/useMotionPrefs';
 import { HorizontalScene } from '@/components/motion/HorizontalScene';
 import { TmdbImage } from '@/components/ui/TmdbImage';
-import { Lightbox } from './Lightbox';
+const Lightbox = dynamic(() => import('./Lightbox').then((m) => m.Lightbox), { ssr: false });
 
 const GalleryGL = dynamic(() => import('@/components/gl/GalleryGL').then((m) => m.GalleryGL), {
   ssr: false,
@@ -20,6 +20,8 @@ const GalleryGL = dynamic(() => import('@/components/gl/GalleryGL').then((m) => 
  */
 export function Gallery({ backdrops, title }: { backdrops: TmdbImageT[]; title: string }) {
   const [open, setOpen] = useState<number | null>(null);
+  const [boxUsed, setBoxUsed] = useState(false);
+  if (open !== null && !boxUsed) setBoxUsed(true);
   const scope = useRef<HTMLDivElement>(null);
   const { webglEnabled, finePointer } = useMotionPrefs();
   if (backdrops.length < 2) return null;
@@ -56,7 +58,9 @@ export function Gallery({ backdrops, title }: { backdrops: TmdbImageT[]; title: 
         ))}
       </HorizontalScene>
       {webglEnabled && finePointer && <GalleryGL scope={scope} />}
-      <Lightbox images={backdrops} index={open} onIndex={setOpen} title={title} />
+      {open !== null && (
+        <Lightbox images={backdrops} index={open} onIndex={setOpen} title={title} />
+      )}
     </div>
   );
 }

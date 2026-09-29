@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { gsap, SplitText } from '@/lib/gsap';
+import { gsap } from '@/lib/gsap';
+import { loadSplitText } from '@/lib/split';
 import { DUR } from '@/lib/tokens';
 import { markPreloaderDone } from '@/lib/intro';
 import { readJSON, writeJSON } from '@/lib/storage';
@@ -84,40 +85,50 @@ export function Preloader() {
     let finished = false;
     const skipTimer = setTimeout(() => setShowSkip(true), 600);
     const stopTracking = trackProgress((p) => (target = p));
+    const splitReady = loadSplitText();
 
     const outro = () => {
       if (finished) return;
       finished = true;
       cancelAnimationFrame(raf);
       stopTracking();
-      const split = SplitText.create(q('[data-wordmark]'), {
-        type: 'chars',
-        mask: 'chars',
-        aria: 'hidden',
-      });
-      gsap
-        .timeline({ onComplete: finish })
-        .to(q('[data-leader]'), { scale: 0, duration: 0.35, ease: 'shutter' })
-        .fromTo(
-          q('[data-flash]'),
-          { opacity: 0 },
-          { opacity: 0.9, duration: 0.1, yoyo: true, repeat: 1, ease: 'none' },
-          '>-0.05',
-        )
-        .set(q('[data-wordmark]'), { autoAlpha: 1 })
-        .from(split.chars, { yPercent: 110, duration: 0.45, ease: 'reel', stagger: 0.03 })
-        .to(
-          split.chars,
-          { yPercent: -110, duration: 0.35, ease: 'shutter', stagger: 0.02 },
-          '+=0.15',
-        )
-        .to(
-          q('[data-panel-top]'),
-          { yPercent: -100, duration: DUR.slow, ease: 'projector' },
-          '-=0.1',
-        )
-        .to(q('[data-panel-bottom]'), { yPercent: 100, duration: DUR.slow, ease: 'projector' }, '<')
-        .call(markPreloaderDone, [], '<0.35');
+      void splitReady.then(
+        (SplitText) => {
+          const split = SplitText.create(q('[data-wordmark]'), {
+            type: 'chars',
+            mask: 'chars',
+            aria: 'hidden',
+          });
+          gsap
+            .timeline({ onComplete: finish })
+            .to(q('[data-leader]'), { scale: 0, duration: 0.35, ease: 'shutter' })
+            .fromTo(
+              q('[data-flash]'),
+              { opacity: 0 },
+              { opacity: 0.9, duration: 0.1, yoyo: true, repeat: 1, ease: 'none' },
+              '>-0.05',
+            )
+            .set(q('[data-wordmark]'), { autoAlpha: 1 })
+            .from(split.chars, { yPercent: 110, duration: 0.45, ease: 'reel', stagger: 0.03 })
+            .to(
+              split.chars,
+              { yPercent: -110, duration: 0.35, ease: 'shutter', stagger: 0.02 },
+              '+=0.15',
+            )
+            .to(
+              q('[data-panel-top]'),
+              { yPercent: -100, duration: DUR.slow, ease: 'projector' },
+              '-=0.1',
+            )
+            .to(
+              q('[data-panel-bottom]'),
+              { yPercent: 100, duration: DUR.slow, ease: 'projector' },
+              '<',
+            )
+            .call(markPreloaderDone, [], '<0.35');
+        },
+        () => gsap.to(el, { autoAlpha: 0, duration: 0.3, onComplete: finish }),
+      );
     };
     skipRef.current = () => {
       if (finished) return;

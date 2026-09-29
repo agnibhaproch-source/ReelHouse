@@ -2,7 +2,8 @@
 
 import { useRef } from 'react';
 import type { TextTag } from './tags';
-import { gsap, SplitText, useGSAP } from '@/lib/gsap';
+import { gsap, useGSAP } from '@/lib/gsap';
+import { loadSplitText } from '@/lib/split';
 import { DUR, STAGGER } from '@/lib/tokens';
 import { useMotionPrefs } from '@/hooks/useMotionPrefs';
 import { cn } from '@/lib/utils';
@@ -40,7 +41,7 @@ export function SplitHeading({
   const { reduced } = useMotionPrefs();
 
   useGSAP(
-    () => {
+    (context) => {
       const el = ref.current;
       if (!el) return;
       if (reduced) {
@@ -54,29 +55,38 @@ export function SplitHeading({
         return;
       }
       let played = false;
-      SplitText.create(el, {
-        type: by === 'chars' ? 'words,chars' : by,
-        mask: by === 'chars' ? 'words' : by,
-        // aria-label is only valid on headings; other tags keep their text readable.
-        aria: /^h[1-6]$/.test(as) ? 'auto' : 'none',
-        autoSplit: true,
-        onSplit(self: SplitText) {
-          const pieces = by === 'chars' ? self.chars : by === 'words' ? self.words : self.lines;
-          if (played) return gsap.set(pieces, { yPercent: 0 });
-          return gsap.from(pieces, {
-            yPercent: 110,
-            duration: DUR.slow,
-            ease: 'reel',
-            stagger: by === 'lines' ? STAGGER.loose : STAGGER.tight,
-            delay,
-            onComplete: () => {
-              played = true;
+      let cancelled = false;
+      void loadSplitText().then((SplitText) => {
+        if (cancelled) return;
+        context.add(() => {
+          SplitText.create(el, {
+            type: by === 'chars' ? 'words,chars' : by,
+            mask: by === 'chars' ? 'words' : by,
+            // aria-label is only valid on headings; other tags keep their text readable.
+            aria: /^h[1-6]$/.test(as) ? 'auto' : 'none',
+            autoSplit: true,
+            onSplit(self) {
+              const pieces = by === 'chars' ? self.chars : by === 'words' ? self.words : self.lines;
+              if (played) return gsap.set(pieces, { yPercent: 0 });
+              return gsap.from(pieces, {
+                yPercent: 110,
+                duration: DUR.slow,
+                ease: 'reel',
+                stagger: by === 'lines' ? STAGGER.loose : STAGGER.tight,
+                delay,
+                onComplete: () => {
+                  played = true;
+                },
+                scrollTrigger:
+                  trigger === 'scroll' ? { trigger: el, start: 'top 88%', once: true } : undefined,
+              });
             },
-            scrollTrigger:
-              trigger === 'scroll' ? { trigger: el, start: 'top 88%', once: true } : undefined,
           });
-        },
+        });
       });
+      return () => {
+        cancelled = true;
+      };
     },
     { scope: ref, dependencies: [reduced, children], revertOnUpdate: true },
   );

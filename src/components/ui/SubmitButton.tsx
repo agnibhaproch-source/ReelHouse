@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m } from 'motion/react';
+import { AnimatePresence } from 'motion/react';
+import * as m from 'motion/react-m';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DUR, EASES, SPRING } from '@/lib/tokens';

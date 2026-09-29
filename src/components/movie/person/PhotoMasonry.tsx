@@ -1,14 +1,19 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import type { TmdbImage as TmdbImageT } from '@/lib/tmdb/types';
 import { TmdbImage } from '@/components/ui/TmdbImage';
 import { Reveal } from '@/components/motion/Reveal';
-import { Lightbox } from '../detail/Lightbox';
+const Lightbox = dynamic(() => import('../detail/Lightbox').then((m) => m.Lightbox), {
+  ssr: false,
+});
 
 /** Photo gallery masonry (CSS columns) with lightbox (spec 27). */
 export function PhotoMasonry({ photos, name }: { photos: TmdbImageT[]; name: string }) {
   const [open, setOpen] = useState<number | null>(null);
+  const [boxUsed, setBoxUsed] = useState(false);
+  if (open !== null && !boxUsed) setBoxUsed(true);
   if (photos.length < 2) return null;
   return (
     <section aria-labelledby="photos-h" className="px-gutter py-12">
@@ -38,7 +43,9 @@ export function PhotoMasonry({ photos, name }: { photos: TmdbImageT[]; name: str
           </li>
         ))}
       </Reveal>
-      <Lightbox images={photos} index={open} onIndex={setOpen} title={name} kind="profile" />
+      {open !== null && (
+        <Lightbox images={photos} index={open} onIndex={setOpen} title={name} kind="profile" />
+      )}
     </section>
   );
 }

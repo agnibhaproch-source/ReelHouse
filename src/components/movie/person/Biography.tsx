@@ -1,6 +1,6 @@
 'use client';
 
-import { m } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useState } from 'react';
 import { SPRING } from '@/lib/tokens';
 import { useMotionPrefs } from '@/hooks/useMotionPrefs';

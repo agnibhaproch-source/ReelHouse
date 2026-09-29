@@ -1,6 +1,7 @@
 'use client';
 
-import { AnimatePresence, m, type PanInfo } from 'motion/react';
+import { AnimatePresence, type PanInfo } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';

@@ -5,30 +5,9 @@ import Lenis from 'lenis';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { EASES } from '@/lib/tokens';
 import { clamp } from '@/lib/utils';
+import { bezier } from '@/lib/bezier';
 import { ScrollContext, type ScrollApi } from '@/hooks/useLenis';
 import { useMotionPrefs } from '@/hooks/useMotionPrefs';
-
-/** cubic-bezier → easing fn for Lenis scrollTo. */
-function bezier([x1, y1, x2, y2]: readonly number[]): (t: number) => number {
-  const cx = 3 * (x1 as number),
-    bx = 3 * ((x2 as number) - (x1 as number)) - cx,
-    ax = 1 - cx - bx;
-  const cy = 3 * (y1 as number),
-    by = 3 * ((y2 as number) - (y1 as number)) - cy,
-    ay = 1 - cy - by;
-  const sx = (t: number) => ((ax * t + bx) * t + cx) * t;
-  const sy = (t: number) => ((ay * t + by) * t + cy) * t;
-  return (x: number) => {
-    let t = x;
-    for (let i = 0; i < 8; i++) {
-      const d = sx(t) - x;
-      const dx = (3 * ax * t + 2 * bx) * t + cx;
-      if (Math.abs(d) < 1e-5 || Math.abs(dx) < 1e-6) break;
-      t -= d / dx;
-    }
-    return sy(clamp(t, 0, 1));
-  };
-}
 
 export const easeProjector = bezier(EASES.projector);
 

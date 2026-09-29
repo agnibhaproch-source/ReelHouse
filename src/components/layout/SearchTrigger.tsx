@@ -1,6 +1,6 @@
 'use client';
 
-import { m } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useUiStore } from '@/stores/ui';
