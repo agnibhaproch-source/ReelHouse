@@ -24,7 +24,19 @@ export const ReviewSchema = z.object({
 type ReviewForm = z.infer<typeof ReviewSchema>;
 
 /** Review sheet (spec 55): plain text ≤ 2000, spoiler toggle, profanity masked, submit morph (spec 34). */
-export function ReviewSheet({ movieId, title, open, editing, onClose }: { movieId: number; title: string; open: boolean; editing?: SiteReview; onClose: () => void }) {
+export function ReviewSheet({
+  movieId,
+  title,
+  open,
+  editing,
+  onClose,
+}: {
+  movieId: number;
+  title: string;
+  open: boolean;
+  editing?: SiteReview;
+  onClose: () => void;
+}) {
   const { save } = useReviewMutations(movieId);
   const id = useId();
   const [shake, setShake] = useState(false);
@@ -46,7 +58,13 @@ export function ReviewSheet({ movieId, title, open, editing, onClose }: { movieI
   };
 
   return (
-    <Modal open={open} onClose={onClose} title={editing ? `Edit your review of ${title}` : `Review ${title}`} variant="sheet" className="md:inset-x-auto md:left-1/2 md:w-[640px] md:-translate-x-1/2">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={editing ? `Edit your review of ${title}` : `Review ${title}`}
+      variant="sheet"
+      className="md:inset-x-auto md:left-1/2 md:w-[640px] md:-translate-x-1/2"
+    >
       <form
         noValidate
         onSubmit={handleSubmit(
@@ -71,9 +89,13 @@ export function ReviewSheet({ movieId, title, open, editing, onClose }: { movieI
           aria-describedby={`${id}-count ${formState.errors.body ? `${id}-err` : ''}`}
           placeholder="What stayed with you after the lights came up?"
           data-autofocus
-          className={cn('w-full resize-y rounded-[10px] border border-line bg-seat p-4 text-reel outline-none placeholder:text-dim focus-visible:border-violet', shake && 'shake', spoiler && 'blur-[1px]')}
+          className={cn(
+            'border-line bg-seat text-reel placeholder:text-dim focus-visible:border-violet w-full resize-y rounded-[10px] border p-4 outline-none',
+            shake && 'shake',
+            spoiler && 'blur-[1px]',
+          )}
         />
-        <div className="flex items-center justify-between text-small">
+        <div className="text-small flex items-center justify-between">
           {formState.errors.body ? (
             <p id={`${id}-err`} role="alert" className="text-danger">
               {formState.errors.body.message}
@@ -87,7 +109,12 @@ export function ReviewSheet({ movieId, title, open, editing, onClose }: { movieI
             {body.length}/{MAX_REVIEW_LENGTH}
           </span>
         </div>
-        <Switch label="Contains spoilers" description="Readers will see a blurred review until they choose to reveal it." checked={spoiler} onChange={(v) => setValue('spoiler', v)} />
+        <Switch
+          label="Contains spoilers"
+          description="Readers will see a blurred review until they choose to reveal it."
+          checked={spoiler}
+          onChange={(v) => setValue('spoiler', v)}
+        />
         <div className="flex justify-end gap-3">
           <Button variant="ghost" onClick={onClose}>
             Cancel

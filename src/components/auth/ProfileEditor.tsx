@@ -63,9 +63,16 @@ export function ProfileEditor({ open, profile, onClose, onSave, onDelete }: Prop
           void save();
         }}
       >
-        <Input label="Name" value={name} onChange={(e) => setName(e.currentTarget.value)} error={error ?? undefined} maxLength={24} data-autofocus />
+        <Input
+          label="Name"
+          value={name}
+          onChange={(e) => setName(e.currentTarget.value)}
+          error={error ?? undefined}
+          maxLength={24}
+          data-autofocus
+        />
         <fieldset>
-          <legend className="mb-3 text-small font-semibold">Avatar</legend>
+          <legend className="text-small mb-3 font-semibold">Avatar</legend>
           <div role="radiogroup" aria-label="Avatar" className="flex flex-wrap gap-3">
             {AVATARS.map((a) => (
               <button
@@ -75,7 +82,10 @@ export function ProfileEditor({ open, profile, onClose, onSave, onDelete }: Prop
                 aria-checked={avatar === a}
                 aria-label={a}
                 onClick={() => setAvatar(a)}
-                className={cn('rounded-[22%] p-1 ring-2 transition-[box-shadow,scale] duration-base ease-snap hover:scale-105', avatar === a ? 'ring-violet' : 'ring-transparent')}
+                className={cn(
+                  'duration-base ease-snap rounded-[22%] p-1 ring-2 transition-[box-shadow,scale] hover:scale-105',
+                  avatar === a ? 'ring-violet' : 'ring-transparent',
+                )}
               >
                 <Avatar avatar={a} name={a} size={56} decorative />
               </button>
@@ -83,10 +93,15 @@ export function ProfileEditor({ open, profile, onClose, onSave, onDelete }: Prop
           </div>
         </fieldset>
         <div>
-          <label htmlFor={`${id}-lang`} className="mb-2 block text-small font-semibold">
+          <label htmlFor={`${id}-lang`} className="text-small mb-2 block font-semibold">
             Content language
           </label>
-          <select id={`${id}-lang`} value={language} onChange={(e) => setLanguage(e.currentTarget.value)} className="min-h-11 w-full rounded-[10px] border border-line bg-seat px-3">
+          <select
+            id={`${id}-lang`}
+            value={language}
+            onChange={(e) => setLanguage(e.currentTarget.value)}
+            className="border-line bg-seat min-h-11 w-full rounded-[10px] border px-3"
+          >
             {CONTENT_LANGUAGES.map((l) => (
               <option key={l.value} value={l.value}>
                 {l.label}
@@ -94,7 +109,12 @@ export function ProfileEditor({ open, profile, onClose, onSave, onDelete }: Prop
             ))}
           </select>
         </div>
-        <Switch label="Kids profile" description="Only family-friendly titles (U/A and below), no horror or thrillers." checked={kids} onChange={setKids} />
+        <Switch
+          label="Kids profile"
+          description="Only family-friendly titles (U/A and below), no horror or thrillers."
+          checked={kids}
+          onChange={setKids}
+        />
         <div className="flex flex-wrap gap-3">
           <Button type="submit" loading={busy} disabled={busy}>
             {profile ? 'Save profile' : 'Add profile'}
@@ -105,10 +125,12 @@ export function ProfileEditor({ open, profile, onClose, onSave, onDelete }: Prop
           {onDelete && profile && (
             <Button
               variant="ghost"
-              className="ml-auto text-danger hover:bg-danger/10"
+              className="text-danger hover:bg-danger/10 ml-auto"
               onClick={() => {
                 setBusy(true);
-                void onDelete().then(onClose).finally(() => setBusy(false));
+                void onDelete()
+                  .then(onClose)
+                  .finally(() => setBusy(false));
               }}
             >
               Delete profile

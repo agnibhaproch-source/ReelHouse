@@ -48,7 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
         <script
           // Runs before paint: skip the long intro on return visits within the session (spec 36).
-          dangerouslySetInnerHTML={{ __html: "try{if(sessionStorage.getItem('intro-seen'))document.documentElement.classList.add('intro-seen')}catch(e){}" }}
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(sessionStorage.getItem('intro-seen'))document.documentElement.classList.add('intro-seen')}catch(e){}",
+          }}
         />
         <noscript>
           <style>{'[data-preloader]{display:none!important}'}</style>

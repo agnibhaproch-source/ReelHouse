@@ -30,7 +30,10 @@ export function useReviewMutations(movieId: number) {
     mutationFn: (id: string) => repo.reviews.remove(profileId, id),
     onMutate: (id) => {
       const prev = qc.getQueryData<SiteReview[]>(key) ?? [];
-      qc.setQueryData(key, prev.filter((r) => r.id !== id));
+      qc.setQueryData(
+        key,
+        prev.filter((r) => r.id !== id),
+      );
       return { prev };
     },
     onError: (_e, _v, ctx) => {
@@ -43,13 +46,19 @@ export function useReviewMutations(movieId: number) {
     mutationFn: ({ id, on }: { id: string; on: boolean }) => repo.reviews.like(profileId, id, on),
     onMutate: ({ id, on }) => {
       const prev = qc.getQueryData<SiteReview[]>(key) ?? [];
-      qc.setQueryData(key, prev.map((r) => (r.id === id ? { ...r, liked: on, likes: Math.max(0, r.likes + (on ? 1 : -1)) } : r)));
+      qc.setQueryData(
+        key,
+        prev.map((r) =>
+          r.id === id ? { ...r, liked: on, likes: Math.max(0, r.likes + (on ? 1 : -1)) } : r,
+        ),
+      );
       return { prev };
     },
     onError: (_e, _v, ctx) => ctx && qc.setQueryData(key, ctx.prev),
   });
   const report = useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) => repo.reviews.report(profileId, id, reason),
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      repo.reviews.report(profileId, id, reason),
     onSuccess: () => toast.info('Thanks — the review was reported for moderation.'),
   });
   return { save, remove, like, report };

@@ -12,7 +12,10 @@ export function enqueue(op: QueuedOp): void {
   const q = readJSON<QueuedOp[]>(KEY, []);
   // Collapse add/remove pairs for the same title so replay is idempotent.
   const id = op.op === 'add' ? op.movie.movie_id : op.movieId;
-  const rest = q.filter((x) => !(x.profileId === op.profileId && (x.op === 'add' ? x.movie.movie_id : x.movieId) === id));
+  const rest = q.filter(
+    (x) =>
+      !(x.profileId === op.profileId && (x.op === 'add' ? x.movie.movie_id : x.movieId) === id),
+  );
   writeJSON(KEY, [...rest, op]);
 }
 
@@ -39,4 +42,5 @@ export async function flush(repo: Repo): Promise<number> {
   return done;
 }
 
-export const isOffline = (): boolean => typeof navigator !== 'undefined' && navigator.onLine === false;
+export const isOffline = (): boolean =>
+  typeof navigator !== 'undefined' && navigator.onLine === false;

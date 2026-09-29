@@ -17,7 +17,15 @@ interface SwitchProps {
 }
 
 /** Toggle: knob slides with a spring, track colour crossfades (spec 34). */
-export function Switch({ label, description, checked, onChange, disabled, className, hideLabel }: SwitchProps) {
+export function Switch({
+  label,
+  description,
+  checked,
+  onChange,
+  disabled,
+  className,
+  hideLabel,
+}: SwitchProps) {
   const id = useId();
   return (
     <div className={cn('flex items-center justify-between gap-4', className)}>
@@ -26,7 +34,7 @@ export function Switch({ label, description, checked, onChange, disabled, classN
           {label}
         </label>
         {description && (
-          <span id={`${id}-d`} className="block text-small text-dim">
+          <span id={`${id}-d`} className="text-small text-dim block">
             {description}
           </span>
         )}
@@ -43,18 +51,24 @@ export function Switch({ label, description, checked, onChange, disabled, classN
           void play('toggle');
           onChange(!checked);
         }}
-        className="relative inline-flex h-7 w-12 shrink-0 items-center rounded-pill p-1 disabled:opacity-40"
+        className="rounded-pill relative inline-flex h-7 w-12 shrink-0 items-center p-1 disabled:opacity-40"
       >
-        <span aria-hidden="true" className="absolute inset-0 rounded-pill bg-line" />
+        <span aria-hidden="true" className="rounded-pill bg-line absolute inset-0" />
         <span
           aria-hidden="true"
-          className={cn('absolute inset-0 rounded-pill bg-violet transition-opacity duration-base ease-reel', checked ? 'opacity-100' : 'opacity-0')}
+          className={cn(
+            'rounded-pill bg-violet duration-base ease-reel absolute inset-0 transition-opacity',
+            checked ? 'opacity-100' : 'opacity-0',
+          )}
         />
         <motion.span
           aria-hidden="true"
           layout
           transition={SPRING}
-          className={cn('relative size-5 rounded-full bg-reel shadow', checked ? 'ml-auto' : 'ml-0')}
+          className={cn(
+            'bg-reel relative size-5 rounded-full shadow',
+            checked ? 'ml-auto' : 'ml-0',
+          )}
         />
       </button>
     </div>

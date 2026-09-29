@@ -52,15 +52,32 @@ interface WatchlistButtonProps {
 }
 
 /** Plus morphs into a check; add → confetti + toast; remove → undo toast (specs 34, 52). */
-export function WatchlistButton({ movie, variant = 'secondary', size = 'md', className, iconOnly }: WatchlistButtonProps) {
+export function WatchlistButton({
+  movie,
+  variant = 'secondary',
+  size = 'md',
+  className,
+  iconOnly,
+}: WatchlistButtonProps) {
   const inList = useInWatchlist(movie.movie_id);
   const toggle = useToggleWatchlist();
   const ref = useRef<HTMLElement>(null);
   const label = inList ? `Remove ${movie.title} from my list` : `Add ${movie.title} to my list`;
 
   const icon = (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d={inList ? 'M5 12.5 10 17.5 19 7' : 'M12 5v14M5 12h14'} className="transition-[d] duration-base ease-snap" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path
+        d={inList ? 'M5 12.5 10 17.5 19 7' : 'M12 5v14M5 12h14'}
+        className="duration-base ease-snap transition-[d]"
+      />
     </svg>
   );
 

@@ -45,7 +45,16 @@ const LONG_PRESS = 500;
  * panel (portal). Click: press + shared-poster flight to /movie/[id]. Keyboard: Enter opens,
  * Space previews. Touch: tap navigates, long-press opens the preview sheet.
  */
-export function MovieCard({ movie, rank, priority, className, progress, onRemove, isDragging, sizes = SIZES.card }: MovieCardProps) {
+export function MovieCard({
+  movie,
+  rank,
+  priority,
+  className,
+  progress,
+  onRemove,
+  isDragging,
+  sizes = SIZES.card,
+}: MovieCardProps) {
   const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
   const linkRef = useRef<HTMLAnchorElement>(null);
@@ -53,7 +62,11 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
   const { reduced, finePointer } = useMotionPrefs();
   const prefetch = usePrefetchMovie();
   const openPreview = usePreviewStore((s) => s.open);
-  const press = usePress<HTMLAnchorElement>({ accent: 'var(--text-reel)', scale: 0.97, sound: false });
+  const press = usePress<HTMLAnchorElement>({
+    accent: 'var(--text-reel)',
+    scale: 0.97,
+    sound: false,
+  });
   const longPress = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressed = useRef(false);
   useTilt(cardRef, 8, finePointer && !reduced);
@@ -98,7 +111,12 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
     const src = img?.currentSrc;
     const push = (h: string) => router.push(h, { scroll: false });
     if (img && rect && src && !isReducedNow()) {
-      requestTransition({ href, kind: 'poster', push, poster: { id: movie.id, src, rect, radius: 6 } });
+      requestTransition({
+        href,
+        kind: 'poster',
+        push,
+        poster: { id: movie.id, src, rect, radius: 6 },
+      });
     } else {
       requestTransition({ href, kind: 'shutter', push });
     }
@@ -134,7 +152,7 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
         <span
           aria-hidden="true"
           data-rank-numeral
-          className="pointer-events-none -mr-[0.18em] shrink-0 font-display text-[clamp(5rem,11vw,9.5rem)] leading-[0.78] font-black tracking-[-0.08em] text-transparent select-none [-webkit-text-stroke:2px_var(--line)] transition-[-webkit-text-stroke-color] duration-base group-hover/card:[-webkit-text-stroke-color:var(--marquee-violet)]"
+          className="font-display duration-base pointer-events-none -mr-[0.18em] shrink-0 text-[clamp(5rem,11vw,9.5rem)] leading-[0.78] font-black tracking-[-0.08em] text-transparent transition-[-webkit-text-stroke-color] select-none [-webkit-text-stroke:2px_var(--line)] group-hover/card:[-webkit-text-stroke-color:var(--marquee-violet)]"
         >
           {rank}
         </span>
@@ -148,7 +166,7 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
           {/* Glow — dominant poster colour on a pseudo layer, opacity only */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-2 -z-10 rounded-poster opacity-0 blur-[40px] transition-opacity duration-base ease-reel group-hover/card:opacity-55 group-focus-within/card:opacity-55"
+            className="rounded-poster duration-base ease-reel pointer-events-none absolute inset-2 -z-10 opacity-0 blur-[40px] transition-opacity group-focus-within/card:opacity-55 group-hover/card:opacity-55"
             style={{ background: 'var(--glow)' }}
           />
           <Link
@@ -177,9 +195,12 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
             onContextMenu={(e) => longPressed.current && e.preventDefault()}
             onFocus={() => prefetch(movie.id)}
             draggable={false}
-            className="block rounded-poster outline-offset-4 transition-transform duration-base ease-reel group-hover/card:scale-[1.06] focus-visible:scale-[1.06] [-webkit-touch-callout:none]"
+            className="rounded-poster duration-base ease-reel block outline-offset-4 transition-transform [-webkit-touch-callout:none] group-hover/card:scale-[1.06] focus-visible:scale-[1.06]"
           >
-            <div data-poster className="relative aspect-[2/3] overflow-hidden rounded-poster bg-seat shadow-[0_10px_30px_rgb(0_0_0/0.35)]">
+            <div
+              data-poster
+              className="rounded-poster bg-seat relative aspect-[2/3] overflow-hidden shadow-[0_10px_30px_rgb(0_0_0/0.35)]"
+            >
               <TmdbImage
                 path={movie.poster_path}
                 kind="poster"
@@ -192,15 +213,23 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
               {/* Glare following the pointer */}
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light transition-opacity duration-base group-hover/card:opacity-100"
-                style={{ background: 'radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgb(255 255 255 / 0.45), transparent 55%)' }}
+                className="duration-base pointer-events-none absolute inset-0 opacity-0 mix-blend-soft-light transition-opacity group-hover/card:opacity-100"
+                style={{
+                  background:
+                    'radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgb(255 255 255 / 0.45), transparent 55%)',
+                }}
               />
               {isNew && (
-                <span className="absolute top-2 left-2 rounded-pill bg-amber px-2 py-0.5 text-[0.7rem] font-extrabold text-void">New</span>
+                <span className="rounded-pill bg-amber text-void absolute top-2 left-2 px-2 py-0.5 text-[0.7rem] font-extrabold">
+                  New
+                </span>
               )}
               {progress !== undefined && (
-                <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 bg-void/70">
-                  <span className="block h-full origin-left bg-violet" style={{ transform: `scaleX(${Math.max(0.04, progress)})` }} />
+                <span aria-hidden="true" className="bg-void/70 absolute inset-x-0 bottom-0 h-1">
+                  <span
+                    className="bg-violet block h-full origin-left"
+                    style={{ transform: `scaleX(${Math.max(0.04, progress)})` }}
+                  />
                 </span>
               )}
             </div>
@@ -209,11 +238,17 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
             <button
               type="button"
               onClick={() => {
-                if (cardRef.current && !isReducedNow()) gsap.to(cardRef.current, { opacity: 0, scale: 0.9, duration: DUR.fast, onComplete: onRemove });
+                if (cardRef.current && !isReducedNow())
+                  gsap.to(cardRef.current, {
+                    opacity: 0,
+                    scale: 0.9,
+                    duration: DUR.fast,
+                    onComplete: onRemove,
+                  });
                 else onRemove();
               }}
               aria-label={`Remove ${movie.title} from this row`}
-              className="absolute top-2 right-2 z-10 grid size-9 place-items-center rounded-full bg-void/80 text-reel opacity-0 backdrop-blur transition-opacity duration-fast group-hover/card:opacity-100 focus-visible:opacity-100 max-md:opacity-100"
+              className="bg-void/80 text-reel duration-fast absolute top-2 right-2 z-10 grid size-9 place-items-center rounded-full opacity-0 backdrop-blur transition-opacity group-hover/card:opacity-100 focus-visible:opacity-100 max-md:opacity-100"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
@@ -222,11 +257,11 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
         {/* Meta: hover-only on desktop, always on touch */}
         <div
           aria-hidden="true"
-          className="mt-2 flex items-start justify-between gap-2 transition-[opacity,translate] duration-base ease-reel pointer-fine:translate-y-1 pointer-fine:opacity-0 pointer-fine:group-hover/card:translate-y-0 pointer-fine:group-hover/card:opacity-100 pointer-fine:group-focus-within/card:translate-y-0 pointer-fine:group-focus-within/card:opacity-100"
+          className="duration-base ease-reel mt-2 flex items-start justify-between gap-2 transition-[opacity,translate] pointer-fine:translate-y-1 pointer-fine:opacity-0 pointer-fine:group-focus-within/card:translate-y-0 pointer-fine:group-focus-within/card:opacity-100 pointer-fine:group-hover/card:translate-y-0 pointer-fine:group-hover/card:opacity-100"
         >
           <div className="min-w-0">
-            <p className="truncate text-small font-semibold">{movie.title}</p>
-            <p className="text-[0.75rem] text-dim">{yearOf(movie.release_date)}</p>
+            <p className="text-small truncate font-semibold">{movie.title}</p>
+            <p className="text-dim text-[0.75rem]">{yearOf(movie.release_date)}</p>
           </div>
           {movie.vote_average > 0 && <RatingRing value={movie.vote_average} size={30} />}
         </div>

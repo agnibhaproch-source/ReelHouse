@@ -53,7 +53,8 @@ export interface MultiResults {
 
 export type TrendingWindow = 'day' | 'week';
 
-export type DiscoverSort = 'popularity.desc' | 'vote_average.desc' | 'primary_release_date.desc' | 'title.asc';
+export type DiscoverSort =
+  'popularity.desc' | 'vote_average.desc' | 'primary_release_date.desc' | 'title.asc';
 
 export interface DiscoverParams {
   genre?: number | string;

@@ -13,7 +13,9 @@ export function DetailTracker({ movie, genreIds }: { movie: MovieDetail; genreId
   const record = useRecordHistory();
   const { profile, ready } = useSession();
   const done = useRef(false);
-  const blocked = Boolean(profile?.is_kids) && (movie.adult || genreIds.some((g) => (KIDS_EXCLUDED_GENRES as readonly number[]).includes(g)));
+  const blocked =
+    Boolean(profile?.is_kids) &&
+    (movie.adult || genreIds.some((g) => (KIDS_EXCLUDED_GENRES as readonly number[]).includes(g)));
 
   useEffect(() => {
     if (!ready || done.current || blocked) return;
@@ -23,8 +25,12 @@ export function DetailTracker({ movie, genreIds }: { movie: MovieDetail; genreId
 
   if (!blocked) return null;
   return (
-    <div className="fixed inset-0 z-(--z-overlay) grid place-items-center bg-void/97 backdrop-blur-xl">
-      <EmptyState title="This title isn’t available on kids profiles." body="Switch profiles to watch grown-up titles." action={{ href: '/profiles', label: 'Switch profile' }} />
+    <div className="bg-void/97 fixed inset-0 z-(--z-overlay) grid place-items-center backdrop-blur-xl">
+      <EmptyState
+        title="This title isn’t available on kids profiles."
+        body="Switch profiles to watch grown-up titles."
+        action={{ href: '/profiles', label: 'Switch profile' }}
+      />
     </div>
   );
 }

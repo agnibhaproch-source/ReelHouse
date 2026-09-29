@@ -10,5 +10,11 @@ export function ScrollProgress() {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     if (ref.current) ref.current.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
   });
-  return <div ref={ref} aria-hidden="true" className="fixed inset-x-0 top-0 z-(--z-toast) h-0.5 origin-left scale-x-0 bg-cyan" />;
+  return (
+    <div
+      ref={ref}
+      aria-hidden="true"
+      className="bg-cyan fixed inset-x-0 top-0 z-(--z-toast) h-0.5 origin-left scale-x-0"
+    />
+  );
 }

@@ -22,14 +22,31 @@ interface TabsProps {
 }
 
 /** Tablist with a sliding active indicator (Motion layoutId) and arrow-key navigation. */
-export function Tabs({ items, value, onChange, label, className, idPrefix, controlsPanels = true }: TabsProps) {
+export function Tabs({
+  items,
+  value,
+  onChange,
+  label,
+  className,
+  idPrefix,
+  controlsPanels = true,
+}: TabsProps) {
   const auto = useId();
   const prefix = idPrefix ?? auto;
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const onKey = (e: KeyboardEvent, i: number) => {
     const n = items.length;
-    const next = e.key === 'ArrowRight' ? (i + 1) % n : e.key === 'ArrowLeft' ? (i - 1 + n) % n : e.key === 'Home' ? 0 : e.key === 'End' ? n - 1 : -1;
+    const next =
+      e.key === 'ArrowRight'
+        ? (i + 1) % n
+        : e.key === 'ArrowLeft'
+          ? (i - 1 + n) % n
+          : e.key === 'Home'
+            ? 0
+            : e.key === 'End'
+              ? n - 1
+              : -1;
     if (next < 0) return;
     e.preventDefault();
     const item = items[next];
@@ -39,7 +56,14 @@ export function Tabs({ items, value, onChange, label, className, idPrefix, contr
   };
 
   return (
-    <div role="tablist" aria-label={label} className={cn('relative flex gap-1 overflow-x-auto no-scrollbar border-b border-line', className)}>
+    <div
+      role="tablist"
+      aria-label={label}
+      className={cn(
+        'no-scrollbar border-line relative flex gap-1 overflow-x-auto border-b',
+        className,
+      )}
+    >
       {items.map((t, i) => {
         const selected = t.id === value;
         return (
@@ -58,13 +82,17 @@ export function Tabs({ items, value, onChange, label, className, idPrefix, contr
             onKeyDown={(e) => onKey(e, i)}
             data-cursor="link"
             className={cn(
-              'relative min-h-11 px-4 py-3 text-small font-semibold whitespace-nowrap transition-colors duration-fast',
+              'text-small duration-fast relative min-h-11 px-4 py-3 font-semibold whitespace-nowrap transition-colors',
               selected ? 'text-reel' : 'text-dim hover:text-reel',
             )}
           >
             {t.label}
             {selected && (
-              <motion.span layoutId={`${prefix}-indicator`} transition={SPRING} className="absolute inset-x-2 -bottom-px h-0.5 rounded-pill bg-cyan" />
+              <motion.span
+                layoutId={`${prefix}-indicator`}
+                transition={SPRING}
+                className="rounded-pill bg-cyan absolute inset-x-2 -bottom-px h-0.5"
+              />
             )}
           </button>
         );
@@ -73,9 +101,28 @@ export function Tabs({ items, value, onChange, label, className, idPrefix, contr
   );
 }
 
-export function TabPanel({ id, value, prefix, children, className }: { id: string; value: string; prefix: string; children: ReactNode; className?: string }) {
+export function TabPanel({
+  id,
+  value,
+  prefix,
+  children,
+  className,
+}: {
+  id: string;
+  value: string;
+  prefix: string;
+  children: ReactNode;
+  className?: string;
+}) {
   return (
-    <div role="tabpanel" id={`${prefix}-panel-${id}`} aria-labelledby={`${prefix}-tab-${id}`} tabIndex={0} hidden={id !== value} className={className}>
+    <div
+      role="tabpanel"
+      id={`${prefix}-panel-${id}`}
+      aria-labelledby={`${prefix}-tab-${id}`}
+      tabIndex={0}
+      hidden={id !== value}
+      className={className}
+    >
       {children}
     </div>
   );

@@ -6,11 +6,44 @@
 import type { Params } from './client';
 import { genreById } from './genres';
 
-const A = ['Last', 'Silent', 'Neon', 'Midnight', 'Paper', 'Velvet', 'Hollow', 'Golden', 'Crimson', 'Distant'];
-const B = ['Projectionist', 'Matinee', 'Harbor', 'Monsoon', 'Signal', 'Orchard', 'Frontier', 'Lantern', 'Echo', 'Reel'];
+const A = [
+  'Last',
+  'Silent',
+  'Neon',
+  'Midnight',
+  'Paper',
+  'Velvet',
+  'Hollow',
+  'Golden',
+  'Crimson',
+  'Distant',
+];
+const B = [
+  'Projectionist',
+  'Matinee',
+  'Harbor',
+  'Monsoon',
+  'Signal',
+  'Orchard',
+  'Frontier',
+  'Lantern',
+  'Echo',
+  'Reel',
+];
 const LANGS = ['en', 'hi', 'ta', 'te', 'ml', 'ko', 'ja', 'kn', 'es', 'fr', 'bn', 'mr'];
 const GENRE_POOL = [28, 12, 16, 35, 80, 18, 14, 27, 9648, 10749, 878, 53, 10751, 99];
-const FIRST = ['Asha', 'Min-jun', 'Kenji', 'Lucía', 'Arjun', 'Priya', 'Élodie', 'Tomás', 'Meera', 'Soo-ah'];
+const FIRST = [
+  'Asha',
+  'Min-jun',
+  'Kenji',
+  'Lucía',
+  'Arjun',
+  'Priya',
+  'Élodie',
+  'Tomás',
+  'Meera',
+  'Soo-ah',
+];
 const LAST = ['Varma', 'Park', 'Sato', 'Moreau', 'Iyer', 'Kapoor', 'Reyes', 'Nair', 'Kim', 'Duval'];
 
 const MOVIE_COUNT = 90;
@@ -68,7 +101,12 @@ const PEOPLE = Array.from({ length: PERSON_COUNT }, (_, i) => person(i));
 function page<T>(items: T[], p: number, size = 20) {
   const total_pages = Math.max(1, Math.ceil(items.length / size));
   const pg = Math.min(Math.max(1, p), total_pages);
-  return { page: pg, results: items.slice((pg - 1) * size, pg * size), total_pages, total_results: items.length };
+  return {
+    page: pg,
+    results: items.slice((pg - 1) * size, pg * size),
+    total_pages,
+    total_results: items.length,
+  };
 }
 
 function rotate<T>(items: T[], by: number): T[] {
@@ -82,7 +120,14 @@ function detail(id: number) {
   const i = id - 1001;
   const cast = Array.from({ length: 10 }, (_, k) => {
     const p = PEOPLE[(i + k) % PEOPLE.length]!;
-    return { id: p.id, name: p.name, character: `Role ${k + 1}`, profile_path: null, order: k, credit_id: `c${id}-${k}` };
+    return {
+      id: p.id,
+      name: p.name,
+      character: `Role ${k + 1}`,
+      profile_path: null,
+      order: k,
+      credit_id: `c${id}-${k}`,
+    };
   });
   const director = PEOPLE[(i * 3) % PEOPLE.length]!;
   const rec = rotate(MOVIES, i + 1).slice(0, 12);
@@ -96,20 +141,43 @@ function detail(id: number) {
     revenue: 1_000_000 * (12 + (i % 90)),
     imdb_id: null,
     homepage: null,
-    spoken_languages: [{ english_name: 'English', iso_639_1: base.original_language, name: 'English' }],
+    spoken_languages: [
+      { english_name: 'English', iso_639_1: base.original_language, name: 'English' },
+    ],
     production_companies: [],
     videos: { results: [] },
     credits: {
       cast,
       crew: [
-        { id: director.id, name: director.name, job: 'Director', department: 'Directing', profile_path: null },
-        { id: director.id + 1, name: PEOPLE[(i * 3 + 1) % PEOPLE.length]!.name, job: 'Screenplay', department: 'Writing', profile_path: null },
+        {
+          id: director.id,
+          name: director.name,
+          job: 'Director',
+          department: 'Directing',
+          profile_path: null,
+        },
+        {
+          id: director.id + 1,
+          name: PEOPLE[(i * 3 + 1) % PEOPLE.length]!.name,
+          job: 'Screenplay',
+          department: 'Writing',
+          profile_path: null,
+        },
       ],
     },
     images: { backdrops: [], posters: [], logos: [] },
     similar: page(rotate(MOVIES, i + 20), 1),
     recommendations: page(rec, 1),
-    release_dates: { results: [{ iso_3166_1: 'IN', release_dates: [{ certification: 'U/A', release_date: `${base.release_date}T00:00:00.000Z`, type: 3 }] }] },
+    release_dates: {
+      results: [
+        {
+          iso_3166_1: 'IN',
+          release_dates: [
+            { certification: 'U/A', release_date: `${base.release_date}T00:00:00.000Z`, type: 3 },
+          ],
+        },
+      ],
+    },
     'watch/providers': { results: {} },
     reviews: {
       page: 1,
@@ -119,7 +187,8 @@ function detail(id: number) {
         {
           id: `r${id}`,
           author: 'demo_critic',
-          content: 'A demo review. The pacing is patient, the score is gorgeous, and the final reel lands.',
+          content:
+            'A demo review. The pacing is patient, the score is gorgeous, and the final reel lands.',
           created_at: '2026-01-10T10:00:00.000Z',
           author_details: { rating: 8, avatar_path: null, username: 'demo_critic' },
         },
@@ -140,7 +209,9 @@ function personDetail(id: number) {
     biography: `${p.name} is an invented performer in the Reelhouse demo catalogue. Their work spans festival dramas, genre thrillers and one very long musical.`,
     birthday: `19${70 + (i % 25)}-0${(i % 9) + 1}-1${i % 9}`,
     deathday: null,
-    place_of_birth: ['Mumbai, India', 'Seoul, South Korea', 'Chennai, India', 'Lyon, France'][i % 4],
+    place_of_birth: ['Mumbai, India', 'Seoul, South Korea', 'Chennai, India', 'Lyon, France'][
+      i % 4
+    ],
     imdb_id: null,
     movie_credits: { cast: credits, crew: [] },
     images: { profiles: [] },
@@ -154,7 +225,8 @@ function discover(params: Params) {
     .filter(Boolean)
     .map(Number);
   if (genres.length) items = items.filter((m) => genres.some((g) => m.genre_ids.includes(g)));
-  if (params.with_original_language) items = items.filter((m) => m.original_language === params.with_original_language);
+  if (params.with_original_language)
+    items = items.filter((m) => m.original_language === params.with_original_language);
   const without = String(params.without_genres ?? '')
     .split(/[,|]/)
     .filter(Boolean)
@@ -169,7 +241,8 @@ function discover(params: Params) {
   const sort = String(params.sort_by ?? 'popularity.desc');
   items.sort((a, b) => {
     if (sort.startsWith('vote_average')) return b.vote_average - a.vote_average;
-    if (sort.startsWith('primary_release_date')) return b.release_date.localeCompare(a.release_date);
+    if (sort.startsWith('primary_release_date'))
+      return b.release_date.localeCompare(a.release_date);
     if (sort.startsWith('title')) return a.title.localeCompare(b.title);
     return b.popularity - a.popularity;
   });
@@ -180,17 +253,34 @@ export function fixtureResponse(path: string, params: Params): unknown {
   const p = Number(params.page ?? 1);
   let m: RegExpExecArray | null;
 
-  if ((m = /^\/trending\/movie\/(day|week)$/.exec(path))) return page(rotate(MOVIES, m[1] === 'day' ? 0 : 5), p);
+  if ((m = /^\/trending\/movie\/(day|week)$/.exec(path)))
+    return page(rotate(MOVIES, m[1] === 'day' ? 0 : 5), p);
   if (path === '/movie/popular') return page(rotate(MOVIES, 10), p);
-  if (path === '/movie/top_rated') return page([...MOVIES].sort((a, b) => b.vote_average - a.vote_average), p);
+  if (path === '/movie/top_rated')
+    return page(
+      [...MOVIES].sort((a, b) => b.vote_average - a.vote_average),
+      p,
+    );
   if (path === '/movie/upcoming') return page(rotate(MOVIES, 30), p);
   if (path === '/movie/now_playing') return page(MOVIES.slice(0, 20), p);
-  if (path === '/genre/movie/list') return { genres: GENRE_POOL.map((id) => ({ id, name: genreById(id)?.name ?? 'Drama' })) };
+  if (path === '/genre/movie/list')
+    return { genres: GENRE_POOL.map((id) => ({ id, name: genreById(id)?.name ?? 'Drama' })) };
   if (path === '/discover/movie') return discover(params);
   if (path === '/search/multi' || path === '/search/movie') {
-    const q = String(params.query ?? '').toLowerCase().trim();
-    const movies = MOVIES.filter((x) => x.title.toLowerCase().includes(q)).map((x) => ({ ...x, media_type: 'movie' }));
-    const people = path === '/search/multi' ? PEOPLE.filter((x) => x.name.toLowerCase().includes(q)).map((x) => ({ ...x, media_type: 'person' })) : [];
+    const q = String(params.query ?? '')
+      .toLowerCase()
+      .trim();
+    const movies = MOVIES.filter((x) => x.title.toLowerCase().includes(q)).map((x) => ({
+      ...x,
+      media_type: 'movie',
+    }));
+    const people =
+      path === '/search/multi'
+        ? PEOPLE.filter((x) => x.name.toLowerCase().includes(q)).map((x) => ({
+            ...x,
+            media_type: 'person',
+          }))
+        : [];
     return page([...movies, ...people], p);
   }
   if ((m = /^\/movie\/(\d+)\/(recommendations|similar)$/.exec(path))) {

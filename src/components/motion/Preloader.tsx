@@ -22,7 +22,9 @@ function trackProgress(onProgress: (p: number) => void): () => void {
     fonts = 1;
     emit();
   });
-  const imgs = Array.from(document.querySelectorAll<HTMLImageElement>('main img[fetchpriority="high"]'));
+  const imgs = Array.from(
+    document.querySelectorAll<HTMLImageElement>('main img[fetchpriority="high"]'),
+  );
   if (!imgs.length) images = 1;
   else {
     let done = 0;
@@ -31,7 +33,12 @@ function trackProgress(onProgress: (p: number) => void): () => void {
       images = done / imgs.length;
       emit();
     };
-    imgs.forEach((img) => (img.complete ? one() : (img.addEventListener('load', one, { once: true }), img.addEventListener('error', one, { once: true }))));
+    imgs.forEach((img) =>
+      img.complete
+        ? one()
+        : (img.addEventListener('load', one, { once: true }),
+          img.addEventListener('error', one, { once: true })),
+    );
   }
   emit();
   return () => {
@@ -83,15 +90,32 @@ export function Preloader() {
       finished = true;
       cancelAnimationFrame(raf);
       stopTracking();
-      const split = SplitText.create(q('[data-wordmark]'), { type: 'chars', mask: 'chars', aria: 'hidden' });
+      const split = SplitText.create(q('[data-wordmark]'), {
+        type: 'chars',
+        mask: 'chars',
+        aria: 'hidden',
+      });
       gsap
         .timeline({ onComplete: finish })
         .to(q('[data-leader]'), { scale: 0, duration: 0.35, ease: 'shutter' })
-        .fromTo(q('[data-flash]'), { opacity: 0 }, { opacity: 0.9, duration: 0.1, yoyo: true, repeat: 1, ease: 'none' }, '>-0.05')
+        .fromTo(
+          q('[data-flash]'),
+          { opacity: 0 },
+          { opacity: 0.9, duration: 0.1, yoyo: true, repeat: 1, ease: 'none' },
+          '>-0.05',
+        )
         .set(q('[data-wordmark]'), { autoAlpha: 1 })
         .from(split.chars, { yPercent: 110, duration: 0.45, ease: 'reel', stagger: 0.03 })
-        .to(split.chars, { yPercent: -110, duration: 0.35, ease: 'shutter', stagger: 0.02 }, '+=0.15')
-        .to(q('[data-panel-top]'), { yPercent: -100, duration: DUR.slow, ease: 'projector' }, '-=0.1')
+        .to(
+          split.chars,
+          { yPercent: -110, duration: 0.35, ease: 'shutter', stagger: 0.02 },
+          '+=0.15',
+        )
+        .to(
+          q('[data-panel-top]'),
+          { yPercent: -100, duration: DUR.slow, ease: 'projector' },
+          '-=0.1',
+        )
         .to(q('[data-panel-bottom]'), { yPercent: 100, duration: DUR.slow, ease: 'projector' }, '<')
         .call(markPreloaderDone, [], '<0.35');
     };
@@ -116,7 +140,11 @@ export function Preloader() {
         const n = String(Math.max(1, 3 - Math.floor(shown * 3)));
         if (num.textContent !== n) {
           num.textContent = n;
-          gsap.fromTo(num, { opacity: 0.35 }, { opacity: 1, duration: 0.18, ease: 'none', repeat: 1, yoyo: false });
+          gsap.fromTo(
+            num,
+            { opacity: 0.35 },
+            { opacity: 1, duration: 0.18, ease: 'none', repeat: 1, yoyo: false },
+          );
         }
       }
       if (shown >= 1) outro();
@@ -137,28 +165,52 @@ export function Preloader() {
   if (done) return null;
 
   return (
-    <div ref={root} data-preloader className="fixed inset-0 z-(--z-preloader)" role="status" aria-label="Loading Reelhouse">
-      <div data-panel-top className="absolute inset-x-0 top-0 h-[50.5%] bg-ink" />
-      <div data-panel-bottom className="absolute inset-x-0 bottom-0 h-[50.5%] bg-ink" />
+    <div
+      ref={root}
+      data-preloader
+      className="fixed inset-0 z-(--z-preloader)"
+      role="status"
+      aria-label="Loading Reelhouse"
+    >
+      <div data-panel-top className="bg-ink absolute inset-x-0 top-0 h-[50.5%]" />
+      <div data-panel-bottom className="bg-ink absolute inset-x-0 bottom-0 h-[50.5%]" />
       <div className="absolute inset-0 grid place-items-center">
         <div data-leader className="relative grid size-[min(52vw,260px)] place-items-center">
-          <div data-arc className="absolute inset-0 rounded-full [--p:0deg]" style={{ background: 'conic-gradient(from 0deg, rgb(237 232 223 / 0.18) var(--p), transparent var(--p))' }} />
-          <svg viewBox="0 0 100 100" className="absolute inset-0 text-reel/60" aria-hidden="true">
+          <div
+            data-arc
+            className="absolute inset-0 rounded-full [--p:0deg]"
+            style={{
+              background:
+                'conic-gradient(from 0deg, rgb(237 232 223 / 0.18) var(--p), transparent var(--p))',
+            }}
+          />
+          <svg viewBox="0 0 100 100" className="text-reel/60 absolute inset-0" aria-hidden="true">
             <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="0.6" />
             <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" strokeWidth="0.6" />
             <path d="M50 0v100M0 50h100" stroke="currentColor" strokeWidth="0.4" />
           </svg>
-          <span data-num className="relative font-display text-[clamp(4rem,14vw,7.5rem)] leading-none text-reel [font-variation-settings:'SOFT'_100,'wght'_700]">
+          <span
+            data-num
+            className="font-display text-reel relative text-[clamp(4rem,14vw,7.5rem)] leading-none [font-variation-settings:'SOFT'_100,'wght'_700]"
+          >
             3
           </span>
         </div>
-        <p data-wordmark aria-hidden="true" className="invisible absolute font-display text-[clamp(3rem,10vw,7rem)] leading-none tracking-tight text-reel">
+        <p
+          data-wordmark
+          aria-hidden="true"
+          className="font-display text-reel invisible absolute text-[clamp(3rem,10vw,7rem)] leading-none tracking-tight"
+        >
           Reelhouse
         </p>
       </div>
-      <div data-flash className="pointer-events-none absolute inset-0 bg-reel opacity-0" />
+      <div data-flash className="bg-reel pointer-events-none absolute inset-0 opacity-0" />
       {showSkip && (
-        <button type="button" onClick={() => skipRef.current()} className="absolute right-6 bottom-6 min-h-11 rounded-pill px-4 text-small font-semibold text-dim transition-colors duration-fast hover:text-reel">
+        <button
+          type="button"
+          onClick={() => skipRef.current()}
+          className="rounded-pill text-small text-dim duration-fast hover:text-reel absolute right-6 bottom-6 min-h-11 px-4 font-semibold transition-colors"
+        >
           Skip intro
         </button>
       )}

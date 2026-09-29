@@ -16,12 +16,32 @@ interface FilterPanelProps {
 }
 
 /** Filter drawer contents (spec 26): year range, rating, language/genre, runtime. */
-export function FilterPanel({ value, onChange, showLanguage, showGenre, onDone }: FilterPanelProps) {
+export function FilterPanel({
+  value,
+  onChange,
+  showLanguage,
+  showGenre,
+  onDone,
+}: FilterPanelProps) {
   const set = (patch: Partial<Filters>) => onChange({ ...value, ...patch });
   return (
     <div className="flex flex-col gap-8">
-      <RangeSlider label="Release year" min={YEAR_MIN} max={YEAR_MAX} value={[value.from, value.to]} onChange={(v) => Array.isArray(v) && set({ from: v[0], to: v[1] })} />
-      <RangeSlider label="Minimum rating" min={0} max={9} step={0.5} value={value.rating} onChange={(v) => typeof v === 'number' && set({ rating: v })} format={(v) => (v ? `${v}+` : 'Any')} />
+      <RangeSlider
+        label="Release year"
+        min={YEAR_MIN}
+        max={YEAR_MAX}
+        value={[value.from, value.to]}
+        onChange={(v) => Array.isArray(v) && set({ from: v[0], to: v[1] })}
+      />
+      <RangeSlider
+        label="Minimum rating"
+        min={0}
+        max={9}
+        step={0.5}
+        value={value.rating}
+        onChange={(v) => typeof v === 'number' && set({ rating: v })}
+        format={(v) => (v ? `${v}+` : 'Any')}
+      />
       <RangeSlider
         label="Runtime"
         min={0}
@@ -33,10 +53,15 @@ export function FilterPanel({ value, onChange, showLanguage, showGenre, onDone }
       />
       {showLanguage && (
         <fieldset>
-          <legend className="mb-3 text-small font-semibold">Language</legend>
+          <legend className="text-small mb-3 font-semibold">Language</legend>
           <div className="flex flex-wrap gap-2">
             {LANGUAGES.map((l) => (
-              <Pill key={l.code} size="sm" selected={value.lang === l.code} onToggle={(on) => set({ lang: on ? l.code : null })}>
+              <Pill
+                key={l.code}
+                size="sm"
+                selected={value.lang === l.code}
+                onToggle={(on) => set({ lang: on ? l.code : null })}
+              >
                 {l.name}
               </Pill>
             ))}
@@ -45,10 +70,15 @@ export function FilterPanel({ value, onChange, showLanguage, showGenre, onDone }
       )}
       {showGenre && (
         <fieldset>
-          <legend className="mb-3 text-small font-semibold">Genre</legend>
+          <legend className="text-small mb-3 font-semibold">Genre</legend>
           <div className="flex flex-wrap gap-2">
             {GENRES.map((g) => (
-              <Pill key={g.id} size="sm" selected={value.genre === g.id} onToggle={(on) => set({ genre: on ? g.id : null })}>
+              <Pill
+                key={g.id}
+                size="sm"
+                selected={value.genre === g.id}
+                onToggle={(on) => set({ genre: on ? g.id : null })}
+              >
                 {g.name}
               </Pill>
             ))}

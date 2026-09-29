@@ -11,7 +11,7 @@ let baseTitle = '';
 let applying = false;
 
 const PLAY_ICON =
-  "data:image/svg+xml," +
+  'data:image/svg+xml,' +
   encodeURIComponent(
     "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='2' y='4' width='28' height='24' rx='4' fill='#8b5cff'/><path d='M13 10v12l10-6z' fill='#ede8df'/></svg>",
   );

@@ -19,7 +19,14 @@ const cls =
   'group/pill relative isolate inline-flex items-center gap-1.5 overflow-hidden rounded-pill border border-line font-semibold transition-colors duration-base ease-reel';
 
 /** Genre chip (link) or filter chip (toggle). Hover: fill grows from centre, text inverts (spec 33). */
-export function Pill({ children, selected = false, onToggle, href, className, size = 'md' }: PillProps) {
+export function Pill({
+  children,
+  selected = false,
+  onToggle,
+  href,
+  className,
+  size = 'md',
+}: PillProps) {
   const press = usePress<HTMLElement>({ accent: 'var(--marquee-violet)', scale: 0.95 });
   const sizing = size === 'sm' ? 'h-8 px-3 text-small' : 'h-10 px-4 text-small';
   const inner = (
@@ -27,8 +34,10 @@ export function Pill({ children, selected = false, onToggle, href, className, si
       <span
         aria-hidden="true"
         className={cn(
-          'absolute inset-0 -z-10 m-auto rounded-pill bg-reel transition-transform duration-base ease-reel',
-          selected ? 'scale-100 bg-violet' : 'scale-x-0 group-hover/pill:scale-x-100 group-focus-visible/pill:scale-x-100',
+          'rounded-pill bg-reel duration-base ease-reel absolute inset-0 -z-10 m-auto transition-transform',
+          selected
+            ? 'bg-violet scale-100'
+            : 'scale-x-0 group-hover/pill:scale-x-100 group-focus-visible/pill:scale-x-100',
         )}
       />
       {children}
@@ -40,7 +49,13 @@ export function Pill({ children, selected = false, onToggle, href, className, si
 
   if (href) {
     return (
-      <Link href={href} className={cn(cls, sizing, state, className)} data-cursor="link" data-pressable {...press}>
+      <Link
+        href={href}
+        className={cn(cls, sizing, state, className)}
+        data-cursor="link"
+        data-pressable
+        {...press}
+      >
         {inner}
       </Link>
     );

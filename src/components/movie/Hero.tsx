@@ -1,7 +1,14 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
 import { Info } from 'lucide-react';
 import { gsap, SplitText, useGSAP } from '@/lib/gsap';
 import { DUR } from '@/lib/tokens';
@@ -18,7 +25,9 @@ import { RatingRing } from '@/components/ui/RatingRing';
 import { WatchlistButton } from './WatchlistButton';
 import { PlayTrailerButton } from './PlayTrailerButton';
 
-const HeroCanvas = dynamic(() => import('@/components/gl/HeroCanvas').then((m) => m.HeroCanvas), { ssr: false });
+const HeroCanvas = dynamic(() => import('@/components/gl/HeroCanvas').then((m) => m.HeroCanvas), {
+  ssr: false,
+});
 
 const SLIDE_MS = 8000;
 
@@ -57,13 +66,28 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       gsap.set(buttons, { opacity: 0, scale: 0.8 });
       gsap.set(overview, { opacity: 0 });
       const cancel = whenIntroReady(() => {
-        const split = overview ? SplitText.create(overview, { type: 'lines', mask: 'lines', aria: 'none' }) : null;
+        const split = overview
+          ? SplitText.create(overview, { type: 'lines', mask: 'lines', aria: 'none' })
+          : null;
         const tl = gsap.timeline();
         tl.to(img, { scale: 1, duration: 1.8, ease: 'reel' }, 0)
-          .to(logo, { clipPath: 'inset(0% 0% 0% 0%)', duration: DUR.cinematic, ease: 'projector' }, 0.2)
+          .to(
+            logo,
+            { clipPath: 'inset(0% 0% 0% 0%)', duration: DUR.cinematic, ease: 'projector' },
+            0.2,
+          )
           .set(overview, { opacity: 1 }, 0.5);
-        if (split) tl.from(split.lines, { yPercent: 110, duration: DUR.slow, ease: 'reel', stagger: 0.06 }, 0.5);
-        tl.to(buttons, { opacity: 1, scale: 1, duration: DUR.base, ease: 'snap', stagger: 0.06 }, 0.8);
+        if (split)
+          tl.from(
+            split.lines,
+            { yPercent: 110, duration: DUR.slow, ease: 'reel', stagger: 0.06 },
+            0.5,
+          );
+        tl.to(
+          buttons,
+          { opacity: 1, scale: 1, duration: DUR.base, ease: 'snap', stagger: 0.06 },
+          0.8,
+        );
       });
       return cancel;
     },
@@ -76,7 +100,12 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       if (reduced || !root.current) return;
       const st = { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true };
       gsap.to(media.current, { yPercent: 40 * 0.6, ease: 'none', scrollTrigger: st });
-      gsap.to(text.current, { yPercent: 20, opacity: 0, ease: 'none', scrollTrigger: { ...st, end: '60% top' } });
+      gsap.to(text.current, {
+        yPercent: 20,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: { ...st, end: '60% top' },
+      });
     },
     { scope: root, dependencies: [reduced] },
   );
@@ -89,8 +118,8 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
     const xTo = gsap.quickTo(target, 'x', { duration: 0.8, ease: 'power3.out' });
     const yTo = gsap.quickTo(target, 'y', { duration: 0.8, ease: 'power3.out' });
     const onMove = (e: globalThis.PointerEvent) => {
-      xTo(((e.clientX / window.innerWidth) - 0.5) * -24);
-      yTo(((e.clientY / window.innerHeight) - 0.5) * -24);
+      xTo((e.clientX / window.innerWidth - 0.5) * -24);
+      yTo((e.clientY / window.innerHeight - 0.5) * -24);
     };
     el.addEventListener('pointermove', onMove);
     return () => el.removeEventListener('pointermove', onMove);
@@ -124,7 +153,12 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
           .call(() => setShown(n), [], 0.45)
           .to(shutters, { scaleY: 0, duration: 0.7, ease: 'reel' }, 0.6);
       }
-      tl.fromTo(textEl, { yPercent: 8, opacity: 0 }, { yPercent: 0, opacity: 1, duration: DUR.slow, ease: 'reel' }, glReady ? 1 : 0.75);
+      tl.fromTo(
+        textEl,
+        { yPercent: 8, opacity: 0 },
+        { yPercent: 0, opacity: 1, duration: DUR.slow, ease: 'reel' },
+        glReady ? 1 : 0.75,
+      );
     },
     [index, slides.length, glReady],
   );
@@ -133,8 +167,14 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
   useEffect(() => {
     const bar = bars.current?.querySelectorAll<HTMLElement>('[data-fill]')[index];
     if (!bar || slides.length < 2) return;
-    bars.current?.querySelectorAll<HTMLElement>('[data-fill]').forEach((b, i) => gsap.set(b, { scaleX: i < index ? 1 : 0 }));
-    progress.current = gsap.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: SLIDE_MS / 1000, ease: 'none', onComplete: () => go(index + 1) });
+    bars.current
+      ?.querySelectorAll<HTMLElement>('[data-fill]')
+      .forEach((b, i) => gsap.set(b, { scaleX: i < index ? 1 : 0 }));
+    progress.current = gsap.fromTo(
+      bar,
+      { scaleX: 0 },
+      { scaleX: 1, duration: SLIDE_MS / 1000, ease: 'none', onComplete: () => go(index + 1) },
+    );
     return () => {
       progress.current?.kill();
     };
@@ -142,7 +182,8 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
 
   useEffect(() => {
     const hidden = () => document.hidden;
-    const apply = () => (paused || hidden() ? progress.current?.pause() : progress.current?.resume());
+    const apply = () =>
+      paused || hidden() ? progress.current?.pause() : progress.current?.resume();
     apply();
     document.addEventListener('visibilitychange', apply);
     return () => document.removeEventListener('visibilitychange', apply);
@@ -168,7 +209,8 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
     swipe.current = null;
     if (!s) return;
     const dx = e.clientX - s.x;
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - s.y)) go(index + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - s.y))
+      go(index + (dx < 0 ? 1 : -1));
   };
 
   if (!slide) return null;
@@ -188,17 +230,34 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget as Node) && setPaused(false)}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
-      className="relative h-svh min-h-[560px] w-full overflow-hidden rounded-none bg-void outline-none"
+      className="bg-void relative h-svh min-h-[560px] w-full overflow-hidden rounded-none outline-none"
     >
       <div ref={media} className="absolute inset-0">
         <div data-hero-media className="absolute inset-0 origin-center">
           <div data-hero-shift className="absolute -inset-4">
             {/* Desktop: backdrop · Mobile: portrait poster crop */}
             <div className="absolute inset-0 max-md:hidden">
-              <TmdbImage key={`b${slide.id}`} path={slide.backdrop ?? slide.poster} kind={slide.backdrop ? 'backdrop' : 'poster'} alt="" sizes={SIZES.hero} priority={shown === 0} fallbackTitle={slide.title} />
+              <TmdbImage
+                key={`b${slide.id}`}
+                path={slide.backdrop ?? slide.poster}
+                kind={slide.backdrop ? 'backdrop' : 'poster'}
+                alt=""
+                sizes={SIZES.hero}
+                priority={shown === 0}
+                fallbackTitle={slide.title}
+              />
             </div>
             <div className="absolute inset-0 md:hidden">
-              <TmdbImage key={`p${slide.id}`} path={slide.poster ?? slide.backdrop} kind={slide.poster ? 'poster' : 'backdrop'} alt="" sizes="100vw" priority={shown === 0} blurDataURL={slide.blur} fallbackTitle={slide.title} />
+              <TmdbImage
+                key={`p${slide.id}`}
+                path={slide.poster ?? slide.backdrop}
+                kind={slide.poster ? 'poster' : 'backdrop'}
+                alt=""
+                sizes="100vw"
+                priority={shown === 0}
+                blurDataURL={slide.blur}
+                fallbackTitle={slide.title}
+              />
             </div>
           </div>
           {webglEnabled && !reduced && !mobile && slides.length > 1 && (
@@ -208,37 +267,81 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       </div>
 
       {/* Shutter bars (slide change) */}
-      <div aria-hidden="true" data-hero-shutter className="absolute inset-x-0 top-0 z-[2] h-1/2 origin-top scale-y-0 bg-void" />
-      <div aria-hidden="true" data-hero-shutter className="absolute inset-x-0 bottom-0 z-[2] h-1/2 origin-bottom scale-y-0 bg-void" />
+      <div
+        aria-hidden="true"
+        data-hero-shutter
+        className="bg-void absolute inset-x-0 top-0 z-[2] h-1/2 origin-top scale-y-0"
+      />
+      <div
+        aria-hidden="true"
+        data-hero-shutter
+        className="bg-void absolute inset-x-0 bottom-0 z-[2] h-1/2 origin-bottom scale-y-0"
+      />
 
       <div aria-hidden="true" className="vignette absolute inset-0 z-[3]" />
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 z-[3] h-2/3 bg-gradient-to-t from-void via-void/60 to-transparent" />
+      <div
+        aria-hidden="true"
+        className="from-void via-void/60 absolute inset-x-0 bottom-0 z-[3] h-2/3 bg-gradient-to-t to-transparent"
+      />
 
-      <div ref={text} className="absolute inset-x-0 bottom-0 z-[4] px-gutter pb-[max(14vh,96px)] max-md:text-center">
-        <div className="flex max-w-[min(92vw,620px)] flex-col gap-5 max-md:mx-auto max-md:items-center" aria-live="polite" aria-atomic="true">
+      <div
+        ref={text}
+        className="px-gutter absolute inset-x-0 bottom-0 z-[4] pb-[max(14vh,96px)] max-md:text-center"
+      >
+        <div
+          className="flex max-w-[min(92vw,620px)] flex-col gap-5 max-md:mx-auto max-md:items-center"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           <h1 className="sr-only">{slide.title}</h1>
           {slide.logo ? (
-            <div data-hero-logo className="relative w-[min(78vw,460px)]" style={{ aspectRatio: `${Math.max(1.2, slide.logo.ratio)}` }}>
-              <TmdbImage path={slide.logo.path} kind="logo" alt="" sizes={SIZES.logo} priority={shown === 0} className="object-contain object-bottom-left max-md:object-bottom" />
+            <div
+              data-hero-logo
+              className="relative w-[min(78vw,460px)]"
+              style={{ aspectRatio: `${Math.max(1.2, slide.logo.ratio)}` }}
+            >
+              <TmdbImage
+                path={slide.logo.path}
+                kind="logo"
+                alt=""
+                sizes={SIZES.logo}
+                priority={shown === 0}
+                className="object-contain object-bottom-left max-md:object-bottom"
+              />
             </div>
           ) : (
-            <p data-hero-logo aria-hidden="true" className="font-display text-hero leading-[0.9] font-semibold [font-variation-settings:'SOFT'_50]">
+            <p
+              data-hero-logo
+              aria-hidden="true"
+              className="font-display text-hero leading-[0.9] font-semibold [font-variation-settings:'SOFT'_50]"
+            >
               {slide.title}
             </p>
           )}
-          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-small text-reel/85 max-md:justify-center">
+          <p className="text-small text-reel/85 flex flex-wrap items-center gap-x-3 gap-y-1 max-md:justify-center">
             {slide.rating > 0 && <RatingRing value={slide.rating} size={36} label="TMDB rating" />}
             {slide.year && <span>{slide.year}</span>}
             {slide.runtime ? <span>{formatRuntime(slide.runtime)}</span> : null}
-            {slide.genres.length > 0 && <span className="text-dim">{slide.genres.join(' · ')}</span>}
+            {slide.genres.length > 0 && (
+              <span className="text-dim">{slide.genres.join(' · ')}</span>
+            )}
           </p>
-          <p key={slide.id} data-hero-overview className="line-clamp-2 text-body text-reel/85 md:text-[1.05rem]">
+          <p
+            key={slide.id}
+            data-hero-overview
+            className="text-body text-reel/85 line-clamp-2 md:text-[1.05rem]"
+          >
             {slide.overview}
           </p>
           <div className="flex flex-wrap gap-3">
             <span data-hero-btn className="inline-flex">
               {slide.videos.length > 0 ? (
-                <PlayTrailerButton movie={snap} videos={slide.videos} color={slide.color} size="lg" />
+                <PlayTrailerButton
+                  movie={snap}
+                  videos={slide.videos}
+                  color={slide.color}
+                  size="lg"
+                />
               ) : (
                 <Button href={`/movie/${slide.id}`} size="lg">
                   See details
@@ -246,7 +349,14 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
               )}
             </span>
             <span data-hero-btn className="inline-flex">
-              <Button href={`/movie/${slide.id}`} variant="secondary" size="lg" icon={<Info />} iconAnim="spin" magnetic={false}>
+              <Button
+                href={`/movie/${slide.id}`}
+                variant="secondary"
+                size="lg"
+                icon={<Info />}
+                iconAnim="spin"
+                magnetic={false}
+              >
                 More info
               </Button>
             </span>
@@ -258,7 +368,10 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       </div>
 
       {slides.length > 1 && (
-        <div ref={bars} className="absolute right-gutter bottom-[max(14vh,96px)] z-[5] flex gap-2 max-md:right-1/2 max-md:bottom-8 max-md:translate-x-1/2">
+        <div
+          ref={bars}
+          className="right-gutter absolute bottom-[max(14vh,96px)] z-[5] flex gap-2 max-md:right-1/2 max-md:bottom-8 max-md:translate-x-1/2"
+        >
           {slides.map((s, i) => (
             <button
               key={s.id}
@@ -269,10 +382,21 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
               data-cursor="link"
               className="group flex min-h-11 items-center"
             >
-              <span className={cn('relative block h-8 w-10 overflow-hidden rounded-[3px] border transition-colors duration-base', i === index ? 'border-reel/70' : 'border-reel/25 group-hover:border-reel/60')}>
-                <span data-fill className="absolute inset-0 origin-left scale-x-0 bg-reel/25" />
-                <span aria-hidden="true" className="sprockets absolute inset-x-0 top-0 h-1 opacity-50" />
-                <span aria-hidden="true" className="sprockets absolute inset-x-0 bottom-0 h-1 opacity-50" />
+              <span
+                className={cn(
+                  'duration-base relative block h-8 w-10 overflow-hidden rounded-[3px] border transition-colors',
+                  i === index ? 'border-reel/70' : 'border-reel/25 group-hover:border-reel/60',
+                )}
+              >
+                <span data-fill className="bg-reel/25 absolute inset-0 origin-left scale-x-0" />
+                <span
+                  aria-hidden="true"
+                  className="sprockets absolute inset-x-0 top-0 h-1 opacity-50"
+                />
+                <span
+                  aria-hidden="true"
+                  className="sprockets absolute inset-x-0 bottom-0 h-1 opacity-50"
+                />
               </span>
             </button>
           ))}

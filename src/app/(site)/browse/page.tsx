@@ -18,13 +18,23 @@ export default async function BrowseIndexPage() {
   const posters = await Promise.all(
     genres.map((g) =>
       discover({ genre: g.id, sort: 'popularity.desc' }, prefs)
-        .then((p) => p.results.filter((m) => m.poster_path).slice(0, 3).map((m) => m.poster_path as string))
+        .then((p) =>
+          p.results
+            .filter((m) => m.poster_path)
+            .slice(0, 3)
+            .map((m) => m.poster_path as string),
+        )
         .catch(() => [] as string[]),
     ),
   );
   return (
     <div className="px-gutter pt-32 pb-10">
-      <SplitHeading as="h1" by="chars" trigger="mount" className="mb-12 font-display text-hero leading-[0.9]">
+      <SplitHeading
+        as="h1"
+        by="chars"
+        trigger="mount"
+        className="font-display text-hero mb-12 leading-[0.9]"
+      >
         Genres
       </SplitHeading>
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

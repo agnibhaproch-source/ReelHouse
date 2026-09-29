@@ -26,29 +26,71 @@ const SORTS: { id: Sort; label: string }[] = [
   { id: 'custom', label: 'My order' },
 ];
 
-function ReorderRow({ item, index, count, onMove, onRemove }: { item: WatchItem; index: number; count: number; onMove: (from: number, to: number) => void; onRemove: () => void }) {
+function ReorderRow({
+  item,
+  index,
+  count,
+  onMove,
+  onRemove,
+}: {
+  item: WatchItem;
+  index: number;
+  count: number;
+  onMove: (from: number, to: number) => void;
+  onRemove: () => void;
+}) {
   const controls = useDragControls();
   return (
-    <Reorder.Item value={item} dragListener={false} dragControls={controls} transition={SPRING} className="flex items-center gap-4 rounded-modal border border-line bg-seat p-3" whileDrag={{ scale: 1.02, boxShadow: '0 20px 50px rgb(0 0 0 / 0.5)' }}>
-      <button type="button" aria-label={`Drag to reorder ${item.title}`} onPointerDown={(e) => controls.start(e)} className="grid size-11 cursor-grab touch-none place-items-center text-dim active:cursor-grabbing" data-cursor="drag">
+    <Reorder.Item
+      value={item}
+      dragListener={false}
+      dragControls={controls}
+      transition={SPRING}
+      className="rounded-modal border-line bg-seat flex items-center gap-4 border p-3"
+      whileDrag={{ scale: 1.02, boxShadow: '0 20px 50px rgb(0 0 0 / 0.5)' }}
+    >
+      <button
+        type="button"
+        aria-label={`Drag to reorder ${item.title}`}
+        onPointerDown={(e) => controls.start(e)}
+        className="text-dim grid size-11 cursor-grab touch-none place-items-center active:cursor-grabbing"
+        data-cursor="drag"
+      >
         <GripVertical className="size-5" aria-hidden="true" />
       </button>
-      <span className="w-6 text-right font-display text-h3 text-dim tabular-nums">{index + 1}</span>
-      <span className="relative h-20 w-14 shrink-0 overflow-hidden rounded-[4px] bg-seat">
+      <span className="font-display text-h3 text-dim w-6 text-right tabular-nums">{index + 1}</span>
+      <span className="bg-seat relative h-20 w-14 shrink-0 overflow-hidden rounded-[4px]">
         <TmdbImage path={item.poster_path} kind="poster" alt="" sizes="56px" />
       </span>
       <TransitionLink href={`/movie/${item.movie_id}`} className="min-w-0 flex-1">
-        <span className="block truncate font-semibold hover:text-cyan">{item.title}</span>
+        <span className="hover:text-cyan block truncate font-semibold">{item.title}</span>
         <span className="text-small text-dim">{yearOf(item.release_date)}</span>
       </TransitionLink>
       <div className="flex items-center">
-        <button type="button" aria-label={`Move ${item.title} up`} disabled={index === 0} onClick={() => onMove(index, index - 1)} className="grid size-11 place-items-center rounded-full text-dim hover:text-reel disabled:opacity-30">
+        <button
+          type="button"
+          aria-label={`Move ${item.title} up`}
+          disabled={index === 0}
+          onClick={() => onMove(index, index - 1)}
+          className="text-dim hover:text-reel grid size-11 place-items-center rounded-full disabled:opacity-30"
+        >
           <ArrowUp className="size-4" aria-hidden="true" />
         </button>
-        <button type="button" aria-label={`Move ${item.title} down`} disabled={index === count - 1} onClick={() => onMove(index, index + 1)} className="grid size-11 place-items-center rounded-full text-dim hover:text-reel disabled:opacity-30">
+        <button
+          type="button"
+          aria-label={`Move ${item.title} down`}
+          disabled={index === count - 1}
+          onClick={() => onMove(index, index + 1)}
+          className="text-dim hover:text-reel grid size-11 place-items-center rounded-full disabled:opacity-30"
+        >
           <ArrowDown className="size-4" aria-hidden="true" />
         </button>
-        <button type="button" aria-label={`Remove ${item.title} from my list`} onClick={onRemove} className="grid size-11 place-items-center rounded-full text-dim hover:text-danger">
+        <button
+          type="button"
+          aria-label={`Remove ${item.title} from my list`}
+          onClick={onRemove}
+          className="text-dim hover:text-danger grid size-11 place-items-center rounded-full"
+        >
           <X className="size-4" aria-hidden="true" />
         </button>
       </div>
@@ -89,39 +131,65 @@ export function MyList() {
 
   return (
     <div className="px-gutter pt-32 pb-10">
-      <SplitHeading as="h1" by="chars" trigger="mount" className="mb-8 font-display text-h1">
+      <SplitHeading as="h1" by="chars" trigger="mount" className="font-display text-h1 mb-8">
         My list
       </SplitHeading>
       {isPending ? (
         <GridSkeleton count={12} />
       ) : !items.length ? (
         <>
-          <EmptyState title="Your list is empty." body="Add movies with the + button on any title." action={{ href: '/', label: 'Find something to watch' }} />
+          <EmptyState
+            title="Your list is empty."
+            body="Add movies with the + button on any title."
+            action={{ href: '/', label: 'Find something to watch' }}
+          />
           <Row rowKey="trending" title="Trending now" source={{ path: 'trending/movie/week' }} />
         </>
       ) : (
         <>
-          <div role="group" aria-label="Sort my list" className="mb-6 flex flex-wrap items-center gap-2">
+          <div
+            role="group"
+            aria-label="Sort my list"
+            className="mb-6 flex flex-wrap items-center gap-2"
+          >
             {SORTS.map((s) => (
               <Pill key={s.id} selected={sort === s.id} onToggle={() => setSort(s.id)}>
                 {s.label}
               </Pill>
             ))}
-            <span className="ml-auto text-small text-dim">
+            <span className="text-small text-dim ml-auto">
               {items.length} title{items.length === 1 ? '' : 's'}
             </span>
           </div>
           {sort === 'custom' ? (
-            <Reorder.Group axis="y" values={custom} onReorder={setOrder} className="flex max-w-3xl flex-col gap-3" layoutScroll={!reduced} onPointerUp={() => order && commit(order)}>
+            <Reorder.Group
+              axis="y"
+              values={custom}
+              onReorder={setOrder}
+              className="flex max-w-3xl flex-col gap-3"
+              layoutScroll={!reduced}
+              onPointerUp={() => order && commit(order)}
+            >
               {custom.map((w, i) => (
-                <ReorderRow key={w.movie_id} item={w} index={i} count={custom.length} onMove={move} onRemove={() => toggle.mutate({ movie: w, add: false })} />
+                <ReorderRow
+                  key={w.movie_id}
+                  item={w}
+                  index={i}
+                  count={custom.length}
+                  onMove={move}
+                  onRemove={() => toggle.mutate({ movie: w, add: false })}
+                />
               ))}
             </Reorder.Group>
           ) : (
-            <MovieGrid label="My list" movies={items.map(fromSnapshot)} onRemove={(m) => {
-              const w = items.find((x) => x.movie_id === m.id);
-              if (w) toggle.mutate({ movie: w, add: false });
-            }} />
+            <MovieGrid
+              label="My list"
+              movies={items.map(fromSnapshot)}
+              onRemove={(m) => {
+                const w = items.find((x) => x.movie_id === m.id);
+                if (w) toggle.mutate({ movie: w, add: false });
+              }}
+            />
           )}
         </>
       )}

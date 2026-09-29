@@ -49,7 +49,10 @@ test('profile → add to list → reload → still there', async ({ page }) => {
   const card = page.locator('a[data-poster-id]').first();
   const id = await card.getAttribute('data-poster-id');
   await page.goto(`/movie/${id}`);
-  await page.getByRole('button', { name: /^add .* to my list$/i }).first().click();
+  await page
+    .getByRole('button', { name: /^add .* to my list$/i })
+    .first()
+    .click();
   await expect(page.getByText('Added to my list')).toBeVisible();
   await page.goto('/my-list');
   await page.reload();

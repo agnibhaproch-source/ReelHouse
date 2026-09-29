@@ -16,7 +16,16 @@ interface RangeSliderProps {
 }
 
 /** Range slider: thumb grows while dragging and shows a value bubble (spec 39). Supports dual thumbs. */
-export function RangeSlider({ label, min, max, step = 1, value, onChange, format = String, className }: RangeSliderProps) {
+export function RangeSlider({
+  label,
+  min,
+  max,
+  step = 1,
+  value,
+  onChange,
+  format = String,
+  className,
+}: RangeSliderProps) {
   const id = useId();
   const [active, setActive] = useState<number | null>(null);
   const values = Array.isArray(value) ? value : [value];
@@ -34,13 +43,16 @@ export function RangeSlider({ label, min, max, step = 1, value, onChange, format
 
   return (
     <fieldset className={cn('w-full', className)}>
-      <legend className="mb-3 flex w-full justify-between text-small">
+      <legend className="text-small mb-3 flex w-full justify-between">
         <span className="font-semibold">{label}</span>
         <span className="text-dim tabular-nums">{values.map(format).join(' – ')}</span>
       </legend>
       <div className="relative h-11">
-        <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-pill bg-line" />
-        <div className="absolute top-1/2 h-1 -translate-y-1/2 rounded-pill bg-violet" style={{ left: `${lo}%`, right: `${100 - hi}%` }} />
+        <div className="rounded-pill bg-line absolute inset-x-0 top-1/2 h-1 -translate-y-1/2" />
+        <div
+          className="rounded-pill bg-violet absolute top-1/2 h-1 -translate-y-1/2"
+          style={{ left: `${lo}%`, right: `${100 - hi}%` }}
+        />
         {values.map((v, i) => (
           <div key={i} className="pointer-events-none absolute inset-0">
             <input
@@ -63,7 +75,7 @@ export function RangeSlider({ label, min, max, step = 1, value, onChange, format
             <span
               aria-hidden="true"
               className={cn(
-                'absolute -top-7 -translate-x-1/2 rounded-md bg-violet px-2 py-0.5 text-small font-bold text-void tabular-nums transition-[opacity,translate] duration-fast ease-snap',
+                'bg-violet text-small text-void duration-fast ease-snap absolute -top-7 -translate-x-1/2 rounded-md px-2 py-0.5 font-bold tabular-nums transition-[opacity,translate]',
                 active === i ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-0',
               )}
               style={{ left: `${pct(v)}%` }}

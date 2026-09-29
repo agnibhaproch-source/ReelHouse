@@ -27,15 +27,32 @@ export default async function GenrePage({ params }: Props) {
   const g = genreBySlug((await params).genre);
   if (!g) notFound();
   const prefs = await getRequestPrefs();
-  const first = await safe(discover({ genre: g.id, sort: 'popularity.desc' }, prefs).then(async (p) => ({ ...p, results: await withMeta(p.results) })));
-  const backdrops = (first.data?.results ?? []).map((m) => m.backdrop_path).filter((b): b is string => Boolean(b));
+  const first = await safe(
+    discover({ genre: g.id, sort: 'popularity.desc' }, prefs).then(async (p) => ({
+      ...p,
+      results: await withMeta(p.results),
+    })),
+  );
+  const backdrops = (first.data?.results ?? [])
+    .map((m) => m.backdrop_path)
+    .filter((b): b is string => Boolean(b));
 
   return (
     <>
       <BrowseHeader eyebrow="Movies by genre" title={g.name} backdrops={backdrops} />
       {first.error && <StatusBanner kind="down" />}
-      <Suspense fallback={<div className="px-gutter"><GridSkeleton count={18} /></div>}>
-        <DiscoverGrid fixed={{ genre: g.id }} initial={first.data ?? undefined} label={`${g.name} movies`} />
+      <Suspense
+        fallback={
+          <div className="px-gutter">
+            <GridSkeleton count={18} />
+          </div>
+        }
+      >
+        <DiscoverGrid
+          fixed={{ genre: g.id }}
+          initial={first.data ?? undefined}
+          label={`${g.name} movies`}
+        />
       </Suspense>
     </>
   );

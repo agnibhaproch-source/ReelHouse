@@ -16,7 +16,13 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="px-gutter pt-32"><GridSkeleton count={12} /></div>}>
+    <Suspense
+      fallback={
+        <div className="px-gutter pt-32">
+          <GridSkeleton count={12} />
+        </div>
+      }
+    >
       <SearchResults />
     </Suspense>
   );

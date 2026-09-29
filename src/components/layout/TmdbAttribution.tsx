@@ -7,12 +7,14 @@ import { cn } from '@/lib/utils';
  */
 export function TmdbAttribution({ className }: { className?: string }) {
   return (
-    <div className={cn('flex max-w-sm items-start gap-3 text-small text-dim md:text-right', className)}>
+    <div
+      className={cn('text-small text-dim flex max-w-sm items-start gap-3 md:text-right', className)}
+    >
       <a
         href="https://www.themoviedb.org/"
         target="_blank"
         rel="noreferrer"
-        className="shrink-0 rounded-md border border-cyan/40 px-2 py-1 font-extrabold tracking-wider text-cyan md:order-last"
+        className="border-cyan/40 text-cyan shrink-0 rounded-md border px-2 py-1 font-extrabold tracking-wider md:order-last"
         aria-label="The Movie Database (TMDB) — opens in a new tab"
       >
         TMDB

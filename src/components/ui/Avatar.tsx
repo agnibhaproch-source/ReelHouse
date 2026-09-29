@@ -20,7 +20,14 @@ const BODY: Record<AvatarKey, { bg: string; fg: string; shape: React.ReactNode }
       <>
         <circle cx="50" cy="54" r="34" fill="var(--text-reel)" />
         {[0, 72, 144, 216, 288].map((a) => (
-          <circle key={a} cx={50 + 21 * Math.cos(((a - 90) * Math.PI) / 180)} cy={54 + 21 * Math.sin(((a - 90) * Math.PI) / 180)} r="6.5" fill="var(--marquee-violet)" opacity="0.35" />
+          <circle
+            key={a}
+            cx={50 + 21 * Math.cos(((a - 90) * Math.PI) / 180)}
+            cy={54 + 21 * Math.sin(((a - 90) * Math.PI) / 180)}
+            r="6.5"
+            fill="var(--marquee-violet)"
+            opacity="0.35"
+          />
         ))}
       </>
     ),
@@ -70,11 +77,23 @@ const BODY: Record<AvatarKey, { bg: string; fg: string; shape: React.ReactNode }
   star: {
     bg: 'var(--bg-aisle)',
     fg: 'var(--bg-void)',
-    shape: <path d="M50 12 61 38l28 3-21 19 6 28-24-14-24 14 6-28-21-19 28-3Z" fill="var(--projector-amber)" />,
+    shape: (
+      <path
+        d="M50 12 61 38l28 3-21 19 6 28-24-14-24 14 6-28-21-19 28-3Z"
+        fill="var(--projector-amber)"
+      />
+    ),
   },
 };
 
-const EYES: Record<AvatarKey, number> = { reel: 50, clapper: 58, popcorn: 58, ticket: 50, lamp: 40, star: 50 };
+const EYES: Record<AvatarKey, number> = {
+  reel: 50,
+  clapper: 58,
+  popcorn: 58,
+  ticket: 50,
+  lamp: 40,
+  star: 50,
+};
 
 /** Illustrated original-character avatar; ring rotates around it on hover (spec 33). */
 export function Avatar({ avatar, name, size = 40, className, blink, decorative }: AvatarProps) {
@@ -89,17 +108,43 @@ export function Avatar({ avatar, name, size = 40, className, blink, decorative }
       aria-label={decorative ? undefined : `${name}'s avatar`}
       aria-hidden={decorative || undefined}
     >
-      <svg viewBox="0 0 100 100" className="absolute -inset-[8%] size-[116%] opacity-0 transition-opacity duration-base group-hover/avatar:opacity-100 group-focus-visible/avatar:opacity-100" aria-hidden="true">
-        <circle cx="50" cy="50" r="47" fill="none" stroke="var(--marquee-cyan)" strokeWidth="2" strokeDasharray="6 8" className="origin-center animate-[reel-spin_6s_linear_infinite]" />
+      <svg
+        viewBox="0 0 100 100"
+        className="duration-base absolute -inset-[8%] size-[116%] opacity-0 transition-opacity group-hover/avatar:opacity-100 group-focus-visible/avatar:opacity-100"
+        aria-hidden="true"
+      >
+        <circle
+          cx="50"
+          cy="50"
+          r="47"
+          fill="none"
+          stroke="var(--marquee-cyan)"
+          strokeWidth="2"
+          strokeDasharray="6 8"
+          className="origin-center animate-[reel-spin_6s_linear_infinite]"
+        />
       </svg>
-      <svg viewBox="0 0 100 100" className="size-full overflow-hidden rounded-[22%]" aria-hidden="true">
+      <svg
+        viewBox="0 0 100 100"
+        className="size-full overflow-hidden rounded-[22%]"
+        aria-hidden="true"
+      >
         <rect width="100" height="100" fill={a.bg} />
         {a.shape}
-        <g className={cn(blink && 'avatar-eyes')} style={{ animationDelay: delay, transformOrigin: `50px ${eyeY}px` }}>
+        <g
+          className={cn(blink && 'avatar-eyes')}
+          style={{ animationDelay: delay, transformOrigin: `50px ${eyeY}px` }}
+        >
           <ellipse cx="40" cy={eyeY} rx="4.5" ry="6" fill={a.fg} />
           <ellipse cx="60" cy={eyeY} rx="4.5" ry="6" fill={a.fg} />
         </g>
-        <path d={`M42 ${eyeY + 12} q8 7 16 0`} stroke={a.fg} strokeWidth="3.5" fill="none" strokeLinecap="round" />
+        <path
+          d={`M42 ${eyeY + 12} q8 7 16 0`}
+          stroke={a.fg}
+          strokeWidth="3.5"
+          fill="none"
+          strokeLinecap="round"
+        />
       </svg>
     </span>
   );

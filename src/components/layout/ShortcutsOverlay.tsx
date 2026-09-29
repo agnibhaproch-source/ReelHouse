@@ -24,7 +24,9 @@ export function ShortcutsOverlay() {
         {SHORTCUTS.map(([k, v]) => (
           <div key={k + v} className="contents">
             <dt>
-              <kbd className="rounded-md border border-line bg-seat px-2 py-1 font-ui text-small whitespace-nowrap">{k}</kbd>
+              <kbd className="border-line bg-seat font-ui text-small rounded-md border px-2 py-1 whitespace-nowrap">
+                {k}
+              </kbd>
             </dt>
             <dd className="text-small text-dim">{v}</dd>
           </div>

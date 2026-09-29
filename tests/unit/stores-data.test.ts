@@ -12,7 +12,12 @@ import { readJSON, writeJSON, removeKey } from '@/lib/storage';
 import { useMotionPrefs } from '@/hooks/useMotionPrefs';
 import type { MovieSnapshot } from '@/lib/data/types';
 
-const snap = (id: number): MovieSnapshot => ({ movie_id: id, title: `T${id}`, poster_path: null, vote_average: id });
+const snap = (id: number): MovieSnapshot => ({
+  movie_id: id,
+  title: `T${id}`,
+  poster_path: null,
+  vote_average: id,
+});
 
 describe('cursor store', () => {
   beforeEach(() => useCursorStore.getState().reset());
@@ -39,18 +44,31 @@ describe('ui store', () => {
     s.toggle('soundOn');
     s.set('searchOpen', true);
     s.setSettings({ grain: 70 });
-    const persisted = JSON.parse(localStorage.getItem('reelhouse-ui') ?? '{}') as { state: Record<string, unknown> };
+    const persisted = JSON.parse(localStorage.getItem('reelhouse-ui') ?? '{}') as {
+      state: Record<string, unknown>;
+    };
     expect(persisted.state.soundOn).toBe(!DEFAULT_SETTINGS.soundOn);
     expect(persisted.state.grain).toBe(70);
     expect(persisted.state).not.toHaveProperty('searchOpen');
-    expect(Object.keys(pickSettings(useUiStore.getState())).sort()).toEqual(Object.keys(DEFAULT_SETTINGS).sort());
+    expect(Object.keys(pickSettings(useUiStore.getState())).sort()).toEqual(
+      Object.keys(DEFAULT_SETTINGS).sort(),
+    );
   });
 });
 
 describe('profile, toast, preview and trailer stores', () => {
   it('profile id falls back to guest', () => {
     expect(activeProfileId(null)).toBe('guest');
-    useProfileStore.getState().setCurrent({ id: 'p1', user_id: null, name: 'A', avatar: 'reel', is_kids: false, language: 'en-US', settings: {}, created_at: '' });
+    useProfileStore.getState().setCurrent({
+      id: 'p1',
+      user_id: null,
+      name: 'A',
+      avatar: 'reel',
+      is_kids: false,
+      language: 'en-US',
+      settings: {},
+      created_at: '',
+    });
     expect(activeProfileId(useProfileStore.getState().current)).toBe('p1');
   });
   it('toasts push, cap and dismiss', () => {
@@ -88,10 +106,21 @@ describe('storage', () => {
 
 describe('local (guest) repo', () => {
   it('manages profiles with a 5-profile cap', async () => {
-    for (let i = 0; i < 5; i++) await localRepo.profiles.create({ name: `P${i}`, avatar: 'reel', is_kids: false, language: 'en-US' });
-    await expect(localRepo.profiles.create({ name: 'P6', avatar: 'reel', is_kids: false, language: 'en-US' })).rejects.toThrow(/up to 5/);
+    for (let i = 0; i < 5; i++)
+      await localRepo.profiles.create({
+        name: `P${i}`,
+        avatar: 'reel',
+        is_kids: false,
+        language: 'en-US',
+      });
+    await expect(
+      localRepo.profiles.create({ name: 'P6', avatar: 'reel', is_kids: false, language: 'en-US' }),
+    ).rejects.toThrow(/up to 5/);
     const [first] = await localRepo.profiles.list();
-    const updated = await localRepo.profiles.update(first!.id, { name: 'Renamed', settings: { grain: 10 } });
+    const updated = await localRepo.profiles.update(first!.id, {
+      name: 'Renamed',
+      settings: { grain: 10 },
+    });
     expect(updated).toMatchObject({ name: 'Renamed', settings: { grain: 10 } });
     await localRepo.profiles.remove(first!.id);
     expect(await localRepo.profiles.list()).toHaveLength(4);
@@ -130,9 +159,18 @@ describe('local (guest) repo', () => {
   });
 
   it('reviews: create, edit own only, like, delete; bodies are cleaned', async () => {
-    const r = await localRepo.reviews.upsert(null, 'me', { movie_id: 9, body: '  great shit  ', spoiler: true });
+    const r = await localRepo.reviews.upsert(null, 'me', {
+      movie_id: 9,
+      body: '  great shit  ',
+      spoiler: true,
+    });
     expect(r.body).toBe('great s***');
-    const other = await localRepo.reviews.upsert(null, 'someone', { id: r.id, movie_id: 9, body: 'hijack', spoiler: false });
+    const other = await localRepo.reviews.upsert(null, 'someone', {
+      id: r.id,
+      movie_id: 9,
+      body: 'hijack',
+      spoiler: false,
+    });
     expect(other.id).not.toBe(r.id);
     await localRepo.reviews.like('me', other.id, true);
     const list = await localRepo.reviews.list(9, 'me');
@@ -167,7 +205,10 @@ describe('offline queue', () => {
 
   it('keeps failed ops', async () => {
     enqueue({ op: 'add', profileId: 'p', movie: snap(4) });
-    const broken = { ...localRepo, watchlist: { ...localRepo.watchlist, add: vi.fn().mockRejectedValue(new Error('x')) } };
+    const broken = {
+      ...localRepo,
+      watchlist: { ...localRepo.watchlist, add: vi.fn().mockRejectedValue(new Error('x')) },
+    };
     expect(await flush(broken)).toBe(0);
     expect(pending()).toHaveLength(1);
   });
@@ -187,7 +228,10 @@ describe('useMotionPrefs', () => {
 
   it('reflects OS reduced motion', () => {
     const mm = window.matchMedia;
-    window.matchMedia = ((q: string) => ({ ...mm(q), matches: q.includes('reduce') })) as typeof window.matchMedia;
+    window.matchMedia = ((q: string) => ({
+      ...mm(q),
+      matches: q.includes('reduce'),
+    })) as typeof window.matchMedia;
     const { result } = renderHook(() => useMotionPrefs());
     expect(result.current.osReduced).toBe(true);
     expect(result.current.reduced).toBe(true);

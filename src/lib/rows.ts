@@ -22,8 +22,17 @@ export function homeRows(): RowDescriptor[] {
     { key: 'trending', title: 'Trending now', source: { path: 'trending/movie/week' } },
     { key: 'top10', title: 'Top 10 today', source: { path: 'trending/movie/day' }, ranked: true },
     {
-      key: 'popular-in', title: 'Popular in India', href: '/language/hi',
-      source: { path: 'discover/movie', params: { region: 'IN', with_original_language: 'hi|ta|te|ml|kn', sort_by: 'popularity.desc' } },
+      key: 'popular-in',
+      title: 'Popular in India',
+      href: '/language/hi',
+      source: {
+        path: 'discover/movie',
+        params: {
+          region: 'IN',
+          with_original_language: 'hi|ta|te|ml|kn',
+          sort_by: 'popularity.desc',
+        },
+      },
     },
     { key: 'new', title: 'New releases', source: { path: 'movie/now_playing' } },
     { key: 'top-rated', title: 'Top rated', source: { path: 'movie/top_rated' } },
@@ -35,7 +44,10 @@ export function homeRows(): RowDescriptor[] {
       key: `lang-${code}`,
       title: `${lang.name} cinema`,
       href: `/language/${code}`,
-      source: { path: 'discover/movie', params: { with_original_language: code, sort_by: 'popularity.desc' } },
+      source: {
+        path: 'discover/movie',
+        params: { with_original_language: code, sort_by: 'popularity.desc' },
+      },
     });
   }
   for (const slug of HOME_GENRE_ROWS) {
@@ -52,6 +64,10 @@ export function homeRows(): RowDescriptor[] {
 }
 
 export function rowUrl(source: RowSource, page = 1): string {
-  const qs = new URLSearchParams({ ...Object.fromEntries(Object.entries(source.params ?? {}).map(([k, v]) => [k, String(v)])), page: String(page), with_meta: '1' });
+  const qs = new URLSearchParams({
+    ...Object.fromEntries(Object.entries(source.params ?? {}).map(([k, v]) => [k, String(v)])),
+    page: String(page),
+    with_meta: '1',
+  });
   return `/api/tmdb/${source.path}?${qs.toString()}`;
 }

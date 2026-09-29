@@ -26,7 +26,10 @@ export function useMagnetic(ref: RefObject<HTMLElement | null>, strength = 0.35)
       if (isReducedNow()) return;
       const r = el.getBoundingClientRect();
       const inside =
-        e.clientX > r.left - PAD && e.clientX < r.right + PAD && e.clientY > r.top - PAD && e.clientY < r.bottom + PAD;
+        e.clientX > r.left - PAD &&
+        e.clientX < r.right + PAD &&
+        e.clientY > r.top - PAD &&
+        e.clientY < r.bottom + PAD;
       if (!inside) {
         if (active) leave();
         return;
@@ -39,11 +42,18 @@ export function useMagnetic(ref: RefObject<HTMLElement | null>, strength = 0.35)
       ixTo?.(dx * strength * 0.5);
       iyTo?.(dy * strength * 0.5);
       const radius = Number.parseFloat(getComputedStyle(el).borderRadius) || 8;
-      useCursorStore.getState().setMagnet({ x: r.left, y: r.top, width: r.width, height: r.height, radius });
+      useCursorStore
+        .getState()
+        .setMagnet({ x: r.left, y: r.top, width: r.width, height: r.height, radius });
     };
     const leave = () => {
       active = false;
-      gsap.to([el, inner].filter(Boolean), { x: 0, y: 0, duration: 0.8, ease: 'elastic.out(1, 0.4)' });
+      gsap.to([el, inner].filter(Boolean), {
+        x: 0,
+        y: 0,
+        duration: 0.8,
+        ease: 'elastic.out(1, 0.4)',
+      });
       useCursorStore.getState().setMagnet(null);
     };
     window.addEventListener('pointermove', onMove, { passive: true });

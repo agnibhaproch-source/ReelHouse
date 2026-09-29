@@ -31,7 +31,17 @@ interface ModalProps {
  * Modal: focus trap, Esc closes, restores focus, aria-modal, scroll lock via Lenis stop()
  * (spec 14). Mobile sheets drag to dismiss with velocity (spec 62).
  */
-export function Modal({ open, onClose, title, hideTitle, description, variant = 'center', children, className, showClose = true }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  hideTitle,
+  description,
+  variant = 'center',
+  children,
+  className,
+  showClose = true,
+}: ModalProps) {
   const ref = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const descId = useId();
@@ -52,14 +62,21 @@ export function Modal({ open, onClose, title, hideTitle, description, variant = 
     };
   }, [open, stop, start]);
 
-  const panelMotion =
-    reduced
-      ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }
-      : effective === 'sheet'
-        ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
-        : effective === 'fullscreen'
-          ? { initial: { opacity: 0, scale: 0.98 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.98 } }
-          : { initial: { opacity: 0, y: 24, scale: 0.97 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, y: 12, scale: 0.98 } };
+  const panelMotion = reduced
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }
+    : effective === 'sheet'
+      ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
+      : effective === 'fullscreen'
+        ? {
+            initial: { opacity: 0, scale: 0.98 },
+            animate: { opacity: 1, scale: 1 },
+            exit: { opacity: 0, scale: 0.98 },
+          }
+        : {
+            initial: { opacity: 0, y: 24, scale: 0.97 },
+            animate: { opacity: 1, y: 0, scale: 1 },
+            exit: { opacity: 0, y: 12, scale: 0.98 },
+          };
 
   const onDragEnd = (_: unknown, info: PanInfo) => {
     if (info.offset.y > 120 || info.velocity.y > 600) onClose();
@@ -72,7 +89,7 @@ export function Modal({ open, onClose, title, hideTitle, description, variant = 
         <div className="fixed inset-0 z-(--z-modal)" data-lenis-prevent>
           <motion.div
             aria-hidden="true"
-            className="absolute inset-0 bg-void/80 backdrop-blur-sm"
+            className="bg-void/80 absolute inset-0 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: DUR.fast } }}
@@ -93,19 +110,26 @@ export function Modal({ open, onClose, title, hideTitle, description, variant = 
             dragElastic={{ top: 0, bottom: 0.6 }}
             onDragEnd={onDragEnd}
             className={cn(
-              'absolute overflow-y-auto bg-aisle text-reel shadow-2xl outline-none',
-              effective === 'center' && 'top-1/2 left-1/2 max-h-[88svh] w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-modal p-6 md:p-8',
-              effective === 'sheet' && 'inset-x-0 bottom-0 max-h-[90svh] rounded-t-modal p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]',
-              effective === 'fullscreen' && 'inset-0 bg-void',
+              'bg-aisle text-reel absolute overflow-y-auto shadow-2xl outline-none',
+              effective === 'center' &&
+                'rounded-modal top-1/2 left-1/2 max-h-[88svh] w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 p-6 md:p-8',
+              effective === 'sheet' &&
+                'rounded-t-modal inset-x-0 bottom-0 max-h-[90svh] p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]',
+              effective === 'fullscreen' && 'bg-void inset-0',
               className,
             )}
           >
-            {effective === 'sheet' && <div aria-hidden="true" className="mx-auto mb-4 h-1 w-10 rounded-pill bg-line" />}
-            <h2 id={titleId} className={cn('mb-2 pr-10 font-display text-h3', hideTitle && 'sr-only')}>
+            {effective === 'sheet' && (
+              <div aria-hidden="true" className="rounded-pill bg-line mx-auto mb-4 h-1 w-10" />
+            )}
+            <h2
+              id={titleId}
+              className={cn('font-display text-h3 mb-2 pr-10', hideTitle && 'sr-only')}
+            >
               {title}
             </h2>
             {description && (
-              <p id={descId} className="mb-4 text-small text-dim">
+              <p id={descId} className="text-small text-dim mb-4">
                 {description}
               </p>
             )}
@@ -115,9 +139,9 @@ export function Modal({ open, onClose, title, hideTitle, description, variant = 
                 onClick={onClose}
                 aria-label="Close"
                 data-cursor="link"
-                className="absolute top-4 right-4 z-10 grid size-11 place-items-center rounded-full text-dim transition-colors duration-fast hover:bg-reel/10 hover:text-reel"
+                className="text-dim duration-fast hover:bg-reel/10 hover:text-reel absolute top-4 right-4 z-10 grid size-11 place-items-center rounded-full transition-colors"
               >
-                <X className="size-5 transition-transform duration-base ease-snap hover:rotate-90" />
+                <X className="duration-base ease-snap size-5 transition-transform hover:rotate-90" />
               </button>
             )}
             {children}

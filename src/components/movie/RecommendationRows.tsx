@@ -18,11 +18,29 @@ export function RecommendationRows() {
   const { data: ratings } = useRatings();
 
   const seeds = useMemo(() => {
-    const liked = new Set(Object.entries(ratings ?? {}).filter(([, s]) => s >= 8).map(([id]) => Number(id)));
-    const fromList = (list ?? []).map((w) => ({ movie_id: w.movie_id, title: w.title, genre_ids: w.genre_ids, original_language: w.original_language ?? undefined }));
-    const fromLikes = (history ?? []).filter((h) => liked.has(h.movie_id)).map((h) => ({ movie_id: h.movie_id, title: h.title, genre_ids: h.genre_ids, original_language: h.original_language ?? undefined }));
+    const liked = new Set(
+      Object.entries(ratings ?? {})
+        .filter(([, s]) => s >= 8)
+        .map(([id]) => Number(id)),
+    );
+    const fromList = (list ?? []).map((w) => ({
+      movie_id: w.movie_id,
+      title: w.title,
+      genre_ids: w.genre_ids,
+      original_language: w.original_language ?? undefined,
+    }));
+    const fromLikes = (history ?? [])
+      .filter((h) => liked.has(h.movie_id))
+      .map((h) => ({
+        movie_id: h.movie_id,
+        title: h.title,
+        genre_ids: h.genre_ids,
+        original_language: h.original_language ?? undefined,
+      }));
     const seen = new Set<number>();
-    return [...fromList, ...fromLikes].filter((s) => (seen.has(s.movie_id) ? false : (seen.add(s.movie_id), true)));
+    return [...fromList, ...fromLikes].filter((s) =>
+      seen.has(s.movie_id) ? false : (seen.add(s.movie_id), true),
+    );
   }, [list, history, ratings]);
 
   const exclude = useMemo(() => (list ?? []).map((w) => w.movie_id), [list]);

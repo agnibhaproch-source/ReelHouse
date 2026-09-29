@@ -66,7 +66,12 @@ export async function tmdbFetch<S extends z.ZodType>(
       try {
         res = await doFetch(url, init);
       } catch (err) {
-        throw new TmdbError('network', `Network error for ${path}: ${(err as Error).message}`, undefined, path);
+        throw new TmdbError(
+          'network',
+          `Network error for ${path}: ${(err as Error).message}`,
+          undefined,
+          path,
+        );
       }
       if (res.status !== 429 || attempt === 1) break;
       const retryAfter = Number(res.headers.get('retry-after'));
@@ -74,7 +79,8 @@ export async function tmdbFetch<S extends z.ZodType>(
     }
     if (!res) throw new TmdbError('network', `No response for ${path}`, undefined, path);
     if (res.status === 404) throw new TmdbError('not_found', `Not found: ${path}`, 404, path);
-    if (res.status === 429) throw new TmdbError('rate_limit', 'TMDB rate limit exceeded', 429, path);
+    if (res.status === 429)
+      throw new TmdbError('rate_limit', 'TMDB rate limit exceeded', 429, path);
     if (!res.ok) throw new TmdbError('http', `TMDB ${res.status} for ${path}`, res.status, path);
     raw = await res.json();
   }

@@ -22,7 +22,14 @@ import { TmdbImage } from '@/components/ui/TmdbImage';
 import { FilmReelSpinner } from '@/components/ui/FilmReelSpinner';
 
 const RECENT_KEY = 'rh:recent-searches';
-const EXAMPLES = ['Search for a title…', 'Try “Dune”', 'Try “Shah Rukh Khan”', 'Try “Parasite”', 'Try “Christopher Nolan”', 'Try “RRR”'] as const;
+const EXAMPLES = [
+  'Search for a title…',
+  'Try “Dune”',
+  'Try “Shah Rukh Khan”',
+  'Try “Parasite”',
+  'Try “Christopher Nolan”',
+  'Try “RRR”',
+] as const;
 
 type Option =
   | { kind: 'movie'; id: string; movie: Movie }
@@ -72,7 +79,9 @@ export function SearchOverlay() {
   const { data, isFetching } = useQuery({
     queryKey: qk.search(term),
     queryFn: async ({ signal }) => {
-      const res = await fetch(`/api/tmdb/search/multi?query=${encodeURIComponent(term)}`, { signal });
+      const res = await fetch(`/api/tmdb/search/multi?query=${encodeURIComponent(term)}`, {
+        signal,
+      });
       if (!res.ok) throw new Error('search');
       return (await res.json()) as MultiResults;
     },
@@ -82,7 +91,8 @@ export function SearchOverlay() {
 
   const { data: trending } = useQuery({
     queryKey: ['search-trending'],
-    queryFn: async () => (await (await fetch('/api/tmdb/trending/movie/day')).json()) as Paginated<Movie>,
+    queryFn: async () =>
+      (await (await fetch('/api/tmdb/trending/movie/day')).json()) as Paginated<Movie>,
     enabled: open,
     staleTime: 60 * 60_000,
   });
@@ -100,7 +110,10 @@ export function SearchOverlay() {
   const activeIndex = Math.min(active, Math.max(0, options.length - 1));
 
   const remember = (query: string) => {
-    const next = [query, ...readJSON<string[]>(RECENT_KEY, []).filter((x) => x.toLowerCase() !== query.toLowerCase())].slice(0, 6);
+    const next = [
+      query,
+      ...readJSON<string[]>(RECENT_KEY, []).filter((x) => x.toLowerCase() !== query.toLowerCase()),
+    ].slice(0, 6);
     writeJSON(RECENT_KEY, next);
   };
 
@@ -169,34 +182,52 @@ export function SearchOverlay() {
         className="relative cursor-pointer overflow-hidden rounded-[10px]"
         data-cursor="link"
       >
-        {selected && <motion.span layoutId="search-highlight" transition={SPRING} className="absolute inset-0 -z-10 rounded-[10px] bg-reel/8" aria-hidden="true" />}
-        {selected && <motion.span layoutId="search-bar" transition={SPRING} className="absolute inset-y-2 left-0 w-0.5 rounded-pill bg-violet" aria-hidden="true" />}
+        {selected && (
+          <motion.span
+            layoutId="search-highlight"
+            transition={SPRING}
+            className="bg-reel/8 absolute inset-0 -z-10 rounded-[10px]"
+            aria-hidden="true"
+          />
+        )}
+        {selected && (
+          <motion.span
+            layoutId="search-bar"
+            transition={SPRING}
+            className="rounded-pill bg-violet absolute inset-y-2 left-0 w-0.5"
+            aria-hidden="true"
+          />
+        )}
         <div className="flex min-h-12 items-center gap-3 px-3 py-2">
           {o.kind === 'movie' && (
             <>
-              <span className="relative h-14 w-10 shrink-0 overflow-hidden rounded-[4px] bg-seat">
+              <span className="bg-seat relative h-14 w-10 shrink-0 overflow-hidden rounded-[4px]">
                 <TmdbImage path={o.movie.poster_path} kind="poster" alt="" sizes="40px" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{o.movie.title}</span>
-                <span className="text-small text-dim">{yearOf(o.movie.release_date) || 'Movie'}</span>
+                <span className="text-small text-dim">
+                  {yearOf(o.movie.release_date) || 'Movie'}
+                </span>
               </span>
             </>
           )}
           {o.kind === 'person' && (
             <>
-              <span className="relative size-10 shrink-0 overflow-hidden rounded-full bg-seat">
+              <span className="bg-seat relative size-10 shrink-0 overflow-hidden rounded-full">
                 <TmdbImage path={o.person.profile_path} kind="profile" alt="" sizes="40px" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{o.person.name}</span>
-                <span className="text-small text-dim">{o.person.known_for_department || 'Person'}</span>
+                <span className="text-small text-dim">
+                  {o.person.known_for_department || 'Person'}
+                </span>
               </span>
             </>
           )}
           {o.kind === 'recent' && (
             <>
-              <Clock className="size-4 text-dim" aria-hidden="true" />
+              <Clock className="text-dim size-4" aria-hidden="true" />
               <span className="flex-1 truncate">{o.q}</span>
               <button
                 type="button"
@@ -206,14 +237,14 @@ export function SearchOverlay() {
                   e.stopPropagation();
                   removeRecent(o.q);
                 }}
-                className="grid size-9 place-items-center rounded-full text-dim hover:bg-reel/10 hover:text-reel"
+                className="text-dim hover:bg-reel/10 hover:text-reel grid size-9 place-items-center rounded-full"
               >
                 <X className="size-4" aria-hidden="true" />
               </button>
             </>
           )}
           {o.kind === 'all' && (
-            <span className="flex flex-1 items-center gap-2 font-semibold text-cyan">
+            <span className="text-cyan flex flex-1 items-center gap-2 font-semibold">
               See all results for “{o.q}” <ArrowRight className="size-4" aria-hidden="true" />
             </span>
           )}
@@ -228,22 +259,43 @@ export function SearchOverlay() {
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-(--z-modal)" data-lenis-prevent>
-          <motion.div aria-hidden="true" className="absolute inset-0 bg-void/85 backdrop-blur-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close} />
-          <motion.div aria-hidden="true" className="absolute inset-x-0 top-0 h-[8vh] bg-ink" initial={{ y: '-100%' }} animate={{ y: 0 }} exit={{ y: '-100%' }} transition={{ duration: DUR.slow, ease: EASES.projector }} />
-          <motion.div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[8vh] bg-ink" initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ duration: DUR.slow, ease: EASES.projector }} />
+          <motion.div
+            aria-hidden="true"
+            className="bg-void/85 absolute inset-0 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={close}
+          />
+          <motion.div
+            aria-hidden="true"
+            className="bg-ink absolute inset-x-0 top-0 h-[8vh]"
+            initial={{ y: '-100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '-100%' }}
+            transition={{ duration: DUR.slow, ease: EASES.projector }}
+          />
+          <motion.div
+            aria-hidden="true"
+            className="bg-ink absolute inset-x-0 bottom-0 h-[8vh]"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ duration: DUR.slow, ease: EASES.projector }}
+          />
           <motion.div
             ref={panel}
             role="dialog"
             aria-modal="true"
             aria-label="Search"
-            className="absolute top-[11vh] left-1/2 flex max-h-[78vh] w-[min(94vw,720px)] -translate-x-1/2 flex-col overflow-hidden rounded-modal border border-line bg-aisle/95 shadow-2xl"
+            className="rounded-modal border-line bg-aisle/95 absolute top-[11vh] left-1/2 flex max-h-[78vh] w-[min(94vw,720px)] -translate-x-1/2 flex-col overflow-hidden border shadow-2xl"
             initial={reduced ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, transition: { duration: DUR.fast } }}
             transition={{ duration: DUR.base, ease: EASES.reel }}
           >
-            <div className="relative flex items-center gap-3 border-b border-line px-5 py-4">
-              <Search className="size-6 shrink-0 text-dim" aria-hidden="true" />
+            <div className="border-line relative flex items-center gap-3 border-b px-5 py-4">
+              <Search className="text-dim size-6 shrink-0" aria-hidden="true" />
               <input
                 ref={input}
                 type="search"
@@ -251,7 +303,9 @@ export function SearchOverlay() {
                 aria-expanded={options.length > 0}
                 aria-controls={listId}
                 aria-autocomplete="list"
-                aria-activedescendant={options[activeIndex] ? optionId(options[activeIndex]) : undefined}
+                aria-activedescendant={
+                  options[activeIndex] ? optionId(options[activeIndex]) : undefined
+                }
                 aria-label="Search movies and people"
                 value={q}
                 onChange={(e) => {
@@ -262,31 +316,49 @@ export function SearchOverlay() {
                 placeholder={placeholder}
                 data-cursor="text"
                 className={cn(
-                  'min-w-0 flex-1 bg-transparent font-display text-[clamp(1.4rem,3.4vw,2.2rem)] text-reel outline-none placeholder:text-dim/80 [&::-webkit-search-cancel-button]:hidden',
+                  'font-display text-reel placeholder:text-dim/80 min-w-0 flex-1 bg-transparent text-[clamp(1.4rem,3.4vw,2.2rem)] outline-none [&::-webkit-search-cancel-button]:hidden',
                   !q && !reduced && 'placeholder-shimmer',
                 )}
               />
-              {isFetching ? <FilmReelSpinner className="size-5 text-dim" label="Searching" /> : null}
-              <kbd className="hidden rounded border border-line px-1.5 py-0.5 text-[0.7rem] text-dim md:block">Esc</kbd>
+              {isFetching ? (
+                <FilmReelSpinner className="text-dim size-5" label="Searching" />
+              ) : null}
+              <kbd className="border-line text-dim hidden rounded border px-1.5 py-0.5 text-[0.7rem] md:block">
+                Esc
+              </kbd>
             </div>
 
             <div className="overflow-y-auto p-2">
-              {!showResults && recent.length > 0 && <p className="px-3 pt-2 pb-1 text-small font-semibold text-dim">Recent searches</p>}
+              {!showResults && recent.length > 0 && (
+                <p className="text-small text-dim px-3 pt-2 pb-1 font-semibold">Recent searches</p>
+              )}
               {showResults && movies.length > 0 && <p className="sr-only">Movies</p>}
               <ul id={listId} role="listbox" aria-label="Search results" className="flex flex-col">
                 <AnimatePresence initial={false}>
                   {showResults && movies.length > 0 && (
-                    <motion.li key="h-movies" role="presentation" className="px-3 pt-2 pb-1 text-small font-semibold text-dim">
+                    <motion.li
+                      key="h-movies"
+                      role="presentation"
+                      className="text-small text-dim px-3 pt-2 pb-1 font-semibold"
+                    >
                       Movies
                     </motion.li>
                   )}
-                  {options.filter((o) => o.kind === 'movie' || o.kind === 'recent').map((o) => renderOption(o, options.indexOf(o)))}
+                  {options
+                    .filter((o) => o.kind === 'movie' || o.kind === 'recent')
+                    .map((o) => renderOption(o, options.indexOf(o)))}
                   {showResults && people.length > 0 && (
-                    <motion.li key="h-people" role="presentation" className="px-3 pt-3 pb-1 text-small font-semibold text-dim">
+                    <motion.li
+                      key="h-people"
+                      role="presentation"
+                      className="text-small text-dim px-3 pt-3 pb-1 font-semibold"
+                    >
                       People
                     </motion.li>
                   )}
-                  {options.filter((o) => o.kind === 'person' || o.kind === 'all').map((o) => renderOption(o, options.indexOf(o)))}
+                  {options
+                    .filter((o) => o.kind === 'person' || o.kind === 'all')
+                    .map((o) => renderOption(o, options.indexOf(o)))}
                 </AnimatePresence>
               </ul>
 
@@ -299,10 +371,15 @@ export function SearchOverlay() {
               )}
               {(!showResults || (data && !movies.length && !people.length)) && trending && (
                 <div className="px-3 pt-3 pb-2">
-                  <p className="mb-2 text-small font-semibold text-dim">Trending now</p>
+                  <p className="text-small text-dim mb-2 font-semibold">Trending now</p>
                   <div className="flex flex-wrap gap-2">
                     {trending.results.slice(0, 6).map((m) => (
-                      <button key={m.id} type="button" onClick={() => go(`/movie/${m.id}`)} className="min-h-10 rounded-pill border border-line px-3 text-small transition-colors duration-fast hover:border-violet hover:text-reel">
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => go(`/movie/${m.id}`)}
+                        className="rounded-pill border-line text-small duration-fast hover:border-violet hover:text-reel min-h-10 border px-3 transition-colors"
+                      >
                         {m.title}
                       </button>
                     ))}
@@ -310,7 +387,10 @@ export function SearchOverlay() {
                 </div>
               )}
             </div>
-            <div className="flex gap-4 border-t border-line px-5 py-2 text-[0.72rem] text-dim max-md:hidden" aria-hidden="true">
+            <div
+              className="border-line text-dim flex gap-4 border-t px-5 py-2 text-[0.72rem] max-md:hidden"
+              aria-hidden="true"
+            >
               <span>↑↓ to move</span>
               <span>Enter to open</span>
               <span>Esc to close</span>

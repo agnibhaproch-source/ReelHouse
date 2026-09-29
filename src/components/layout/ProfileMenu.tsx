@@ -28,7 +28,8 @@ export function ProfileMenu() {
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: PointerEvent) => {
-      if (!panel.current?.contains(e.target as Node) && !btn.current?.contains(e.target as Node)) setOpen(false);
+      if (!panel.current?.contains(e.target as Node) && !btn.current?.contains(e.target as Node))
+        setOpen(false);
     };
     document.addEventListener('pointerdown', onDoc);
     return () => document.removeEventListener('pointerdown', onDoc);
@@ -60,7 +61,7 @@ export function ProfileMenu() {
             id={id}
             role="dialog"
             aria-label="Profile menu"
-            className="absolute top-full right-0 mt-2 w-64 origin-top-right rounded-modal border border-line bg-aisle/95 p-2 shadow-2xl backdrop-blur-xl"
+            className="rounded-modal border-line bg-aisle/95 absolute top-full right-0 mt-2 w-64 origin-top-right border p-2 shadow-2xl backdrop-blur-xl"
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: DUR.instant } }}
@@ -73,7 +74,7 @@ export function ProfileMenu() {
                 <p className="text-small text-amber">{greeting}</p>
               </div>
             </div>
-            <div className="my-1 h-px bg-line" />
+            <div className="bg-line my-1 h-px" />
             <TransitionLink href="/my-list" className={item} onClick={close}>
               <Bookmark className="size-4" aria-hidden="true" /> My list
             </TransitionLink>
@@ -85,7 +86,7 @@ export function ProfileMenu() {
             </TransitionLink>
             {accountsEnabled && (
               <>
-                <div className="my-1 h-px bg-line" />
+                <div className="bg-line my-1 h-px" />
                 {user ? (
                   <button type="button" className={item} onClick={() => void signOut()}>
                     <LogOut className="size-4" aria-hidden="true" /> Sign out

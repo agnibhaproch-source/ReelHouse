@@ -44,7 +44,9 @@ describe('tab title micro-interactions', () => {
     const stop = watchTitle();
     setNowPlaying('Dune');
     expect(document.title).toBe('▶ Now playing: Dune');
-    expect(document.querySelector<HTMLLinkElement>('link[rel="icon"]')?.href).toContain('data:image/svg+xml');
+    expect(document.querySelector<HTMLLinkElement>('link[rel="icon"]')?.href).toContain(
+      'data:image/svg+xml',
+    );
     Object.defineProperty(document, 'hidden', { configurable: true, get: () => true });
     document.dispatchEvent(new Event('visibilitychange'));
     expect(document.title).toBe('Intermission — come back');
@@ -52,7 +54,9 @@ describe('tab title micro-interactions', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     setNowPlaying(null);
     expect(document.title).toBe('Dune — Reelhouse');
-    expect(document.querySelector<HTMLLinkElement>('link[rel="icon"]')?.href).toContain('/icon.svg');
+    expect(document.querySelector<HTMLLinkElement>('link[rel="icon"]')?.href).toContain(
+      '/icon.svg',
+    );
     stop();
   });
 });
@@ -66,7 +70,10 @@ describe('YouTube loader', () => {
     const p = loadYouTube();
     const p2 = loadYouTube();
     expect(document.querySelectorAll('script[src*="iframe_api"]')).toHaveLength(1);
-    window.YT = { Player: vi.fn() as never, PlayerState: { ENDED: 0, PLAYING: 1, PAUSED: 2, BUFFERING: 3, CUED: 5 } };
+    window.YT = {
+      Player: vi.fn() as never,
+      PlayerState: { ENDED: 0, PLAYING: 1, PAUSED: 2, BUFFERING: 3, CUED: 5 },
+    };
     window.onYouTubeIframeAPIReady?.();
     await expect(p).resolves.toBe(window.YT);
     await expect(p2).resolves.toBe(window.YT);

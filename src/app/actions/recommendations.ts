@@ -21,7 +21,10 @@ const SeedSchema = z.object({
   original_language: z.string().max(8).optional(),
 });
 
-const InputSchema = z.object({ seeds: z.array(SeedSchema).max(40), exclude: z.array(z.number().int()).max(500) });
+const InputSchema = z.object({
+  seeds: z.array(SeedSchema).max(40),
+  exclude: z.array(z.number().int()).max(500),
+});
 
 export interface RecRow {
   key: string;
@@ -49,14 +52,22 @@ export async function getRecommendationRows(input: z.input<typeof InputSchema>):
     const recent = seeds.slice(0, 5);
     const lists = await Promise.all(
       recent.map((s) =>
-        tmdbFetch(`/movie/${s.movie_id}/recommendations`, { page: 1 }, { schema: MovieListSchema, revalidate: SIX_HOURS })
+        tmdbFetch(
+          `/movie/${s.movie_id}/recommendations`,
+          { page: 1 },
+          { schema: MovieListSchema, revalidate: SIX_HOURS },
+        )
           .then((r) => r.results)
           .catch(() => [] as Movie[]),
       ),
     );
     const merged = rankRecommendations(lists, excluded).filter((m) => !kids || !m.adult);
     if (merged.length >= 4 && recent[0]) {
-      rows.push({ key: `because-${recent[0].movie_id}`, title: `Because you added ${recent[0].title}`, movies: await withMeta(merged) });
+      rows.push({
+        key: `because-${recent[0].movie_id}`,
+        title: `Because you added ${recent[0].title}`,
+        movies: await withMeta(merged),
+      });
       merged.forEach((m) => excluded.add(m.id));
     }
 
@@ -66,16 +77,37 @@ export async function getRecommendationRows(input: z.input<typeof InputSchema>):
       const res = await discover({ genre: g1, sort: 'popularity.desc', page: 2, kids });
       const movies = res.results.filter((m) => !excluded.has(m.id));
       if (g && movies.length >= 4) {
-        rows.push({ key: `more-${g.slug}`, title: `More ${g.name.toLowerCase()} for you`, href: `/browse/${g.slug}`, movies: await withMeta(movies) });
+        rows.push({
+          key: `more-${g.slug}`,
+          title: `More ${g.name.toLowerCase()} for you`,
+          href: `/browse/${g.slug}`,
+          movies: await withMeta(movies),
+        });
         movies.forEach((m) => excluded.add(m.id));
       }
     }
 
     const lang = languageAffinity(seeds);
     if (lang) {
-      const res = await tmdbFetch('/discover/movie', { with_original_language: lang, sort_by: 'popularity.desc', page: 1, include_adult: false, ...(kids ? kidsParams() : {}) }, { schema: MovieListSchema, revalidate: SIX_HOURS });
+      const res = await tmdbFetch(
+        '/discover/movie',
+        {
+          with_original_language: lang,
+          sort_by: 'popularity.desc',
+          page: 1,
+          include_adult: false,
+          ...(kids ? kidsParams() : {}),
+        },
+        { schema: MovieListSchema, revalidate: SIX_HOURS },
+      );
       const movies = res.results.filter((m) => !excluded.has(m.id));
-      if (movies.length >= 4) rows.push({ key: `lang-rec-${lang}`, title: `Popular in ${languageName(lang)}`, href: `/language/${lang}`, movies: await withMeta(movies) });
+      if (movies.length >= 4)
+        rows.push({
+          key: `lang-rec-${lang}`,
+          title: `Popular in ${languageName(lang)}`,
+          href: `/language/${lang}`,
+          movies: await withMeta(movies),
+        });
     }
   } catch (err) {
     console.error('[recommendations]', err);

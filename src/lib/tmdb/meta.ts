@@ -13,9 +13,18 @@ async function compute(path: string): Promise<PosterMeta> {
   if (!res.ok) throw new Error(`poster ${res.status}`);
   const buf = Buffer.from(await res.arrayBuffer());
   // Native modules load lazily so a broken sharp install degrades to fallback colours, not a crash.
-  const [{ default: sharp }, { getAverageColor }] = await Promise.all([import('sharp'), import('fast-average-color-node')]);
+  const [{ default: sharp }, { getAverageColor }] = await Promise.all([
+    import('sharp'),
+    import('fast-average-color-node'),
+  ]);
   const [avg, tiny] = await Promise.all([
-    getAverageColor(buf, { algorithm: 'dominant', ignoredColor: [[0, 0, 0, 255, 24], [255, 255, 255, 255, 24]] }),
+    getAverageColor(buf, {
+      algorithm: 'dominant',
+      ignoredColor: [
+        [0, 0, 0, 255, 24],
+        [255, 255, 255, 255, 24],
+      ],
+    }),
     sharp(buf).resize(10, 15, { fit: 'cover' }).webp({ quality: 40 }).toBuffer(),
   ]);
   return { color: avg.hex, blur: `data:image/webp;base64,${tiny.toString('base64')}` };

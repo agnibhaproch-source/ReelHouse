@@ -33,7 +33,11 @@ export function GLLayer() {
     document.documentElement.classList.toggle('gl-grain', on);
     const el = host.current;
     if (!on || !el) return;
-    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: false,
+      alpha: true,
+      powerPreference: 'low-power',
+    });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1) * 0.6);
     renderer.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
     el.appendChild(renderer.domElement);
@@ -46,7 +50,12 @@ export function GLLayer() {
       uViolet: { value: new THREE.Color(COLORS.violet) },
       uAmber: { value: new THREE.Color(COLORS.amber) },
     };
-    const material = new THREE.ShaderMaterial({ vertexShader: vert, fragmentShader: withChunks(frag), uniforms, depthTest: false });
+    const material = new THREE.ShaderMaterial({
+      vertexShader: vert,
+      fragmentShader: withChunks(frag),
+      uniforms,
+      depthTest: false,
+    });
     const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
     scene.add(quad);
     const resize = () => {
@@ -75,5 +84,11 @@ export function GLLayer() {
   }, [on]);
 
   if (!on) return null;
-  return <div ref={host} aria-hidden="true" className="pointer-events-none fixed inset-0 z-(--z-overlay) mix-blend-overlay" />;
+  return (
+    <div
+      ref={host}
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-(--z-overlay) mix-blend-overlay"
+    />
+  );
 }

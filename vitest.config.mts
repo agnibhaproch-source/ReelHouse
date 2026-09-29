@@ -21,7 +21,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/lib/**', 'src/stores/**'],
-      exclude: ['src/lib/supabase/**', 'src/lib/gsap.ts', 'src/lib/sound.ts', 'src/lib/tmdb/fixtures.ts'],
+      exclude: [
+        'src/lib/supabase/**',
+        'src/lib/gsap.ts',
+        'src/lib/sound.ts',
+        'src/lib/tmdb/fixtures.ts',
+      ],
       thresholds: { statements: 80, lines: 80, functions: 80, branches: 70 },
     },
   },

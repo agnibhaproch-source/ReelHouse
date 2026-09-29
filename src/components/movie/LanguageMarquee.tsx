@@ -9,11 +9,15 @@ export function LanguageMarquee() {
       <TransitionLink
         key={l.code}
         href={`/language/${l.code}`}
-        className="group flex items-baseline gap-4 px-6 font-display text-[clamp(2.5rem,7vw,6rem)] leading-none whitespace-nowrap text-reel/45 transition-colors duration-base hover:text-reel"
+        className="group font-display text-reel/45 duration-base hover:text-reel flex items-baseline gap-4 px-6 text-[clamp(2.5rem,7vw,6rem)] leading-none whitespace-nowrap transition-colors"
       >
         {l.native}
-        <span className="font-ui text-small text-dim transition-colors group-hover:text-cyan">{l.name}</span>
-        <span aria-hidden="true" className="text-violet/60">✦</span>
+        <span className="font-ui text-small text-dim group-hover:text-cyan transition-colors">
+          {l.name}
+        </span>
+        <span aria-hidden="true" className="text-violet/60">
+          ✦
+        </span>
       </TransitionLink>
     ));
   return (

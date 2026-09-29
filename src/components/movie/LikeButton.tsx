@@ -9,7 +9,15 @@ import { isReducedNow } from '@/hooks/useMotionPrefs';
 import { Button } from '@/components/ui/Button';
 
 /** "Like" = a 5-star rating shortcut; heart beats on hover, bursts on like (specs 33, 55). */
-export function LikeButton({ movieId, title, size = 'md' }: { movieId: number; title: string; size?: 'sm' | 'md' }) {
+export function LikeButton({
+  movieId,
+  title,
+  size = 'md',
+}: {
+  movieId: number;
+  title: string;
+  size?: 'sm' | 'md';
+}) {
   const rating = useMyRating(movieId);
   const set = useSetRating(movieId);
   const liked = rating !== null && rating >= 8;
@@ -27,7 +35,11 @@ export function LikeButton({ movieId, title, size = 'md' }: { movieId: number; t
       onClick={() => {
         const svg = ref.current?.querySelector('svg');
         if (!liked && svg && !isReducedNow()) {
-          gsap.fromTo(svg, { scale: 0.6 }, { scale: 1, duration: 0.6, ease: 'elastic.out(1.2, 0.4)' });
+          gsap.fromTo(
+            svg,
+            { scale: 0.6 },
+            { scale: 1, duration: 0.6, ease: 'elastic.out(1.2, 0.4)' },
+          );
         }
         set.mutate(liked ? null : 10);
       }}

@@ -14,7 +14,8 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
-export const clamp = (v: number, min: number, max: number): number => Math.min(max, Math.max(min, v));
+export const clamp = (v: number, min: number, max: number): number =>
+  Math.min(max, Math.max(min, v));
 
 export const lerp = (a: number, b: number, t: number): number => a + (b - a) * t;
 
@@ -33,7 +34,11 @@ export function formatRuntime(minutes: number | null | undefined): string {
 
 export function formatMoney(n: number | null | undefined): string {
   if (!n) return '—';
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(n);
 }
 
 export function isNewRelease(date: string | null | undefined, now: Date = new Date()): boolean {

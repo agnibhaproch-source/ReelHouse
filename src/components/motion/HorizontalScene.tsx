@@ -9,7 +9,17 @@ import { cn } from '@/lib/utils';
  * Vertical scroll drives horizontal translate of the track (spec 32). Below 768px or with reduced
  * motion the track becomes a native horizontal scroller instead of a pin.
  */
-export function HorizontalScene({ children, className, trackClassName, label }: { children: ReactNode; className?: string; trackClassName?: string; label: string }) {
+export function HorizontalScene({
+  children,
+  className,
+  trackClassName,
+  label,
+}: {
+  children: ReactNode;
+  className?: string;
+  trackClassName?: string;
+  label: string;
+}) {
   const ref = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const { reduced } = useMotionPrefs();
@@ -26,7 +36,15 @@ export function HorizontalScene({ children, className, trackClassName, label }: 
         gsap.to(tr, {
           x: () => -distance(),
           ease: 'none',
-          scrollTrigger: { trigger: el, start: 'top top', end: () => `+=${distance()}`, pin: true, scrub: 0.8, invalidateOnRefresh: true, anticipatePin: 1 },
+          scrollTrigger: {
+            trigger: el,
+            start: 'top top',
+            end: () => `+=${distance()}`,
+            pin: true,
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+            anticipatePin: 1,
+          },
         });
       });
       return () => mm.revert();
@@ -37,7 +55,11 @@ export function HorizontalScene({ children, className, trackClassName, label }: 
     <section ref={ref} aria-label={label} className={cn('relative overflow-hidden', className)}>
       <div
         ref={track}
-        className={cn('flex w-max gap-6 px-gutter max-md:w-full max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto', reduced && 'w-full overflow-x-auto', trackClassName)}
+        className={cn(
+          'px-gutter flex w-max gap-6 max-md:w-full max-md:snap-x max-md:snap-mandatory max-md:overflow-x-auto',
+          reduced && 'w-full overflow-x-auto',
+          trackClassName,
+        )}
         data-lenis-prevent-horizontal
       >
         {children}

@@ -44,13 +44,24 @@ export function DustField({ color }: { color: string }) {
       uPixelRatio: { value: dpr },
       uColor: { value: new THREE.Color(COLORS.reel).lerp(new THREE.Color(color), 0.25) },
     };
-    const material = new THREE.ShaderMaterial({ vertexShader: vert, fragmentShader: frag, uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+    const material = new THREE.ShaderMaterial({
+      vertexShader: vert,
+      fragmentShader: frag,
+      uniforms,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
     const points = new THREE.Points(geometry, material);
     points.frustumCulled = false;
     scene.add(points);
 
     const target = new THREE.Vector2();
-    const onMove = (e: PointerEvent) => target.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+    const onMove = (e: PointerEvent) =>
+      target.set(
+        (e.clientX / window.innerWidth) * 2 - 1,
+        -(e.clientY / window.innerHeight) * 2 + 1,
+      );
     window.addEventListener('pointermove', onMove, { passive: true });
 
     let visible = true;
@@ -85,5 +96,7 @@ export function DustField({ color }: { color: string }) {
     };
   }, [color]);
 
-  return <div ref={host} aria-hidden="true" className="pointer-events-none absolute inset-0 -z-[5]" />;
+  return (
+    <div ref={host} aria-hidden="true" className="pointer-events-none absolute inset-0 -z-[5]" />
+  );
 }

@@ -27,9 +27,14 @@ export function HeroCanvas({ slides, index, onReady }: Props) {
   useEffect(() => {
     const el = host.current;
     if (!el || !canUseWebGL()) return;
-    const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'high-performance' });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: false,
+      alpha: true,
+      powerPreference: 'high-performance',
+    });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-    renderer.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 400ms';
+    renderer.domElement.style.cssText =
+      'position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 400ms';
     el.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -47,7 +52,11 @@ export function HeroCanvas({ slides, index, onReady }: Props) {
       uTime: { value: 0 },
       uResolution: { value: new THREE.Vector2(1, 1) },
     };
-    const material = new THREE.ShaderMaterial({ vertexShader: vert, fragmentShader: withChunks(frag), uniforms });
+    const material = new THREE.ShaderMaterial({
+      vertexShader: vert,
+      fragmentShader: withChunks(frag),
+      uniforms,
+    });
     const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
     scene.add(quad);
     let current = 0;

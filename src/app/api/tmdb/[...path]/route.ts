@@ -20,7 +20,8 @@ const LIST_TO_DISCOVER: Record<string, string> = {
 export async function GET(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
   const { path: segments } = await ctx.params;
   let path = segments.join('/');
-  if (!isAllowedPath(path)) return NextResponse.json({ error: 'Path not allowed' }, { status: 403 });
+  if (!isAllowedPath(path))
+    return NextResponse.json({ error: 'Path not allowed' }, { status: 403 });
 
   const sp = req.nextUrl.searchParams;
   const params: Params = {};
@@ -40,23 +41,50 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ path: strin
   try {
     let body: unknown;
     if (path === 'search/multi') {
-      body = await searchMulti(String(params.query ?? ''), Number(params.page ?? 1), { language, kids });
-    } else if (/^movie\/\d+$/.test(path)) {
-      body = await tmdbFetch(`/${path}`, { append_to_response: 'videos,images', include_image_language: 'en,null' }, {
-        schema: MovieDetailSchema, revalidate: REVALIDATE.details, language,
+      body = await searchMulti(String(params.query ?? ''), Number(params.page ?? 1), {
+        language,
+        kids,
       });
+    } else if (/^movie\/\d+$/.test(path)) {
+      body = await tmdbFetch(
+        `/${path}`,
+        { append_to_response: 'videos,images', include_image_language: 'en,null' },
+        {
+          schema: MovieDetailSchema,
+          revalidate: REVALIDATE.details,
+          language,
+        },
+      );
     } else if (path === 'genre/movie/list') {
-      body = await tmdbFetch(`/${path}`, {}, { schema: GenreListSchema, revalidate: REVALIDATE.genres, language });
+      body = await tmdbFetch(
+        `/${path}`,
+        {},
+        { schema: GenreListSchema, revalidate: REVALIDATE.genres, language },
+      );
     } else {
-      const raw = await tmdbFetch(`/${path}`, params, { schema: MovieListSchema, revalidate: REVALIDATE.lists, language });
+      const raw = await tmdbFetch(`/${path}`, params, {
+        schema: MovieListSchema,
+        revalidate: REVALIDATE.lists,
+        language,
+      });
       // Defence in depth for kids profiles: every list response drops adult/excluded genres.
       const list = kids
-        ? { ...raw, results: raw.results.filter((m) => !m.adult && !m.genre_ids.some((g) => (KIDS_EXCLUDED_GENRES as readonly number[]).includes(g))) }
+        ? {
+            ...raw,
+            results: raw.results.filter(
+              (m) =>
+                !m.adult &&
+                !m.genre_ids.some((g) => (KIDS_EXCLUDED_GENRES as readonly number[]).includes(g)),
+            ),
+          }
         : raw;
       body = wantMeta ? { ...list, results: await withMeta(list.results) } : list;
     }
     return NextResponse.json(body, {
-      headers: { 'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600', Vary: 'Cookie' },
+      headers: {
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=3600',
+        Vary: 'Cookie',
+      },
     });
   } catch (err) {
     if (isTmdbError(err)) {

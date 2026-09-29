@@ -65,7 +65,11 @@ export function SettingsSync() {
     const id = profile?.id ?? 'guest';
     if (hydratingFor.current === id) return;
     hydratingFor.current = id;
-    if (profile) useUiStore.getState().setSettings({ ...DEFAULT_SETTINGS, ...pickSettings({ ...DEFAULT_SETTINGS, ...profile.settings }) });
+    if (profile)
+      useUiStore.getState().setSettings({
+        ...DEFAULT_SETTINGS,
+        ...pickSettings({ ...DEFAULT_SETTINGS, ...profile.settings }),
+      });
   }, [profile]);
 
   // Store → profile (debounced).

@@ -19,7 +19,15 @@ interface RevealProps {
 }
 
 /** Fade + rise 40px on enter, `reel` ease, once, start `top 85%` (spec 32). */
-export function Reveal({ children, as = 'div', className, stagger, delay = 0, y = 40, start = 'top 85%' }: RevealProps) {
+export function Reveal({
+  children,
+  as = 'div',
+  className,
+  stagger,
+  delay = 0,
+  y = 40,
+  start = 'top 85%',
+}: RevealProps) {
   // Rendered as any intrinsic text tag; typed as div for ref compatibility.
   const Tag = as as 'div';
   const ref = useRef<HTMLDivElement>(null);

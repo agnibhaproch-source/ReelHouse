@@ -35,7 +35,11 @@ export function useToggleWatchlist() {
   const mutation = useMutation({
     mutationFn: async ({ movie, add }: ToggleVars) => {
       if (isOffline()) {
-        enqueue(add ? { op: 'add', profileId, movie } : { op: 'remove', profileId, movieId: movie.movie_id });
+        enqueue(
+          add
+            ? { op: 'add', profileId, movie }
+            : { op: 'remove', profileId, movieId: movie.movie_id },
+        );
         return;
       }
       if (add) await repo.watchlist.add(profileId, movie);
@@ -45,7 +49,14 @@ export function useToggleWatchlist() {
       await qc.cancelQueries({ queryKey: key });
       const prev = qc.getQueryData<WatchItem[]>(key) ?? [];
       const next: WatchItem[] = add
-        ? [{ ...movie, added_at: new Date().toISOString(), position: (prev[0]?.position ?? 1) - 1 }, ...prev.filter((w) => w.movie_id !== movie.movie_id)]
+        ? [
+            {
+              ...movie,
+              added_at: new Date().toISOString(),
+              position: (prev[0]?.position ?? 1) - 1,
+            },
+            ...prev.filter((w) => w.movie_id !== movie.movie_id),
+          ]
         : prev.filter((w) => w.movie_id !== movie.movie_id);
       qc.setQueryData(key, next);
       if (add) {
@@ -54,10 +65,18 @@ export function useToggleWatchlist() {
         if ('vibrate' in navigator) navigator.vibrate?.(8);
       }
       if (!silent) {
-        if (add) toast.success(isOffline() ? 'Added to my list — will sync when you’re back online' : 'Added to my list');
+        if (add)
+          toast.success(
+            isOffline()
+              ? 'Added to my list — will sync when you’re back online'
+              : 'Added to my list',
+          );
         else
           toast.info(`Removed “${movie.title}”`, {
-            action: { label: 'Undo', onAction: () => mutation.mutate({ movie, add: true, silent: true }) },
+            action: {
+              label: 'Undo',
+              onAction: () => mutation.mutate({ movie, add: true, silent: true }),
+            },
           });
       }
       return { prev };
@@ -65,7 +84,11 @@ export function useToggleWatchlist() {
     onError: (_err, { add }, ctx) => {
       if (ctx) qc.setQueryData(key, ctx.prev);
       void play('error');
-      toast.error(add ? 'Couldn’t add to your list. Try again.' : 'Couldn’t remove from your list. Try again.');
+      toast.error(
+        add
+          ? 'Couldn’t add to your list. Try again.'
+          : 'Couldn’t remove from your list. Try again.',
+      );
     },
     onSettled: () => {
       if (!isOffline()) void qc.invalidateQueries({ queryKey: key });
@@ -83,7 +106,12 @@ export function useReorderWatchlist() {
     onMutate: (ids) => {
       const prev = qc.getQueryData<WatchItem[]>(key) ?? [];
       const pos = new Map(ids.map((id, i) => [id, i]));
-      qc.setQueryData(key, [...prev].map((w) => ({ ...w, position: pos.get(w.movie_id) ?? w.position })).sort((a, b) => a.position - b.position));
+      qc.setQueryData(
+        key,
+        [...prev]
+          .map((w) => ({ ...w, position: pos.get(w.movie_id) ?? w.position }))
+          .sort((a, b) => a.position - b.position),
+      );
       return { prev };
     },
     onError: (_e, _v, ctx) => {

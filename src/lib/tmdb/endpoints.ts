@@ -64,12 +64,19 @@ export function discoverParams(p: DiscoverParams): Params {
 }
 
 const listOf = (path: string, params: Params, prefs: RequestPrefs, revalidate: number) =>
-  tmdbFetch(path, params, { schema: MovieListSchema, revalidate, language: prefs.language }) as Promise<
-    Paginated<Movie>
-  >;
+  tmdbFetch(path, params, {
+    schema: MovieListSchema,
+    revalidate,
+    language: prefs.language,
+  }) as Promise<Paginated<Movie>>;
 
 export function discover(p: DiscoverParams, prefs: RequestPrefs = {}): Promise<Paginated<Movie>> {
-  return listOf('/discover/movie', discoverParams({ ...p, kids: p.kids ?? prefs.kids }), prefs, REVALIDATE.lists);
+  return listOf(
+    '/discover/movie',
+    discoverParams({ ...p, kids: p.kids ?? prefs.kids }),
+    prefs,
+    REVALIDATE.lists,
+  );
 }
 
 export function getTrending(window: TrendingWindow = 'day', page = 1, prefs: RequestPrefs = {}) {
@@ -115,15 +122,23 @@ export function getRecommendations(id: number, prefs: RequestPrefs = {}) {
 }
 
 export async function getGenres(prefs: RequestPrefs = {}): Promise<Genre[]> {
-  const res = await tmdbFetch('/genre/movie/list', {}, {
-    schema: GenreListSchema,
-    revalidate: REVALIDATE.genres,
-    language: prefs.language,
-  });
+  const res = await tmdbFetch(
+    '/genre/movie/list',
+    {},
+    {
+      schema: GenreListSchema,
+      revalidate: REVALIDATE.genres,
+      language: prefs.language,
+    },
+  );
   return res.genres;
 }
 
-export async function searchMulti(q: string, page = 1, prefs: RequestPrefs = {}): Promise<MultiResults> {
+export async function searchMulti(
+  q: string,
+  page = 1,
+  prefs: RequestPrefs = {},
+): Promise<MultiResults> {
   const res = await tmdbFetch(
     '/search/multi',
     { query: q, page, include_adult: false },
@@ -134,7 +149,13 @@ export async function searchMulti(q: string, page = 1, prefs: RequestPrefs = {})
   for (const item of res.results) {
     if (item.media_type === 'movie') {
       const m = MovieSchema.safeParse(item);
-      if (m.success && !(prefs.kids && m.data.genre_ids.some((g) => (KIDS_EXCLUDED_GENRES as readonly number[]).includes(g))))
+      if (
+        m.success &&
+        !(
+          prefs.kids &&
+          m.data.genre_ids.some((g) => (KIDS_EXCLUDED_GENRES as readonly number[]).includes(g))
+        )
+      )
         movies.push(m.data);
     } else if (item.media_type === 'person') {
       const p = PersonResultSchema.safeParse(item);

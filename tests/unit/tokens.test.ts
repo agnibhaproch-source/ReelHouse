@@ -31,7 +31,8 @@ describe('design tokens', () => {
       amber: 'projector-amber',
       danger: 'danger',
     };
-    for (const [k, css] of Object.entries(map)) expect(value(css)?.toLowerCase()).toBe(COLORS[k as keyof typeof COLORS]);
+    for (const [k, css] of Object.entries(map))
+      expect(value(css)?.toLowerCase()).toBe(COLORS[k as keyof typeof COLORS]);
   });
 
   it('Tailwind @theme maps onto the live tokens (changing a token updates classes)', () => {
@@ -42,10 +43,13 @@ describe('design tokens', () => {
 
   it('secondary text meets WCAG AA on the page background', () => {
     const lum = (hex: string) => {
-      const c = [0, 2, 4].map((i) => Number.parseInt(hex.slice(1 + i, 3 + i), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
+      const c = [0, 2, 4]
+        .map((i) => Number.parseInt(hex.slice(1 + i, 3 + i), 16) / 255)
+        .map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
       return 0.2126 * c[0]! + 0.7152 * c[1]! + 0.0722 * c[2]!;
     };
-    const ratio = (a: string, b: string) => (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
+    const ratio = (a: string, b: string) =>
+      (Math.max(lum(a), lum(b)) + 0.05) / (Math.min(lum(a), lum(b)) + 0.05);
     expect(ratio(COLORS.dim, COLORS.void)).toBeGreaterThanOrEqual(4.5);
     expect(ratio(COLORS.dim, COLORS.aisle)).toBeGreaterThanOrEqual(4.5);
     expect(ratio(COLORS.void, COLORS.violet)).toBeGreaterThanOrEqual(4.5);

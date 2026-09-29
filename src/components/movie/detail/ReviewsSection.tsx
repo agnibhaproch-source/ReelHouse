@@ -18,7 +18,11 @@ import { SplitHeading } from '@/components/motion/SplitHeading';
 import { EmptyState } from '@/components/layout/EmptyState';
 import { ReviewSheet } from './ReviewSheet';
 
-const dateFmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const dateFmt = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+});
 
 function ExpandableText({ text, spoiler }: { text: string; spoiler?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -28,15 +32,28 @@ function ExpandableText({ text, spoiler }: { text: string; spoiler?: boolean }) 
   return (
     <motion.div layout={!reduced} transition={SPRING} className="relative">
       {spoiler && !revealed && (
-        <button type="button" onClick={() => setRevealed(true)} className="absolute inset-0 z-10 grid place-items-center rounded-md text-small font-bold text-amber">
+        <button
+          type="button"
+          onClick={() => setRevealed(true)}
+          className="text-small text-amber absolute inset-0 z-10 grid place-items-center rounded-md font-bold"
+        >
           Contains spoilers — reveal
         </button>
       )}
-      <p className={cn('spoiler whitespace-pre-line text-reel/85', !open && long && 'line-clamp-6')} data-revealed={revealed} aria-hidden={!revealed || undefined}>
+      <p
+        className={cn('spoiler text-reel/85 whitespace-pre-line', !open && long && 'line-clamp-6')}
+        data-revealed={revealed}
+        aria-hidden={!revealed || undefined}
+      >
         {text}
       </p>
       {long && revealed && (
-        <button type="button" onClick={() => setOpen((o) => !o)} className="mt-2 min-h-9 text-small font-semibold text-cyan hover:underline" aria-expanded={open}>
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="text-small text-cyan mt-2 min-h-9 font-semibold hover:underline"
+          aria-expanded={open}
+        >
           {open ? 'Show less' : 'Read more'}
         </button>
       )}
@@ -44,23 +61,40 @@ function ExpandableText({ text, spoiler }: { text: string; spoiler?: boolean }) 
   );
 }
 
-function HeartBurst({ on, onClick, count, label }: { on: boolean; onClick: () => void; count: number; label: string }) {
+function HeartBurst({
+  on,
+  onClick,
+  count,
+  label,
+}: {
+  on: boolean;
+  onClick: () => void;
+  count: number;
+  label: string;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={on}
       aria-label={label}
-      className={cn('group relative flex min-h-9 items-center gap-1.5 rounded-pill px-2 text-small transition-colors', on ? 'text-danger' : 'text-dim hover:text-reel')}
+      className={cn(
+        'group rounded-pill text-small relative flex min-h-9 items-center gap-1.5 px-2 transition-colors',
+        on ? 'text-danger' : 'text-dim hover:text-reel',
+      )}
     >
       <span className="relative">
-        <Heart className={cn('size-4 transition-transform duration-base ease-snap', on && 'scale-110')} fill={on ? 'currentColor' : 'none'} aria-hidden="true" />
+        <Heart
+          className={cn('duration-base ease-snap size-4 transition-transform', on && 'scale-110')}
+          fill={on ? 'currentColor' : 'none'}
+          aria-hidden="true"
+        />
         <AnimatePresence>
           {on && (
             <motion.span
               key="burst"
               aria-hidden="true"
-              className="absolute inset-0 rounded-full border-2 border-danger"
+              className="border-danger absolute inset-0 rounded-full border-2"
               initial={{ scale: 0.6, opacity: 0.8 }}
               animate={{ scale: 2.4, opacity: 0 }}
               exit={{ opacity: 0 }}
@@ -97,7 +131,12 @@ export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
         <SplitHeading id="reviews-h" className="font-display text-h2">
           Reviews
         </SplitHeading>
-        <Button variant="secondary" icon={<Pencil />} onClick={() => setSheet({ open: true, editing: mine })} magnetic={false}>
+        <Button
+          variant="secondary"
+          icon={<Pencil />}
+          onClick={() => setSheet({ open: true, editing: mine })}
+          magnetic={false}
+        >
           {mine ? 'Edit your review' : 'Write a review'}
         </Button>
       </div>
@@ -126,13 +165,13 @@ export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.96 }}
-                  className="rounded-modal border border-line bg-seat p-5"
+                  className="rounded-modal border-line bg-seat border p-5"
                 >
                   <div className="mb-3 flex items-center gap-3">
                     <Avatar avatar={r.avatar} name={r.profile_name} size={36} decorative />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold">{r.profile_name}</p>
-                      <p className="text-[0.75rem] text-dim">
+                      <p className="text-dim text-[0.75rem]">
                         {dateFmt.format(Date.parse(r.created_at))}
                         {r.updated_at !== r.created_at && ' · edited'}
                       </p>
@@ -140,18 +179,35 @@ export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
                   </div>
                   <ExpandableText text={r.body} spoiler={r.spoiler} />
                   <div className="mt-3 flex items-center gap-1">
-                    <HeartBurst on={r.liked} count={r.likes} label={r.liked ? 'Unlike review' : 'Like review'} onClick={() => like.mutate({ id: r.id, on: !r.liked })} />
+                    <HeartBurst
+                      on={r.liked}
+                      count={r.likes}
+                      label={r.liked ? 'Unlike review' : 'Like review'}
+                      onClick={() => like.mutate({ id: r.id, on: !r.liked })}
+                    />
                     {r.profile_id === profileId ? (
                       <>
-                        <button type="button" onClick={() => setSheet({ open: true, editing: r })} className="ml-auto flex min-h-9 items-center gap-1 rounded-pill px-2 text-small text-dim hover:text-reel">
+                        <button
+                          type="button"
+                          onClick={() => setSheet({ open: true, editing: r })}
+                          className="rounded-pill text-small text-dim hover:text-reel ml-auto flex min-h-9 items-center gap-1 px-2"
+                        >
                           <Pencil className="size-3.5" aria-hidden="true" /> Edit
                         </button>
-                        <button type="button" onClick={() => remove.mutate(r.id)} className="flex min-h-9 items-center gap-1 rounded-pill px-2 text-small text-dim hover:text-danger">
+                        <button
+                          type="button"
+                          onClick={() => remove.mutate(r.id)}
+                          className="rounded-pill text-small text-dim hover:text-danger flex min-h-9 items-center gap-1 px-2"
+                        >
                           <Trash2 className="size-3.5" aria-hidden="true" /> Delete
                         </button>
                       </>
                     ) : (
-                      <button type="button" onClick={() => report.mutate({ id: r.id, reason: 'Inappropriate' })} className="ml-auto flex min-h-9 items-center gap-1 rounded-pill px-2 text-small text-dim hover:text-amber">
+                      <button
+                        type="button"
+                        onClick={() => report.mutate({ id: r.id, reason: 'Inappropriate' })}
+                        className="rounded-pill text-small text-dim hover:text-amber ml-auto flex min-h-9 items-center gap-1 px-2"
+                      >
                         <Flag className="size-3.5" aria-hidden="true" /> Report
                       </button>
                     )}
@@ -164,23 +220,41 @@ export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
       </TabPanel>
       <TabPanel id="tmdb" value={tab} prefix="reviews" className="pt-6">
         {tmdbReviews.length === 0 ? (
-          <EmptyState title="No TMDB reviews for this title yet." action={{ href: 'https://www.themoviedb.org/', label: 'Visit TMDB' }} />
+          <EmptyState
+            title="No TMDB reviews for this title yet."
+            action={{ href: 'https://www.themoviedb.org/', label: 'Visit TMDB' }}
+          />
         ) : (
           <ul className="grid gap-5 lg:grid-cols-2">
             {tmdbReviews.slice(0, 10).map((r) => (
-              <li key={r.id} className="rounded-modal border border-line bg-seat p-5">
+              <li key={r.id} className="rounded-modal border-line bg-seat border p-5">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <p className="font-semibold">{r.author}</p>
-                  {r.author_details?.rating ? <StarRating value={Math.round(r.author_details.rating)} readOnly size="sm" label={`${r.author}'s rating`} /> : null}
+                  {r.author_details?.rating ? (
+                    <StarRating
+                      value={Math.round(r.author_details.rating)}
+                      readOnly
+                      size="sm"
+                      label={`${r.author}'s rating`}
+                    />
+                  ) : null}
                 </div>
                 <ExpandableText text={r.content} />
-                <p className="mt-3 text-[0.75rem] text-dim">{dateFmt.format(Date.parse(r.created_at))}</p>
+                <p className="text-dim mt-3 text-[0.75rem]">
+                  {dateFmt.format(Date.parse(r.created_at))}
+                </p>
               </li>
             ))}
           </ul>
         )}
       </TabPanel>
-      <ReviewSheet movieId={movieId} title={title} open={sheet.open} editing={sheet.editing} onClose={() => setSheet({ open: false })} />
+      <ReviewSheet
+        movieId={movieId}
+        title={title}
+        open={sheet.open}
+        editing={sheet.editing}
+        onClose={() => setSheet({ open: false })}
+      />
     </section>
   );
 }

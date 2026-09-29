@@ -10,8 +10,12 @@ import { useMotionPrefs } from '@/hooks/useMotionPrefs';
 
 /** cubic-bezier → easing fn for Lenis scrollTo. */
 function bezier([x1, y1, x2, y2]: readonly number[]): (t: number) => number {
-  const cx = 3 * (x1 as number), bx = 3 * ((x2 as number) - (x1 as number)) - cx, ax = 1 - cx - bx;
-  const cy = 3 * (y1 as number), by = 3 * ((y2 as number) - (y1 as number)) - cy, ay = 1 - cy - by;
+  const cx = 3 * (x1 as number),
+    bx = 3 * ((x2 as number) - (x1 as number)) - cx,
+    ax = 1 - cx - bx;
+  const cy = 3 * (y1 as number),
+    by = 3 * ((y2 as number) - (y1 as number)) - cy,
+    ay = 1 - cy - by;
   const sx = (t: number) => ((ax * t + bx) * t + cx) * t;
   const sy = (t: number) => ((ay * t + by) * t + cy) * t;
   return (x: number) => {
@@ -38,7 +42,13 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!smoothScroll) return;
-    const l = new Lenis({ lerp: 0.09, wheelMultiplier: 1, smoothWheel: true, syncTouch: false, anchors: { offset: -80 } });
+    const l = new Lenis({
+      lerp: 0.09,
+      wheelMultiplier: 1,
+      smoothWheel: true,
+      syncTouch: false,
+      anchors: { offset: -80 },
+    });
     const root = document.documentElement;
     const onScroll = (x: Lenis) => {
       ScrollTrigger.update();

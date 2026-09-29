@@ -18,7 +18,15 @@ interface MarqueeProps {
 }
 
 /** Infinite, velocity-reactive marquee; pauses on hover (spec 38). */
-export function Marquee({ children, speed = 40, direction = 1, velocityReactive = true, pauseOnHover = true, className, label }: MarqueeProps) {
+export function Marquee({
+  children,
+  speed = 40,
+  direction = 1,
+  velocityReactive = true,
+  pauseOnHover = true,
+  className,
+  label,
+}: MarqueeProps) {
   const track = useRef<HTMLDivElement>(null);
   const hovered = useRef(false);
   const { reduced } = useMotionPrefs();
@@ -37,12 +45,15 @@ export function Marquee({ children, speed = 40, direction = 1, velocityReactive 
       const half = el.scrollWidth / 2;
       let v = hovered.current ? 0 : speed;
       if (velocityReactive) {
-        const sv = velocity() || Number(getComputedStyle(document.documentElement).getPropertyValue('--scroll-velocity')) * 40;
+        const sv =
+          velocity() ||
+          Number(getComputedStyle(document.documentElement).getPropertyValue('--scroll-velocity')) *
+            40;
         if (Math.abs(sv) > 0.5) dir = Math.sign(sv) * direction;
         v += Math.min(600, Math.abs(sv) * 25);
       }
       x -= v * dt * dir;
-      if (half > 0) x = ((x % half) + half) % half - half;
+      if (half > 0) x = (((x % half) + half) % half) - half;
       el.style.transform = `translate3d(${x}px,0,0)`;
       raf = requestAnimationFrame(loop);
     };

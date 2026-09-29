@@ -45,7 +45,12 @@ export function ShareQuote() {
     if (!sel) return;
     const payload = `“${sel.text}” — ${document.title}\n${window.location.href}`;
     try {
-      if (navigator.share) await navigator.share({ text: `“${sel.text}”`, url: window.location.href, title: document.title });
+      if (navigator.share)
+        await navigator.share({
+          text: `“${sel.text}”`,
+          url: window.location.href,
+          title: document.title,
+        });
       else {
         await navigator.clipboard.writeText(payload);
         toast.success('Quote copied');
@@ -64,7 +69,7 @@ export function ShareQuote() {
           type="button"
           data-share-quote
           onClick={() => void share()}
-          className="absolute z-(--z-toast) flex min-h-9 -translate-x-1/2 -translate-y-full items-center gap-1.5 rounded-pill bg-violet px-3 text-small font-bold text-void shadow-xl"
+          className="rounded-pill bg-violet text-small text-void absolute z-(--z-toast) flex min-h-9 -translate-x-1/2 -translate-y-full items-center gap-1.5 px-3 font-bold shadow-xl"
           style={{ left: sel.x, top: sel.y - 10 }}
           initial={{ opacity: 0, y: 6, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}

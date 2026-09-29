@@ -5,7 +5,10 @@ import type Lenis from 'lenis';
 
 export interface ScrollApi {
   lenis: Lenis | null;
-  scrollTo: (target: number | string | HTMLElement, opts?: { offset?: number; duration?: number; immediate?: boolean; onComplete?: () => void }) => void;
+  scrollTo: (
+    target: number | string | HTMLElement,
+    opts?: { offset?: number; duration?: number; immediate?: boolean; onComplete?: () => void },
+  ) => void;
   stop: () => void;
   start: () => void;
   /** px/frame; 0 under native scroll. */
@@ -21,7 +24,10 @@ const nativeApi: ScrollApi = {
     const y =
       typeof target === 'number'
         ? target
-        : (typeof target === 'string' ? document.querySelector(target) : target)?.getBoundingClientRect().top ?? 0;
+        : ((typeof target === 'string'
+            ? document.querySelector(target)
+            : target
+          )?.getBoundingClientRect().top ?? 0);
     const top = typeof target === 'number' ? y : y + window.scrollY + (opts?.offset ?? 0);
     window.scrollTo({ top, behavior: opts?.immediate ? 'instant' : 'smooth' });
     opts?.onComplete?.();
@@ -37,7 +43,9 @@ export function useLenis(): ScrollApi {
 }
 
 /** Subscribe to scroll ticks (Lenis or native), without re-rendering. */
-export function useScrollListener(cb: (y: number, velocity: number, direction: 1 | -1 | 0) => void): void {
+export function useScrollListener(
+  cb: (y: number, velocity: number, direction: 1 | -1 | 0) => void,
+): void {
   const { lenis } = useLenis();
   const ref = useRef(cb);
   useEffect(() => {

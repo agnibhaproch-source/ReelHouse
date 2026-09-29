@@ -1,4 +1,5 @@
-export type TmdbErrorKind = 'config' | 'http' | 'validation' | 'network' | 'not_found' | 'rate_limit';
+export type TmdbErrorKind =
+  'config' | 'http' | 'validation' | 'network' | 'not_found' | 'rate_limit';
 
 export class TmdbError extends Error {
   override readonly name = 'TmdbError';

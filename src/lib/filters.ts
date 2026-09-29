@@ -58,7 +58,8 @@ export function parseFilters(sp: URLSearchParams): Filters {
 
 export function filtersToSearch(f: Filters, base?: URLSearchParams): URLSearchParams {
   const sp = new URLSearchParams(base);
-  const set = (k: string, v: string | number | null, def: string | number | null) => (v === def || v === null ? sp.delete(k) : sp.set(k, String(v)));
+  const set = (k: string, v: string | number | null, def: string | number | null) =>
+    v === def || v === null ? sp.delete(k) : sp.set(k, String(v));
   set('sort', f.sort, DEFAULT_FILTERS.sort);
   set('from', f.from, YEAR_MIN);
   set('to', f.to, YEAR_MAX);
@@ -71,7 +72,11 @@ export function filtersToSearch(f: Filters, base?: URLSearchParams): URLSearchPa
 }
 
 /** TMDB discover params for the proxy. */
-export function discoverQuery(f: Filters, fixed: { genre?: number; lang?: string }, page: number): URLSearchParams {
+export function discoverQuery(
+  f: Filters,
+  fixed: { genre?: number; lang?: string },
+  page: number,
+): URLSearchParams {
   const sort = SORTS.find((s) => s.id === f.sort)?.tmdb ?? 'popularity.desc';
   const q = new URLSearchParams({ sort_by: sort, page: String(page) });
   const genre = fixed.genre ?? f.genre;
@@ -80,7 +85,8 @@ export function discoverQuery(f: Filters, fixed: { genre?: number; lang?: string
   if (lang) q.set('with_original_language', lang);
   if (f.from > YEAR_MIN) q.set('primary_release_date.gte', `${f.from}-01-01`);
   if (f.to < YEAR_MAX) q.set('primary_release_date.lte', `${f.to}-12-31`);
-  else if (f.sort === 'new') q.set('primary_release_date.lte', new Date().toISOString().slice(0, 10));
+  else if (f.sort === 'new')
+    q.set('primary_release_date.lte', new Date().toISOString().slice(0, 10));
   if (f.rating > 0) q.set('vote_average.gte', String(f.rating));
   if (f.sort === 'top') q.set('vote_count.gte', '300');
   else if (f.sort === 'az') q.set('vote_count.gte', '50');
@@ -91,5 +97,11 @@ export function discoverQuery(f: Filters, fixed: { genre?: number; lang?: string
 }
 
 export function activeFilterCount(f: Filters): number {
-  return [f.from > YEAR_MIN || f.to < YEAR_MAX, f.rating > 0, f.runtimeMin > 0 || f.runtimeMax < RUNTIME_MAX, f.lang !== null, f.genre !== null].filter(Boolean).length;
+  return [
+    f.from > YEAR_MIN || f.to < YEAR_MAX,
+    f.rating > 0,
+    f.runtimeMin > 0 || f.runtimeMax < RUNTIME_MAX,
+    f.lang !== null,
+    f.genre !== null,
+  ].filter(Boolean).length;
 }

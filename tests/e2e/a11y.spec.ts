@@ -14,7 +14,13 @@ for (const path of ['/styleguide', '/', '/movie/1001', '/search?q=the', '/browse
       .exclude('.grain')
       .exclude('[data-cursor-root]')
       .analyze();
-    const summary = results.violations.map((v) => `${v.id} (${v.impact}): ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join(' | ')}`);
+    const summary = results.violations.map(
+      (v) =>
+        `${v.id} (${v.impact}): ${v.nodes
+          .slice(0, 3)
+          .map((n) => n.target.join(' '))
+          .join(' | ')}`,
+    );
     expect(summary, summary.join('\n')).toEqual([]);
   });
 }

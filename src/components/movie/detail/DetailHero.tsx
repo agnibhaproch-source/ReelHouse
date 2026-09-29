@@ -22,7 +22,9 @@ import { PlayTrailerButton } from '../PlayTrailerButton';
 import { RateButton } from './RateButton';
 import { ShareButton } from './ShareButton';
 
-const DustField = dynamic(() => import('@/components/gl/DustField').then((m) => m.DustField), { ssr: false });
+const DustField = dynamic(() => import('@/components/gl/DustField').then((m) => m.DustField), {
+  ssr: false,
+});
 
 interface Props {
   movie: MovieDetail;
@@ -65,9 +67,24 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
   useGSAP(
     () => {
       if (reduced || !root.current) return;
-      gsap.fromTo('[data-kenburns]', { scale: 1 }, { scale: 1.08, duration: 20, ease: 'none', repeat: -1, yoyo: true });
-      gsap.to('[data-detail-backdrop]', { yPercent: 18, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true } });
-      const intro = () => gsap.from('[data-detail-meta] > *', { y: 24, opacity: 0, duration: DUR.slow, ease: 'reel', stagger: 0.05 });
+      gsap.fromTo(
+        '[data-kenburns]',
+        { scale: 1 },
+        { scale: 1.08, duration: 20, ease: 'none', repeat: -1, yoyo: true },
+      );
+      gsap.to('[data-detail-backdrop]', {
+        yPercent: 18,
+        ease: 'none',
+        scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true },
+      });
+      const intro = () =>
+        gsap.from('[data-detail-meta] > *', {
+          y: 24,
+          opacity: 0,
+          duration: DUR.slow,
+          ease: 'reel',
+          stagger: 0.05,
+        });
       window.addEventListener(PAGE_INTRO_EVENT, intro, { once: true });
       return () => window.removeEventListener(PAGE_INTRO_EVENT, intro);
     },
@@ -75,44 +92,101 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
   );
 
   const year = yearOf(movie.release_date);
-  const genreLinks = movie.genres.slice(0, 4).map((g) => ({ ...g, slug: GENRES.find((x) => x.id === g.id)?.slug }));
+  const genreLinks = movie.genres
+    .slice(0, 4)
+    .map((g) => ({ ...g, slug: GENRES.find((x) => x.id === g.id)?.slug }));
 
   return (
     <header ref={root} data-hero className="relative isolate min-h-[92svh] overflow-hidden">
       {/* Ambient light bleeding into the page */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[140%] opacity-35" style={{ background: `radial-gradient(ellipse 80% 60% at 30% 30%, ${color}, transparent 70%)` }} />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[140%] opacity-35"
+        style={{
+          background: `radial-gradient(ellipse 80% 60% at 30% 30%, ${color}, transparent 70%)`,
+        }}
+      />
       <div data-detail-backdrop className="absolute inset-0 -z-10">
         <div data-kenburns className="absolute inset-0 origin-[60%_40%]">
-          <TmdbImage path={movie.backdrop_path ?? movie.poster_path} kind={movie.backdrop_path ? 'backdrop' : 'poster'} alt="" sizes="100vw" priority fallbackTitle={movie.title} />
+          <TmdbImage
+            path={movie.backdrop_path ?? movie.poster_path}
+            kind={movie.backdrop_path ? 'backdrop' : 'poster'}
+            alt=""
+            sizes="100vw"
+            priority
+            fallbackTitle={movie.title}
+          />
         </div>
         <div aria-hidden="true" className="vignette absolute inset-0" />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-void via-void/55 to-void/10" />
+        <div
+          aria-hidden="true"
+          className="from-void via-void/55 to-void/10 absolute inset-0 bg-gradient-to-t"
+        />
       </div>
       {webglEnabled && !reduced && <DustField color={color} />}
 
-      <div className="relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-end gap-8 px-gutter pt-32 pb-14 md:flex-row md:items-end md:gap-12">
-        <div ref={poster} data-shared-poster={movie.id} className="relative aspect-[2/3] w-[min(46vw,300px)] shrink-0 overflow-hidden rounded-poster shadow-[0_40px_90px_rgb(0_0_0/0.6)] max-md:mx-auto">
-          <TmdbImage path={movie.poster_path} kind="poster" alt={`${movie.title} poster`} sizes={SIZES.detailPoster} blurDataURL={blur} priority fallbackTitle={movie.title} />
+      <div className="px-gutter relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-end gap-8 pt-32 pb-14 md:flex-row md:items-end md:gap-12">
+        <div
+          ref={poster}
+          data-shared-poster={movie.id}
+          className="rounded-poster relative aspect-[2/3] w-[min(46vw,300px)] shrink-0 overflow-hidden shadow-[0_40px_90px_rgb(0_0_0/0.6)] max-md:mx-auto"
+        >
+          <TmdbImage
+            path={movie.poster_path}
+            kind="poster"
+            alt={`${movie.title} poster`}
+            sizes={SIZES.detailPoster}
+            blurDataURL={blur}
+            priority
+            fallbackTitle={movie.title}
+          />
         </div>
 
-        <div data-detail-meta className="flex min-w-0 flex-1 flex-col gap-5 max-md:items-center max-md:text-center">
+        <div
+          data-detail-meta
+          className="flex min-w-0 flex-1 flex-col gap-5 max-md:items-center max-md:text-center"
+        >
           {logo ? (
             <>
               <h1 className="sr-only">{movie.title}</h1>
-              <div className="relative w-[min(80vw,480px)]" style={{ aspectRatio: `${Math.max(1.4, logo.aspect_ratio)}` }}>
-                <TmdbImage path={logo.file_path} kind="logo" alt="" sizes={SIZES.logo} priority className="object-contain object-left-bottom max-md:object-bottom" />
+              <div
+                className="relative w-[min(80vw,480px)]"
+                style={{ aspectRatio: `${Math.max(1.4, logo.aspect_ratio)}` }}
+              >
+                <TmdbImage
+                  path={logo.file_path}
+                  kind="logo"
+                  alt=""
+                  sizes={SIZES.logo}
+                  priority
+                  className="object-contain object-left-bottom max-md:object-bottom"
+                />
               </div>
             </>
           ) : (
-            <SplitHeading as="h1" by="chars" trigger="mount" delay={0.3} className="font-display text-h1">
+            <SplitHeading
+              as="h1"
+              by="chars"
+              trigger="mount"
+              delay={0.3}
+              className="font-display text-h1"
+            >
               {movie.title}
             </SplitHeading>
           )}
-          {movie.tagline && <p className="font-display text-h3 text-reel/80 italic [font-variation-settings:'SOFT'_100]">{movie.tagline}</p>}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-small text-reel/85 max-md:justify-center">
+          {movie.tagline && (
+            <p className="font-display text-h3 text-reel/80 italic [font-variation-settings:'SOFT'_100]">
+              {movie.tagline}
+            </p>
+          )}
+          <div className="text-small text-reel/85 flex flex-wrap items-center gap-x-4 gap-y-2 max-md:justify-center">
             <RatingRing value={movie.vote_average} size={52} label="TMDB rating" />
             {year && <span>{year}</span>}
-            {certification && <span className="rounded border border-reel/40 px-1.5 text-[0.75rem]">{certification}</span>}
+            {certification && (
+              <span className="border-reel/40 rounded border px-1.5 text-[0.75rem]">
+                {certification}
+              </span>
+            )}
             {movie.runtime ? <ScrambleText text={formatRuntime(movie.runtime)} /> : null}
             <span className="text-dim">{languageName(movie.original_language)}</span>
           </div>
@@ -120,7 +194,10 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
             <ul className="flex flex-wrap gap-2 max-md:justify-center" aria-label="Genres">
               {genreLinks.map((g) => (
                 <li key={g.id}>
-                  <Pill href={g.slug && genreBySlug(g.slug) ? `/browse/${g.slug}` : '/browse'} size="sm">
+                  <Pill
+                    href={g.slug && genreBySlug(g.slug) ? `/browse/${g.slug}` : '/browse'}
+                    size="sm"
+                  >
                     {g.name}
                   </Pill>
                 </li>
@@ -128,7 +205,9 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
             </ul>
           )}
           <div className="flex flex-wrap items-center gap-3 max-md:justify-center">
-            {videos.length > 0 && <PlayTrailerButton movie={snap} videos={videos} color={color} size="lg" />}
+            {videos.length > 0 && (
+              <PlayTrailerButton movie={snap} videos={videos} color={color} size="lg" />
+            )}
             <WatchlistButton movie={snap} size="lg" />
             <RateButton movieId={movie.id} title={movie.title} tmdbAverage={movie.vote_average} />
             <ShareButton title={movie.title} />

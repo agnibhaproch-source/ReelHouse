@@ -40,7 +40,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return () => data.subscription.unsubscribe();
   }, [sb]);
 
-  const repo = useMemo(() => (sb && user ? createSupabaseRepo(sb, user.id) : localRepo), [sb, user]);
+  const repo = useMemo(
+    () => (sb && user ? createSupabaseRepo(sb, user.id) : localRepo),
+    [sb, user],
+  );
 
   // A stored profile must belong to the current identity.
   useEffect(() => {
@@ -51,7 +54,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   // Offer to keep titles saved as a guest after signing in (spec 52).
   const mergeCount =
-    user && profile && profile.user_id === user.id && mergeHandledFor !== profile.id ? readGuestWatchlist().length : 0;
+    user && profile && profile.user_id === user.id && mergeHandledFor !== profile.id
+      ? readGuestWatchlist().length
+      : 0;
 
   // Replay offline watchlist writes when back online.
   useEffect(() => {
@@ -69,7 +74,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const selectProfile = useCallback(
     (p: Profile | null) => {
-      const kidsChanged = Boolean(p?.is_kids) !== Boolean(useProfileStore.getState().current?.is_kids);
+      const kidsChanged =
+        Boolean(p?.is_kids) !== Boolean(useProfileStore.getState().current?.is_kids);
       setCurrent(p);
       if (kidsChanged) router.refresh();
     },
@@ -89,7 +95,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (keep) {
       const items = readGuestWatchlist();
       const existing = new Set((await repo.watchlist.list(pid)).map((w) => w.movie_id));
-      for (const w of items.reverse()) if (!existing.has(w.movie_id)) await repo.watchlist.add(pid, w);
+      for (const w of items.reverse())
+        if (!existing.has(w.movie_id)) await repo.watchlist.add(pid, w);
       void qc.invalidateQueries({ queryKey: ['watchlist'] });
       toast.success(`Kept ${items.length} title${items.length > 1 ? 's' : ''} in your list`);
     }
@@ -111,7 +118,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   return (
     <SessionContext.Provider value={value}>
       {children}
-      <Modal open={mergeCount > 0} onClose={() => void mergeGuest(false)} title={`Keep the ${mergeCount} title${mergeCount > 1 ? 's' : ''} you saved?`} description="You added these to your list before signing in.">
+      <Modal
+        open={mergeCount > 0}
+        onClose={() => void mergeGuest(false)}
+        title={`Keep the ${mergeCount} title${mergeCount > 1 ? 's' : ''} you saved?`}
+        description="You added these to your list before signing in."
+      >
         <div className="mt-6 flex flex-wrap gap-3">
           <Button onClick={() => void mergeGuest(true)} data-autofocus>
             Keep them

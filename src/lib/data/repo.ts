@@ -1,5 +1,14 @@
 import type { ExperienceSettings } from '@/stores/ui';
-import type { HistoryItem, Profile, ProfileInput, ReviewInput, SiteReview, WatchItem, MovieSnapshot, HistoryKind } from './types';
+import type {
+  HistoryItem,
+  Profile,
+  ProfileInput,
+  ReviewInput,
+  SiteReview,
+  WatchItem,
+  MovieSnapshot,
+  HistoryKind,
+} from './types';
 
 /** Persistence contract implemented by the guest (localStorage) and Supabase backends. */
 export interface Repo {
@@ -7,7 +16,10 @@ export interface Repo {
   profiles: {
     list(): Promise<Profile[]>;
     create(input: ProfileInput): Promise<Profile>;
-    update(id: string, patch: Partial<ProfileInput> & { settings?: Partial<ExperienceSettings> }): Promise<Profile>;
+    update(
+      id: string,
+      patch: Partial<ProfileInput> & { settings?: Partial<ExperienceSettings> },
+    ): Promise<Profile>;
     remove(id: string): Promise<void>;
   };
   watchlist: {
@@ -18,7 +30,12 @@ export interface Repo {
   };
   history: {
     list(profileId: string): Promise<HistoryItem[]>;
-    record(profileId: string, movie: MovieSnapshot, kind: HistoryKind, progress?: number): Promise<void>;
+    record(
+      profileId: string,
+      movie: MovieSnapshot,
+      kind: HistoryKind,
+      progress?: number,
+    ): Promise<void>;
     remove(profileId: string, movieId: number): Promise<void>;
     clear(profileId: string): Promise<void>;
   };

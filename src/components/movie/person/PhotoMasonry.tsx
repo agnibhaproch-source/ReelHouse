@@ -12,7 +12,7 @@ export function PhotoMasonry({ photos, name }: { photos: TmdbImageT[]; name: str
   if (photos.length < 2) return null;
   return (
     <section aria-labelledby="photos-h" className="px-gutter py-12">
-      <h2 id="photos-h" className="mb-6 font-display text-h2">
+      <h2 id="photos-h" className="font-display text-h2 mb-6">
         Photos
       </h2>
       <Reveal as="ul" stagger className="columns-2 gap-4 sm:columns-3 lg:columns-5">
@@ -24,10 +24,16 @@ export function PhotoMasonry({ photos, name }: { photos: TmdbImageT[]; name: str
               data-cursor="play"
               data-cursor-label="View"
               aria-label={`View photo ${i + 1} of ${name}`}
-              className="group/ph relative block w-full overflow-hidden rounded-poster bg-seat"
+              className="group/ph rounded-poster bg-seat relative block w-full overflow-hidden"
               style={{ aspectRatio: `${p.aspect_ratio || p.width / p.height}` }}
             >
-              <TmdbImage path={p.file_path} kind="profile" alt="" sizes="(max-width: 640px) 50vw, 20vw" className="transition-transform duration-slow ease-reel group-hover/ph:scale-105" />
+              <TmdbImage
+                path={p.file_path}
+                kind="profile"
+                alt=""
+                sizes="(max-width: 640px) 50vw, 20vw"
+                className="duration-slow ease-reel transition-transform group-hover/ph:scale-105"
+              />
             </button>
           </li>
         ))}

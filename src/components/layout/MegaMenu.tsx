@@ -38,9 +38,14 @@ function Collage({ params }: { params: Record<string, string | number> }) {
         {posters.map((m, i) => (
           <motion.div
             key={`${qs}-${m.id}`}
-            className="absolute top-1/2 left-1/2 aspect-[2/3] w-28 overflow-hidden rounded-poster shadow-2xl"
+            className="rounded-poster absolute top-1/2 left-1/2 aspect-[2/3] w-28 overflow-hidden shadow-2xl"
             initial={{ opacity: 0, rotate: 0, x: '-50%', y: '-40%' }}
-            animate={{ opacity: 1, rotate: (i - 1) * 9, x: `${-50 + (i - 1) * 42}%`, y: `${-50 + Math.abs(i - 1) * 6}%` }}
+            animate={{
+              opacity: 1,
+              rotate: (i - 1) * 9,
+              x: `${-50 + (i - 1) * 42}%`,
+              y: `${-50 + Math.abs(i - 1) * 6}%`,
+            }}
             exit={{ opacity: 0 }}
             transition={{ duration: DUR.slow, ease: EASES.reel, delay: i * 0.06 }}
           >
@@ -76,7 +81,8 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
     if (!open) return;
     const onDoc = (e: PointerEvent) => {
       const panel = document.getElementById(id);
-      if (!panel?.contains(e.target as Node) && !trigger.current?.contains(e.target as Node)) setOpen(false);
+      if (!panel?.contains(e.target as Node) && !trigger.current?.contains(e.target as Node))
+        setOpen(false);
     };
     document.addEventListener('pointerdown', onDoc);
     return () => document.removeEventListener('pointerdown', onDoc);
@@ -99,7 +105,14 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
 
   const cols = 3;
   const onItemKey = (e: KeyboardEvent, i: number) => {
-    const moves: Record<string, number> = { ArrowRight: i + 1, ArrowLeft: i - 1, ArrowDown: i + cols, ArrowUp: i - cols, Home: 0, End: items.length - 1 };
+    const moves: Record<string, number> = {
+      ArrowRight: i + 1,
+      ArrowLeft: i - 1,
+      ArrowDown: i + cols,
+      ArrowUp: i - cols,
+      Home: 0,
+      End: items.length - 1,
+    };
     if (e.key in moves) {
       e.preventDefault();
       if (e.key === 'ArrowUp' && i < cols) {
@@ -136,10 +149,19 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
         onClick={() => setOpen((o) => !o)}
         onKeyDown={onTriggerKey}
         data-cursor="link"
-        className={cn('roll-parent relative flex min-h-11 items-center gap-1 px-3 text-small font-semibold transition-colors duration-fast', active || open ? 'text-reel' : 'text-reel/75 hover:text-reel')}
+        className={cn(
+          'roll-parent text-small duration-fast relative flex min-h-11 items-center gap-1 px-3 font-semibold transition-colors',
+          active || open ? 'text-reel' : 'text-reel/75 hover:text-reel',
+        )}
       >
         <RollText>{label}</RollText>
-        <ChevronDown className={cn('size-3.5 transition-transform duration-base ease-reel', open && 'rotate-180')} aria-hidden="true" />
+        <ChevronDown
+          className={cn(
+            'duration-base ease-reel size-3.5 transition-transform',
+            open && 'rotate-180',
+          )}
+          aria-hidden="true"
+        />
       </button>
       <AnimatePresence>
         {open && (
@@ -147,21 +169,32 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
             id={id}
             role="region"
             aria-label={label}
-            className="absolute inset-x-0 top-full border-b border-line bg-void/95 backdrop-blur-xl"
+            className="border-line bg-void/95 absolute inset-x-0 top-full border-b backdrop-blur-xl"
             initial={reduced ? { opacity: 0 } : { clipPath: 'inset(0% 0% 100% 0%)' }}
             animate={reduced ? { opacity: 1 } : { clipPath: 'inset(0% 0% 0% 0%)' }}
-            exit={reduced ? { opacity: 0 } : { clipPath: 'inset(0% 0% 100% 0%)', transition: { duration: DUR.fast, ease: EASES.shutter } }}
+            exit={
+              reduced
+                ? { opacity: 0 }
+                : {
+                    clipPath: 'inset(0% 0% 100% 0%)',
+                    transition: { duration: DUR.fast, ease: EASES.shutter },
+                  }
+            }
             transition={{ duration: DUR.base, ease: EASES.projector }}
             data-lenis-prevent
           >
-            <div className="mx-auto grid max-w-7xl grid-cols-[1fr_280px] gap-10 px-gutter py-8">
+            <div className="px-gutter mx-auto grid max-w-7xl grid-cols-[1fr_280px] gap-10 py-8">
               <ul className="grid grid-cols-3 gap-x-6 gap-y-1">
                 {items.map((item, i) => (
                   <motion.li
                     key={item.href}
                     initial={reduced ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i, STAGGER.maxItems) * STAGGER.base + 0.1, duration: DUR.base, ease: EASES.reel }}
+                    transition={{
+                      delay: Math.min(i, STAGGER.maxItems) * STAGGER.base + 0.1,
+                      duration: DUR.base,
+                      ease: EASES.reel,
+                    }}
                   >
                     <TransitionLink
                       ref={(n) => {
@@ -172,16 +205,22 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
                       onPointerEnter={() => setHot(i)}
                       onFocus={() => setHot(i)}
                       onClick={() => setOpen(false)}
-                      className="group/item flex min-h-11 items-baseline gap-2 rounded-md px-2 py-2 font-display text-h3 text-reel/80 transition-colors duration-fast hover:text-reel focus-visible:text-reel"
+                      className="group/item font-display text-h3 text-reel/80 duration-fast hover:text-reel focus-visible:text-reel flex min-h-11 items-baseline gap-2 rounded-md px-2 py-2 transition-colors"
                     >
-                      <span className="transition-transform duration-base ease-reel group-hover/item:translate-x-1">{item.label}</span>
+                      <span className="duration-base ease-reel transition-transform group-hover/item:translate-x-1">
+                        {item.label}
+                      </span>
                       {item.sub && <span className="font-ui text-small text-dim">{item.sub}</span>}
                     </TransitionLink>
                   </motion.li>
                 ))}
                 {seeAll && (
                   <li className="col-span-3 mt-3">
-                    <TransitionLink href={seeAll.href} onClick={() => setOpen(false)} className="text-small font-semibold text-cyan hover:underline">
+                    <TransitionLink
+                      href={seeAll.href}
+                      onClick={() => setOpen(false)}
+                      className="text-small text-cyan font-semibold hover:underline"
+                    >
                       {seeAll.label} →
                     </TransitionLink>
                   </li>

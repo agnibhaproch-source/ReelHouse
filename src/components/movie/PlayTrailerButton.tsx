@@ -18,7 +18,14 @@ interface Props {
 }
 
 /** Label slides out, reel spins, then the letterbox transition opens the player (spec 34). */
-export function PlayTrailerButton({ movie, videos, color, size = 'md', variant = 'primary', label = 'Play trailer' }: Props) {
+export function PlayTrailerButton({
+  movie,
+  videos,
+  color,
+  size = 'md',
+  variant = 'primary',
+  label = 'Play trailer',
+}: Props) {
   const open = useTrailerStore((s) => s.open);
   const [loading, setLoading] = useState(false);
   const ref = useRef<HTMLElement>(null);

@@ -17,7 +17,8 @@ import { RollText } from '@/components/motion/RollText';
 import { FilmReelSpinner } from './FilmReelSpinner';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'icon';
-export type IconAnim = 'heart' | 'plus' | 'share' | 'bookmark' | 'nudge-left' | 'nudge-right' | 'spin' | 'none';
+export type IconAnim =
+  'heart' | 'plus' | 'share' | 'bookmark' | 'nudge-left' | 'nudge-right' | 'spin' | 'none';
 
 type Common = {
   variant?: ButtonVariant;
@@ -32,8 +33,16 @@ type Common = {
   className?: string;
 };
 
-type AsButton = Common & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & { href?: undefined };
-type AsLink = Common & { href: string; prefetch?: boolean; onClick?: () => void; target?: string; rel?: string; 'aria-label'?: string };
+type AsButton = Common &
+  Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> & { href?: undefined };
+type AsLink = Common & {
+  href: string;
+  prefetch?: boolean;
+  onClick?: () => void;
+  target?: string;
+  rel?: string;
+  'aria-label'?: string;
+};
 export type ButtonProps = AsButton | AsLink;
 
 const base =
@@ -41,7 +50,8 @@ const base =
 
 const variants: Record<ButtonVariant, string> = {
   primary: 'rounded-pill bg-violet text-void hover:text-void',
-  secondary: 'spotlight-border rounded-pill bg-reel/10 text-reel backdrop-blur-md hover:bg-reel/15 hover:backdrop-blur-xl',
+  secondary:
+    'spotlight-border rounded-pill bg-reel/10 text-reel backdrop-blur-md hover:bg-reel/15 hover:backdrop-blur-xl',
   ghost: 'rounded-pill text-reel hover:bg-reel/10',
   icon: 'spotlight-border rounded-pill bg-reel/10 text-reel backdrop-blur-md hover:bg-reel/15',
 };
@@ -56,7 +66,8 @@ const iconSizes = { sm: 'size-9', md: 'size-11', lg: 'size-13' };
 const iconAnimClass: Record<IconAnim, string> = {
   heart: 'group-hover/btn:animate-[heartbeat_0.8s_var(--ease-snap)_infinite]',
   plus: 'transition-transform duration-base ease-snap group-hover/btn:rotate-90 group-focus-visible/btn:rotate-90',
-  share: 'transition-transform duration-fast ease-reel group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5',
+  share:
+    'transition-transform duration-fast ease-reel group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5',
   bookmark: '',
   'nudge-left': 'transition-transform duration-fast ease-reel group-hover/btn:-translate-x-1',
   'nudge-right': 'transition-transform duration-fast ease-reel group-hover/btn:translate-x-1',
@@ -68,7 +79,13 @@ function entrySide(e: ReactPointerEvent<HTMLElement>): string {
   const r = e.currentTarget.getBoundingClientRect();
   const dx = (e.clientX - r.left) / r.width - 0.5;
   const dy = (e.clientY - r.top) / r.height - 0.5;
-  return Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left center' : 'right center') : dy < 0 ? 'center top' : 'center bottom';
+  return Math.abs(dx) > Math.abs(dy)
+    ? dx < 0
+      ? 'left center'
+      : 'right center'
+    : dy < 0
+      ? 'center top'
+      : 'center bottom';
 }
 
 /**
@@ -89,7 +106,9 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
     className,
     ...rest
   } = props;
-  const press = usePress<HTMLElement>({ accent: variant === 'primary' ? 'var(--text-reel)' : 'var(--marquee-violet)' });
+  const press = usePress<HTMLElement>({
+    accent: variant === 'primary' ? 'var(--text-reel)' : 'var(--marquee-violet)',
+  });
   const localRef = useRef<HTMLElement | null>(null);
   useImperativeHandle(forwarded, () => localRef.current as HTMLElement);
   useMagnetic(localRef, magnetic ? 0.3 : 0);
@@ -117,13 +136,13 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
         <>
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-2 -z-20 rounded-pill bg-violet opacity-0 blur-xl transition-opacity duration-base ease-reel group-hover/btn:opacity-50 group-focus-visible/btn:opacity-50"
+            className="rounded-pill bg-violet duration-base ease-reel pointer-events-none absolute -inset-2 -z-20 opacity-0 blur-xl transition-opacity group-hover/btn:opacity-50 group-focus-visible/btn:opacity-50"
           />
           <span
             ref={fillRef}
             aria-hidden="true"
             data-on="false"
-            className="pointer-events-none absolute inset-0 -z-10 scale-0 rounded-[inherit] bg-reel transition-transform duration-base ease-reel data-[on=true]:scale-100"
+            className="bg-reel duration-base ease-reel pointer-events-none absolute inset-0 -z-10 scale-0 rounded-[inherit] transition-transform data-[on=true]:scale-100"
           />
         </>
       )}
@@ -132,13 +151,19 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
           <FilmReelSpinner className="size-4" />
         ) : (
           icon && (
-            <span className={cn('inline-flex shrink-0 [&_svg]:size-[1.15em]', isIcon && '[&_svg]:size-5', iconAnimClass[iconAnim])}>{icon}</span>
+            <span
+              className={cn(
+                'inline-flex shrink-0 [&_svg]:size-[1.15em]',
+                isIcon && '[&_svg]:size-5',
+                iconAnimClass[iconAnim],
+              )}
+            >
+              {icon}
+            </span>
           )
         )}
         {!isIcon && children && (
-          <span>
-            {typeof children === 'string' ? <RollText>{children}</RollText> : children}
-          </span>
+          <span>{typeof children === 'string' ? <RollText>{children}</RollText> : children}</span>
         )}
       </span>
     </>
@@ -176,7 +201,13 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
     );
   }
 
-  const { type = 'button', disabled, 'aria-label': ariaLabel, onClick, ...buttonRest } = rest as AsButton;
+  const {
+    type = 'button',
+    disabled,
+    'aria-label': ariaLabel,
+    onClick,
+    ...buttonRest
+  } = rest as AsButton;
   return (
     <button
       {...buttonRest}

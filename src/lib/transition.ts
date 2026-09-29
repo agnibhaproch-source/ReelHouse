@@ -30,7 +30,11 @@ let readyWaiters: Array<(path: string) => void> = [];
 let busy = false;
 
 /** Last detail poster rect — used for the reverse flight on back navigation. */
-export const lastDetail: { id: number | null; rect: DOMRect | null; src: string | null } = { id: null, rect: null, src: null };
+export const lastDetail: { id: number | null; rect: DOMRect | null; src: string | null } = {
+  id: null,
+  rect: null,
+  src: null,
+};
 
 export function onTransitionRequest(l: Listener): () => void {
   listener = l;
@@ -84,12 +88,14 @@ export function waitForPage(timeout = 1500): Promise<'ready' | 'timeout'> {
 export const PAGE_INTRO_EVENT = 'rh:page-intro';
 
 export function shouldIntercept(e: React.MouseEvent<HTMLAnchorElement>, href: string): boolean {
-  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+    return false;
   const target = e.currentTarget.getAttribute('target');
   if (target && target !== '_self') return false;
   if (!href.startsWith('/') || href.startsWith('//')) return false;
   const url = new URL(href, window.location.href);
-  if (url.pathname === window.location.pathname && url.search === window.location.search) return false;
+  if (url.pathname === window.location.pathname && url.search === window.location.search)
+    return false;
   if (url.pathname === window.location.pathname && url.hash) return false;
   return true;
 }

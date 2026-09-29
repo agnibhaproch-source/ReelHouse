@@ -29,7 +29,8 @@ export function GalleryGL({ scope }: { scope: React.RefObject<HTMLElement | null
     if (!root || !el || !canUseWebGL()) return;
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-    renderer.domElement.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none';
+    renderer.domElement.style.cssText =
+      'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none';
     el.appendChild(renderer.domElement);
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(0, 1, 0, 1, -1000, 1000);
@@ -83,7 +84,10 @@ export function GalleryGL({ scope }: { scope: React.RefObject<HTMLElement | null
         node.addEventListener('pointerleave', () => (plane.target = 0));
         node.addEventListener('pointermove', (e) => {
           const r = node.getBoundingClientRect();
-          material.uniforms.uPointer!.value.set((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height);
+          material.uniforms.uPointer!.value.set(
+            (e.clientX - r.left) / r.width,
+            1 - (e.clientY - r.top) / r.height,
+          );
         });
         node.dataset.glLive = 'true';
       });

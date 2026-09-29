@@ -22,7 +22,14 @@ export function Lightbox({ images, index, onIndex, title, kind = 'backdrop' }: P
   const img = index !== null ? images[index] : undefined;
   const go = (d: number) => index !== null && onIndex((index + d + n) % n);
   return (
-    <Modal open={index !== null} onClose={() => onIndex(null)} title={`${title} — image ${(index ?? 0) + 1} of ${n}`} hideTitle variant="fullscreen" className="grid place-items-center p-4">
+    <Modal
+      open={index !== null}
+      onClose={() => onIndex(null)}
+      title={`${title} — image ${(index ?? 0) + 1} of ${n}`}
+      hideTitle
+      variant="fullscreen"
+      className="grid place-items-center p-4"
+    >
       <div
         className="relative flex size-full items-center justify-center"
         onKeyDown={(e) => {
@@ -41,14 +48,35 @@ export function Lightbox({ images, index, onIndex, title, kind = 'backdrop' }: P
               exit={{ opacity: 0 }}
               transition={{ duration: DUR.base, ease: EASES.reel }}
             >
-              <TmdbImage path={img.file_path} kind={kind} alt={`${title} still ${(index ?? 0) + 1}`} sizes="92vw" className="object-contain" />
+              <TmdbImage
+                path={img.file_path}
+                kind={kind}
+                alt={`${title} still ${(index ?? 0) + 1}`}
+                sizes="92vw"
+                className="object-contain"
+              />
             </motion.div>
           )}
         </AnimatePresence>
         {n > 1 && (
           <>
-            <Button variant="icon" label="Previous image" icon={<ChevronLeft />} iconAnim="nudge-left" onClick={() => go(-1)} className="absolute left-2 bg-void/70" />
-            <Button variant="icon" label="Next image" icon={<ChevronRight />} iconAnim="nudge-right" onClick={() => go(1)} className="absolute right-2 bg-void/70" data-autofocus />
+            <Button
+              variant="icon"
+              label="Previous image"
+              icon={<ChevronLeft />}
+              iconAnim="nudge-left"
+              onClick={() => go(-1)}
+              className="bg-void/70 absolute left-2"
+            />
+            <Button
+              variant="icon"
+              label="Next image"
+              icon={<ChevronRight />}
+              iconAnim="nudge-right"
+              onClick={() => go(1)}
+              className="bg-void/70 absolute right-2"
+              data-autofocus
+            />
           </>
         )}
       </div>

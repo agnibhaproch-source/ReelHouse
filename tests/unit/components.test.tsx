@@ -38,10 +38,18 @@ describe('Button', () => {
   });
   it('disabled and loading states block interaction', async () => {
     const onClick = vi.fn();
-    const { rerender } = render(<Button disabled onClick={onClick}>Save</Button>);
+    const { rerender } = render(
+      <Button disabled onClick={onClick}>
+        Save
+      </Button>,
+    );
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).not.toHaveBeenCalled();
-    rerender(<Button loading onClick={onClick}>Save</Button>);
+    rerender(
+      <Button loading onClick={onClick}>
+        Save
+      </Button>,
+    );
     expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'true');
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).not.toHaveBeenCalled();
@@ -124,7 +132,17 @@ describe('Switch, Tabs, Input', () => {
   it('tabs move with arrow keys', async () => {
     function T() {
       const [v, setV] = useState('a');
-      return <Tabs label="Sections" value={v} onChange={setV} items={[{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }]} />;
+      return (
+        <Tabs
+          label="Sections"
+          value={v}
+          onChange={setV}
+          items={[
+            { id: 'a', label: 'A' },
+            { id: 'b', label: 'B' },
+          ]}
+        />
+      );
     }
     render(<T />);
     screen.getByRole('tab', { name: 'A' }).focus();
@@ -145,8 +163,32 @@ describe('Search combobox', () => {
       'fetch',
       vi.fn(async (url: string) => {
         if (url.includes('search/multi'))
-          return new Response(JSON.stringify({ page: 1, total_pages: 1, movies: [{ id: 11, title: 'Neon Harbor', overview: '', poster_path: null, backdrop_path: null, release_date: '2020-01-01', vote_average: 7, vote_count: 1, popularity: 1, genre_ids: [], original_language: 'en', adult: false }], people: [] }));
-        return new Response(JSON.stringify({ page: 1, results: [], total_pages: 1, total_results: 0 }));
+          return new Response(
+            JSON.stringify({
+              page: 1,
+              total_pages: 1,
+              movies: [
+                {
+                  id: 11,
+                  title: 'Neon Harbor',
+                  overview: '',
+                  poster_path: null,
+                  backdrop_path: null,
+                  release_date: '2020-01-01',
+                  vote_average: 7,
+                  vote_count: 1,
+                  popularity: 1,
+                  genre_ids: [],
+                  original_language: 'en',
+                  adult: false,
+                },
+              ],
+              people: [],
+            }),
+          );
+        return new Response(
+          JSON.stringify({ page: 1, results: [], total_pages: 1, total_results: 0 }),
+        );
       }),
     );
     push.mockReset();
@@ -168,7 +210,20 @@ describe('Search combobox', () => {
 });
 
 describe('MovieCard keyboard behaviour', () => {
-  const movie: Movie = { id: 42, title: 'Dune', overview: '', poster_path: null, backdrop_path: null, release_date: '2024-03-01', vote_average: 8.2, vote_count: 1, popularity: 1, genre_ids: [], original_language: 'en', adult: false };
+  const movie: Movie = {
+    id: 42,
+    title: 'Dune',
+    overview: '',
+    poster_path: null,
+    backdrop_path: null,
+    release_date: '2024-03-01',
+    vote_average: 8.2,
+    vote_count: 1,
+    popularity: 1,
+    genre_ids: [],
+    original_language: 'en',
+    adult: false,
+  };
 
   it('is a link with an accessible name; Space opens the preview; Enter navigates', async () => {
     const user = userEvent.setup();

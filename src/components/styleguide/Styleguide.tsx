@@ -49,7 +49,11 @@ const TYPE = [
   { token: '--fs-h1', cls: 'font-display text-h1', sample: 'Heading one' },
   { token: '--fs-h2', cls: 'font-display text-h2', sample: 'Heading two' },
   { token: '--fs-h3', cls: 'font-display text-h3', sample: 'Heading three' },
-  { token: '--fs-body', cls: 'text-body', sample: 'Body copy in Manrope keeps to seventy characters per line for comfortable reading.' },
+  {
+    token: '--fs-body',
+    cls: 'text-body',
+    sample: 'Body copy in Manrope keeps to seventy characters per line for comfortable reading.',
+  },
   { token: '--fs-small', cls: 'text-small text-dim', sample: 'Small / meta text' },
 ];
 
@@ -73,8 +77,8 @@ const DEMO_MOVIE: Movie = {
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
-    <section aria-labelledby={id} className="border-t border-line py-14">
-      <h2 id={id} className="mb-8 font-display text-h2">
+    <section aria-labelledby={id} className="border-line border-t py-14">
+      <h2 id={id} className="font-display text-h2 mb-8">
         {title}
       </h2>
       {children}
@@ -86,7 +90,7 @@ function State({ label, children }: { label: string; children: ReactNode }) {
   return (
     <figure className="flex flex-col items-start gap-2">
       {children}
-      <figcaption className="text-[0.72rem] text-dim">{label}</figcaption>
+      <figcaption className="text-dim text-[0.72rem]">{label}</figcaption>
     </figure>
   );
 }
@@ -109,18 +113,21 @@ export function Styleguide() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-gutter pt-32 pb-20">
+    <div className="px-gutter mx-auto max-w-7xl pt-32 pb-20">
       <h1 className="font-display text-hero leading-[0.9]">Styleguide</h1>
-      <p className="mt-4 max-w-xl text-dim">The Projection Room — tokens, type, motion and every component state. Tab through it: every control has a visible focus ring.</p>
+      <p className="text-dim mt-4 max-w-xl">
+        The Projection Room — tokens, type, motion and every component state. Tab through it: every
+        control has a visible focus ring.
+      </p>
 
       <Section id="sg-color" title="Colour">
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {TOKENS.map((t) => (
-            <li key={t.name} className="overflow-hidden rounded-modal border border-line">
+            <li key={t.name} className="rounded-modal border-line overflow-hidden border">
               <div className="h-24" style={{ background: `var(${t.name})` }} />
               <div className="p-3">
-                <code className="block text-small">{t.name}</code>
-                <span className="text-[0.75rem] text-dim">
+                <code className="text-small block">{t.name}</code>
+                <span className="text-dim text-[0.75rem]">
                   {t.hex} · {t.use}
                 </span>
               </div>
@@ -140,21 +147,23 @@ export function Styleguide() {
         </ul>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           <div>
-            <p className="mb-2 text-small text-dim">Wordmark (hover: SOFT 0→100, wght 600→800)</p>
+            <p className="text-small text-dim mb-2">Wordmark (hover: SOFT 0→100, wght 600→800)</p>
             <span className="group/wm inline-block">
               <Wordmark className="text-h1" />
             </span>
           </div>
           <div>
-            <p className="mb-2 text-small text-dim">VariableHover (move the pointer near the letters)</p>
+            <p className="text-small text-dim mb-2">
+              VariableHover (move the pointer near the letters)
+            </p>
             <VariableHover text="Projection" className="text-h1" />
           </div>
           <div>
-            <p className="mb-2 text-small text-dim">ScrambleText</p>
+            <p className="text-small text-dim mb-2">ScrambleText</p>
             <ScrambleText text="Loading the reel" loop={2500} className="font-display text-h3" />
           </div>
           <div>
-            <p className="mb-2 text-small text-dim">Counter (odometer)</p>
+            <p className="text-small text-dim mb-2">Counter (odometer)</p>
             <Counter value="$1,204,000" className="font-display text-h2" />
           </div>
         </div>
@@ -165,7 +174,7 @@ export function Styleguide() {
           {SPACES.map((s, i) => (
             <div key={s} className="flex flex-col items-center gap-1">
               <div className="bg-violet/60" style={{ width: s, height: s }} />
-              <code className="text-[0.7rem] text-dim">--space-{i + 1}</code>
+              <code className="text-dim text-[0.7rem]">--space-{i + 1}</code>
             </div>
           ))}
         </div>
@@ -177,7 +186,7 @@ export function Styleguide() {
             ['hero 0', 'rounded-none'],
           ].map(([label, cls]) => (
             <State key={label} label={label as string}>
-              <div className={`h-20 w-28 border border-line bg-seat ${cls}`} />
+              <div className={`border-line bg-seat h-20 w-28 border ${cls}`} />
             </State>
           ))}
         </div>
@@ -233,7 +242,10 @@ export function Styleguide() {
           </State>
           <State label="magnetic wrapper">
             <Magnetic>
-              <span data-magnetic-inner className="grid size-20 place-items-center rounded-full border border-line text-small">
+              <span
+                data-magnetic-inner
+                className="border-line text-small grid size-20 place-items-center rounded-full border"
+              >
                 Magnet
               </span>
             </Magnetic>
@@ -273,7 +285,13 @@ export function Styleguide() {
             <Input label="Name" defaultValue="Agni" className="w-72" />
           </State>
           <State label="text · error">
-            <Input label="Password" type="password" defaultValue="abc" error="Use at least 8 characters." className="w-72" />
+            <Input
+              label="Password"
+              type="password"
+              defaultValue="abc"
+              error="Use at least 8 characters."
+              className="w-72"
+            />
           </State>
           <State label="text · disabled">
             <Input label="Locked" disabled className="w-72" />
@@ -289,7 +307,13 @@ export function Styleguide() {
           </State>
           <State label="range · thumb grows + value bubble">
             <div className="w-72">
-              <RangeSlider label="Release year" min={1950} max={2026} value={range} onChange={setRange} />
+              <RangeSlider
+                label="Release year"
+                min={1950}
+                max={2026}
+                value={range}
+                onChange={setRange}
+              />
             </div>
           </State>
         </div>
@@ -316,7 +340,11 @@ export function Styleguide() {
         <div className="flex flex-wrap gap-6">
           {AVATARS.map((a) => (
             <State key={a} label={`${a} · ring rotates on hover`}>
-              <button type="button" className="group/avatar rounded-[22%]" aria-label={`${a} avatar`}>
+              <button
+                type="button"
+                className="group/avatar rounded-[22%]"
+                aria-label={`${a} avatar`}
+              >
                 <Avatar avatar={a} name={a} size={72} blink decorative />
               </button>
             </State>
@@ -343,14 +371,37 @@ export function Styleguide() {
           <Button variant="ghost" onClick={() => toast.error('Couldn’t save. Try again.')}>
             Error toast
           </Button>
-          <Button variant="ghost" onClick={() => toast.info('Removed “Dune”', { action: { label: 'Undo', onAction: () => toast.success('Restored') } })}>
+          <Button
+            variant="ghost"
+            onClick={() =>
+              toast.info('Removed “Dune”', {
+                action: { label: 'Undo', onAction: () => toast.success('Restored') },
+              })
+            }
+          >
             Info toast with undo
           </Button>
         </div>
         <div className="mt-10 max-w-lg">
-          <Tabs label="Demo tabs" controlsPanels={false} value={tab} onChange={setTab} items={[{ id: 'one', label: 'Overview' }, { id: 'two', label: 'Cast' }, { id: 'three', label: 'Reviews' }]} />
+          <Tabs
+            label="Demo tabs"
+            controlsPanels={false}
+            value={tab}
+            onChange={setTab}
+            items={[
+              { id: 'one', label: 'Overview' },
+              { id: 'two', label: 'Cast' },
+              { id: 'three', label: 'Reviews' },
+            ]}
+          />
         </div>
-        <Modal open={modal !== null} onClose={() => setModal(null)} title={`${modal ?? ''} modal`} variant={modal ?? 'center'} description="Focus is trapped; Esc closes and returns focus.">
+        <Modal
+          open={modal !== null}
+          onClose={() => setModal(null)}
+          title={`${modal ?? ''} modal`}
+          variant={modal ?? 'center'}
+          description="Focus is trapped; Esc closes and returns focus."
+        >
           <div className="mt-6 flex gap-3">
             <Button onClick={() => setModal(null)} data-autofocus>
               Close
@@ -368,12 +419,19 @@ export function Styleguide() {
           </State>
           <State label="ranked">
             <div className="w-48">
-              <MovieCard movie={{ ...DEMO_MOVIE, id: 1002, title: 'The Silent Matinee' }} rank={1} />
+              <MovieCard
+                movie={{ ...DEMO_MOVIE, id: 1002, title: 'The Silent Matinee' }}
+                rank={1}
+              />
             </div>
           </State>
           <State label="continue exploring (progress + remove)">
             <div className="w-40">
-              <MovieCard movie={{ ...DEMO_MOVIE, id: 1003, title: 'Neon Harbor' }} progress={0.6} onRemove={() => toast.info('Removed from row')} />
+              <MovieCard
+                movie={{ ...DEMO_MOVIE, id: 1003, title: 'Neon Harbor' }}
+                progress={0.6}
+                onRemove={() => toast.info('Removed from row')}
+              />
             </div>
           </State>
           <State label="loading">
@@ -382,8 +440,14 @@ export function Styleguide() {
             </div>
           </State>
           <State label="broken image → designed fallback">
-            <div className="relative aspect-[2/3] w-40 overflow-hidden rounded-poster">
-              <TmdbImage path="/does-not-exist.jpg" kind="poster" alt="Missing poster" sizes="160px" fallbackTitle="Missing Reel" />
+            <div className="rounded-poster relative aspect-[2/3] w-40 overflow-hidden">
+              <TmdbImage
+                path="/does-not-exist.jpg"
+                kind="poster"
+                alt="Missing poster"
+                sizes="160px"
+                fallbackTitle="Missing Reel"
+              />
             </div>
           </State>
         </div>
@@ -391,7 +455,7 @@ export function Styleguide() {
 
       <Section id="sg-skeletons" title="Skeletons">
         <div className="flex flex-col gap-6">
-          <div className="h-64 overflow-hidden rounded-modal">
+          <div className="rounded-modal h-64 overflow-hidden">
             <HeroSkeleton />
           </div>
           <RowSkeleton count={5} />
@@ -404,7 +468,7 @@ export function Styleguide() {
       <Section id="sg-marquee" title="Marquee">
         <Marquee speed={40} label="Demo marquee">
           {['Hindi', 'Tamil', 'Telugu', 'Malayalam', 'Korean', 'Japanese'].map((l) => (
-            <span key={l} className="px-6 font-display text-h1 text-reel/40">
+            <span key={l} className="font-display text-h1 text-reel/40 px-6">
               {l}
             </span>
           ))}

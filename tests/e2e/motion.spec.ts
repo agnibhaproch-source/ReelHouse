@@ -11,7 +11,9 @@ test.describe('reduced motion', () => {
   });
 });
 
-test('custom cursor mounts on fine pointers and the settings toggle restores the native one', async ({ page }) => {
+test('custom cursor mounts on fine pointers and the settings toggle restores the native one', async ({
+  page,
+}) => {
   await page.goto('/account?section=experience');
   await page.mouse.move(400, 300);
   await expect(page.locator('html')).toHaveClass(/has-custom-cursor/);
@@ -19,7 +21,9 @@ test('custom cursor mounts on fine pointers and the settings toggle restores the
   await expect(page.locator('html')).not.toHaveClass(/has-custom-cursor/);
 });
 
-test('first visit shows a skippable preloader, never on client navigations', async ({ browser }) => {
+test('first visit shows a skippable preloader, never on client navigations', async ({
+  browser,
+}) => {
   const page = await browser.newPage();
   await page.goto('/');
   const pre = page.locator('[data-preloader]');

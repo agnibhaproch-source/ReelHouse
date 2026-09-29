@@ -10,7 +10,9 @@ import { SettingsSync } from '@/components/providers/SettingsSync';
 
 const Devtools =
   process.env.NODE_ENV === 'development'
-    ? dynamic(() => import('@tanstack/react-query-devtools').then((m) => m.ReactQueryDevtools), { ssr: false })
+    ? dynamic(() => import('@tanstack/react-query-devtools').then((m) => m.ReactQueryDevtools), {
+        ssr: false,
+      })
     : () => null;
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -18,7 +20,12 @@ export function Providers({ children }: { children: ReactNode }) {
     () =>
       new QueryClient({
         defaultOptions: {
-          queries: { staleTime: 5 * 60_000, gcTime: 30 * 60_000, refetchOnWindowFocus: false, retry: 1 },
+          queries: {
+            staleTime: 5 * 60_000,
+            gcTime: 30 * 60_000,
+            refetchOnWindowFocus: false,
+            retry: 1,
+          },
         },
       }),
   );

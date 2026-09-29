@@ -18,7 +18,15 @@ interface ScrambleTextProps {
 }
 
 /** Characters scramble through random glyphs before settling (spec 38). */
-export function ScrambleText({ text, as = 'span', className, loop, duration = 900, id, tabIndex }: ScrambleTextProps) {
+export function ScrambleText({
+  text,
+  as = 'span',
+  className,
+  loop,
+  duration = 900,
+  id,
+  tabIndex,
+}: ScrambleTextProps) {
   // Rendered as any intrinsic text tag; typed as div for ref compatibility.
   const Tag = as as 'div';
   const [out, setOut] = useState(text);
@@ -35,14 +43,17 @@ export function ScrambleText({ text, as = 'span', className, loop, duration = 90
       const settled = Math.floor(p * text.length);
       setOut(
         [...text]
-          .map((ch, i) => (i < settled || ch === ' ' ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]))
+          .map((ch, i) =>
+            i < settled || ch === ' ' ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+          )
           .join(''),
       );
       if (p < 1) frame.current = requestAnimationFrame(run);
-      else if (loop) timer = setTimeout(() => {
-        start = 0;
-        frame.current = requestAnimationFrame(run);
-      }, loop);
+      else if (loop)
+        timer = setTimeout(() => {
+          start = 0;
+          frame.current = requestAnimationFrame(run);
+        }, loop);
     };
     frame.current = requestAnimationFrame(run);
     return () => {

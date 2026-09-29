@@ -2,7 +2,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildUrl, tmdbFetch, usingFixtures } from '@/lib/tmdb/client';
 import { MovieListSchema, MovieDetailSchema, PersonSchema } from '@/lib/tmdb/schemas';
 import { TmdbError, isTmdbError } from '@/lib/tmdb/errors';
-import { discover, discoverParams, getMovie, getPerson, getTrending, kidsParams, searchMulti, getGenres, getTopRated, getUpcoming, getNowPlaying, getPopular, getRecommendations } from '@/lib/tmdb/endpoints';
+import {
+  discover,
+  discoverParams,
+  getMovie,
+  getPerson,
+  getTrending,
+  kidsParams,
+  searchMulti,
+  getGenres,
+  getTopRated,
+  getUpcoming,
+  getNowPlaying,
+  getPopular,
+  getRecommendations,
+} from '@/lib/tmdb/endpoints';
 
 const movie = (id: number, extra: Record<string, unknown> = {}) => ({
   id,
@@ -19,9 +33,17 @@ const movie = (id: number, extra: Record<string, unknown> = {}) => ({
   adult: false,
   ...extra,
 });
-const list = (items: unknown[]) => ({ page: 1, results: items, total_pages: 1, total_results: items.length });
+const list = (items: unknown[]) => ({
+  page: 1,
+  results: items,
+  total_pages: 1,
+  total_results: items.length,
+});
 const json = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
-  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', ...headers } });
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'content-type': 'application/json', ...headers },
+  });
 
 describe('tmdb client', () => {
   beforeEach(() => {
@@ -34,7 +56,9 @@ describe('tmdb client', () => {
   });
 
   it('builds URLs with language and skips empty params', () => {
-    const url = new URL(buildUrl('/discover/movie', { page: 2, with_genres: 28, region: undefined, x: '' }, 'hi-IN'));
+    const url = new URL(
+      buildUrl('/discover/movie', { page: 2, with_genres: 28, region: undefined, x: '' }, 'hi-IN'),
+    );
     expect(url.pathname).toBe('/3/discover/movie');
     expect(url.searchParams.get('language')).toBe('hi-IN');
     expect(url.searchParams.get('page')).toBe('2');
@@ -51,7 +75,11 @@ describe('tmdb client', () => {
   });
 
   it('normalises TMDB nulls and empty strings', async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(json(list([movie(2, { poster_path: '', release_date: '', overview: null })])));
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue(
+        json(list([movie(2, { poster_path: '', release_date: '', overview: null })])),
+      );
     const res = await tmdbFetch('/movie/popular', {}, { schema: MovieListSchema, fetchImpl });
     expect(res.results[0]?.poster_path).toBeNull();
     expect(res.results[0]?.release_date).toBeNull();
@@ -61,17 +89,40 @@ describe('tmdb client', () => {
   it('throws a typed validation error on invalid payloads', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(json({ nope: true }));
     vi.spyOn(console, 'error').mockImplementation(() => {});
-    await expect(tmdbFetch('/movie/popular', {}, { schema: MovieListSchema, fetchImpl })).rejects.toMatchObject({ kind: 'validation' });
+    await expect(
+      tmdbFetch('/movie/popular', {}, { schema: MovieListSchema, fetchImpl }),
+    ).rejects.toMatchObject({ kind: 'validation' });
   });
 
   it('maps HTTP errors to typed errors', async () => {
-    await expect(tmdbFetch('/movie/1', {}, { schema: MovieDetailSchema, fetchImpl: vi.fn().mockResolvedValue(json({}, 404)) })).rejects.toMatchObject({ kind: 'not_found', status: 404 });
-    await expect(tmdbFetch('/movie/1', {}, { schema: MovieDetailSchema, fetchImpl: vi.fn().mockResolvedValue(json({}, 500)) })).rejects.toMatchObject({ kind: 'http', status: 500 });
-    await expect(tmdbFetch('/movie/1', {}, { schema: MovieDetailSchema, fetchImpl: vi.fn().mockRejectedValue(new Error('offline')) })).rejects.toMatchObject({ kind: 'network' });
+    await expect(
+      tmdbFetch(
+        '/movie/1',
+        {},
+        { schema: MovieDetailSchema, fetchImpl: vi.fn().mockResolvedValue(json({}, 404)) },
+      ),
+    ).rejects.toMatchObject({ kind: 'not_found', status: 404 });
+    await expect(
+      tmdbFetch(
+        '/movie/1',
+        {},
+        { schema: MovieDetailSchema, fetchImpl: vi.fn().mockResolvedValue(json({}, 500)) },
+      ),
+    ).rejects.toMatchObject({ kind: 'http', status: 500 });
+    await expect(
+      tmdbFetch(
+        '/movie/1',
+        {},
+        { schema: MovieDetailSchema, fetchImpl: vi.fn().mockRejectedValue(new Error('offline')) },
+      ),
+    ).rejects.toMatchObject({ kind: 'network' });
   });
 
   it('retries once on 429 then succeeds', async () => {
-    const fetchImpl = vi.fn().mockResolvedValueOnce(json({}, 429, { 'retry-after': '0' })).mockResolvedValueOnce(json(list([movie(3)])));
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(json({}, 429, { 'retry-after': '0' }))
+      .mockResolvedValueOnce(json(list([movie(3)])));
     vi.useFakeTimers();
     const p = tmdbFetch('/movie/popular', {}, { schema: MovieListSchema, fetchImpl });
     await vi.runAllTimersAsync();
@@ -84,7 +135,9 @@ describe('tmdb client', () => {
   it('surfaces rate limits after the retry', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(json({}, 429, { 'retry-after': '0' }));
     vi.useFakeTimers();
-    const p = tmdbFetch('/movie/popular', {}, { schema: MovieListSchema, fetchImpl }).catch((e: unknown) => e);
+    const p = tmdbFetch('/movie/popular', {}, { schema: MovieListSchema, fetchImpl }).catch(
+      (e: unknown) => e,
+    );
     await vi.runAllTimersAsync();
     const err = await p;
     vi.useRealTimers();
@@ -93,7 +146,9 @@ describe('tmdb client', () => {
 
   it('errors with a config error when the token is missing and fixtures are off', async () => {
     vi.stubEnv('TMDB_READ_TOKEN', '');
-    await expect(tmdbFetch('/movie/popular', {}, { schema: MovieListSchema, fetchImpl: vi.fn() })).rejects.toBeInstanceOf(TmdbError);
+    await expect(
+      tmdbFetch('/movie/popular', {}, { schema: MovieListSchema, fetchImpl: vi.fn() }),
+    ).rejects.toBeInstanceOf(TmdbError);
   });
 });
 
@@ -109,10 +164,37 @@ describe('tmdb endpoints (mocked fetch)', () => {
         calls.push(url);
         const u = new URL(url);
         if (u.pathname.startsWith('/3/search/multi'))
-          return json(list([{ ...movie(1), media_type: 'movie' }, { id: 9, name: 'Actor', profile_path: null, known_for_department: 'Acting', popularity: 1, media_type: 'person' }, { id: 5, name: 'Show', media_type: 'tv' }]));
-        if (u.pathname === '/3/genre/movie/list') return json({ genres: [{ id: 28, name: 'Action' }] });
-        if (/^\/3\/movie\/\d+$/.test(u.pathname)) return json({ ...movie(7), genres: [{ id: 18, name: 'Drama' }], runtime: 120, videos: { results: [] } });
-        if (/^\/3\/person\/\d+$/.test(u.pathname)) return json({ id: 9, name: 'Actor', biography: null, profile_path: null, movie_credits: { cast: [movie(1)], crew: [] } });
+          return json(
+            list([
+              { ...movie(1), media_type: 'movie' },
+              {
+                id: 9,
+                name: 'Actor',
+                profile_path: null,
+                known_for_department: 'Acting',
+                popularity: 1,
+                media_type: 'person',
+              },
+              { id: 5, name: 'Show', media_type: 'tv' },
+            ]),
+          );
+        if (u.pathname === '/3/genre/movie/list')
+          return json({ genres: [{ id: 28, name: 'Action' }] });
+        if (/^\/3\/movie\/\d+$/.test(u.pathname))
+          return json({
+            ...movie(7),
+            genres: [{ id: 18, name: 'Drama' }],
+            runtime: 120,
+            videos: { results: [] },
+          });
+        if (/^\/3\/person\/\d+$/.test(u.pathname))
+          return json({
+            id: 9,
+            name: 'Actor',
+            biography: null,
+            profile_path: null,
+            movie_credits: { cast: [movie(1)], crew: [] },
+          });
         return json(list([movie(1), movie(2)]));
       }),
     );
@@ -123,7 +205,14 @@ describe('tmdb endpoints (mocked fetch)', () => {
   });
 
   it('fetches every list endpoint', async () => {
-    for (const fn of [() => getTrending('day'), () => getPopular(), () => getTopRated(), () => getUpcoming(), () => getNowPlaying(), () => getRecommendations(1)]) {
+    for (const fn of [
+      () => getTrending('day'),
+      () => getPopular(),
+      () => getTopRated(),
+      () => getUpcoming(),
+      () => getNowPlaying(),
+      () => getRecommendations(1),
+    ]) {
       expect((await fn()).results).toHaveLength(2);
     }
     expect(calls.some((c) => c.includes('/trending/movie/day'))).toBe(true);
@@ -158,7 +247,13 @@ describe('tmdb endpoints (mocked fetch)', () => {
   });
 
   it('discover maps filters and sort floors', async () => {
-    await discover({ genre: 28, lang: 'hi', sort: 'vote_average.desc', yearFrom: 2000, yearTo: 2010 });
+    await discover({
+      genre: 28,
+      lang: 'hi',
+      sort: 'vote_average.desc',
+      yearFrom: 2000,
+      yearTo: 2010,
+    });
     const url = new URL(calls[0] as string);
     expect(url.searchParams.get('with_genres')).toBe('28');
     expect(url.searchParams.get('with_original_language')).toBe('hi');
@@ -193,7 +288,9 @@ describe('discover params', () => {
     expect(kidsParams('US')['certification.lte']).toBe('PG');
   });
   it('clamps newest to today', () => {
-    expect(discoverParams({ sort: 'primary_release_date.desc' })['primary_release_date.lte']).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(
+      discoverParams({ sort: 'primary_release_date.desc' })['primary_release_date.lte'],
+    ).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });
 

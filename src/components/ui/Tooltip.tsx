@@ -1,6 +1,14 @@
 'use client';
 
-import { cloneElement, isValidElement, useId, useRef, useState, type ReactElement, type ReactNode } from 'react';
+import {
+  cloneElement,
+  isValidElement,
+  useId,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { cn } from '@/lib/utils';
 
 interface TooltipProps {
@@ -37,9 +45,11 @@ export function Tooltip({ content, side = 'top', children }: TooltipProps) {
         role="tooltip"
         id={id}
         className={cn(
-          'pointer-events-none absolute left-1/2 z-(--z-toast) w-max max-w-60 -translate-x-1/2 rounded-md border border-line bg-seat px-2.5 py-1.5 text-small text-reel shadow-lg',
+          'border-line bg-seat text-small text-reel pointer-events-none absolute left-1/2 z-(--z-toast) w-max max-w-60 -translate-x-1/2 rounded-md border px-2.5 py-1.5 shadow-lg',
           side === 'top' ? 'bottom-full mb-2' : 'top-full mt-2',
-          open ? 'visible translate-y-0 opacity-100 transition-[opacity,translate] duration-fast ease-reel' : 'invisible opacity-0 transition-none',
+          open
+            ? 'duration-fast ease-reel visible translate-y-0 opacity-100 transition-[opacity,translate]'
+            : 'invisible opacity-0 transition-none',
           !open && (side === 'top' ? 'translate-y-1' : '-translate-y-1'),
         )}
       >

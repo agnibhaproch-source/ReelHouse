@@ -19,8 +19,18 @@ export default async function HomePage() {
   const prefs = await getRequestPrefs();
   const [hero, trending, top10, nowPlaying] = await Promise.all([
     safe(getHeroSlides(prefs)),
-    safe(getTrending('week', 1, prefs).then(async (p) => ({ ...p, results: await withMeta(p.results) }))),
-    safe(getTrending('day', 1, prefs).then(async (p) => ({ ...p, results: await withMeta(p.results, 10) }))),
+    safe(
+      getTrending('week', 1, prefs).then(async (p) => ({
+        ...p,
+        results: await withMeta(p.results),
+      })),
+    ),
+    safe(
+      getTrending('day', 1, prefs).then(async (p) => ({
+        ...p,
+        results: await withMeta(p.results, 10),
+      })),
+    ),
     safe(getNowPlaying(1, prefs).then((p) => withMeta(p.results, 5))),
   ]);
   const down = [hero, trending, top10].every((r) => r.error);
@@ -40,16 +50,42 @@ export default async function HomePage() {
       ) : (
         <div className="px-gutter pt-40 pb-10">
           <h1 className="font-display text-hero">Reelhouse</h1>
-          <p className="mt-4 max-w-xl text-dim">The projection room is warming up.</p>
+          <p className="text-dim mt-4 max-w-xl">The projection room is warming up.</p>
         </div>
       )}
 
-      <div className={hero.data?.length ? 'relative z-[1] -mt-[12vh] max-md:-mt-4' : 'relative z-[1]'}>
-        {trendingRow && <Row rowKey={trendingRow.key} title={trendingRow.title} source={trendingRow.source} initial={trending.data ?? undefined} priorityCount={6} sprockets />}
+      <div
+        className={hero.data?.length ? 'relative z-[1] -mt-[12vh] max-md:-mt-4' : 'relative z-[1]'}
+      >
+        {trendingRow && (
+          <Row
+            rowKey={trendingRow.key}
+            title={trendingRow.title}
+            source={trendingRow.source}
+            initial={trending.data ?? undefined}
+            priorityCount={6}
+            sprockets
+          />
+        )}
         <ContinueExploringRow />
-        {top10Row && <Row rowKey={top10Row.key} title={top10Row.title} source={top10Row.source} initial={top10.data ?? undefined} ranked />}
+        {top10Row && (
+          <Row
+            rowKey={top10Row.key}
+            title={top10Row.title}
+            source={top10Row.source}
+            initial={top10.data ?? undefined}
+            ranked
+          />
+        )}
         {early.map((r) => (
-          <Row key={r.key} rowKey={r.key} title={r.title} href={r.href} source={r.source} className="cv-auto" />
+          <Row
+            key={r.key}
+            rowKey={r.key}
+            title={r.title}
+            href={r.href}
+            source={r.source}
+            className="cv-auto"
+          />
         ))}
       </div>
 
@@ -57,16 +93,35 @@ export default async function HomePage() {
 
       <RecommendationRows />
       {langRows.map((r) => (
-        <Row key={r.key} rowKey={r.key} title={r.title} href={r.href} source={r.source} className="cv-auto" sprockets={r.key === 'lang-hi'} />
+        <Row
+          key={r.key}
+          rowKey={r.key}
+          title={r.title}
+          href={r.href}
+          source={r.source}
+          className="cv-auto"
+          sprockets={r.key === 'lang-hi'}
+        />
       ))}
       <GenreWall />
       {genreRows.map((r) => (
-        <Row key={r.key} rowKey={r.key} title={r.title} href={r.href} source={r.source} className="cv-auto" />
+        <Row
+          key={r.key}
+          rowKey={r.key}
+          title={r.title}
+          href={r.href}
+          source={r.source}
+          className="cv-auto"
+        />
       ))}
       <LanguageMarquee />
 
       {down && !trending.data && (
-        <EmptyState title="Live data is unavailable right now." body="Try again in a minute — or browse by language and genre below." action={{ href: '/browse', label: 'Browse genres' }} />
+        <EmptyState
+          title="Live data is unavailable right now."
+          body="Try again in a minute — or browse by language and genre below."
+          action={{ href: '/browse', label: 'Browse genres' }}
+        />
       )}
     </>
   );

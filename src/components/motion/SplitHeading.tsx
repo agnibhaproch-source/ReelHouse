@@ -24,7 +24,16 @@ interface SplitHeadingProps {
  * SplitText in masks; pieces rise with a 30ms stagger; re-splits on resize (autoSplit).
  * The original text stays accessible (SplitText aria: 'auto').
  */
-export function SplitHeading({ children, as = 'h2', className, by = 'words', trigger = 'scroll', delay = 0, id, tabIndex }: SplitHeadingProps) {
+export function SplitHeading({
+  children,
+  as = 'h2',
+  className,
+  by = 'words',
+  trigger = 'scroll',
+  delay = 0,
+  id,
+  tabIndex,
+}: SplitHeadingProps) {
   // Rendered as any intrinsic text tag; typed as div for ref compatibility.
   const Tag = as as 'div';
   const ref = useRef<HTMLDivElement>(null);
@@ -35,7 +44,13 @@ export function SplitHeading({ children, as = 'h2', className, by = 'words', tri
       const el = ref.current;
       if (!el) return;
       if (reduced) {
-        gsap.from(el, { opacity: 0, duration: DUR.fast, delay, scrollTrigger: trigger === 'scroll' ? { trigger: el, start: 'top 90%', once: true } : undefined });
+        gsap.from(el, {
+          opacity: 0,
+          duration: DUR.fast,
+          delay,
+          scrollTrigger:
+            trigger === 'scroll' ? { trigger: el, start: 'top 90%', once: true } : undefined,
+        });
         return;
       }
       let played = false;
@@ -57,7 +72,8 @@ export function SplitHeading({ children, as = 'h2', className, by = 'words', tri
             onComplete: () => {
               played = true;
             },
-            scrollTrigger: trigger === 'scroll' ? { trigger: el, start: 'top 88%', once: true } : undefined,
+            scrollTrigger:
+              trigger === 'scroll' ? { trigger: el, start: 'top 88%', once: true } : undefined,
           });
         },
       });

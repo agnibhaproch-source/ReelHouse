@@ -18,8 +18,15 @@ export function useRecordHistory() {
   const { repo, profileId } = useSession();
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ movie, kind, progress }: { movie: MovieSnapshot; kind: HistoryKind; progress?: number }) =>
-      repo.history.record(profileId, movie, kind, progress),
+    mutationFn: ({
+      movie,
+      kind,
+      progress,
+    }: {
+      movie: MovieSnapshot;
+      kind: HistoryKind;
+      progress?: number;
+    }) => repo.history.record(profileId, movie, kind, progress),
     onSettled: () => qc.invalidateQueries({ queryKey: qk.history(profileId) }),
   });
 }
@@ -32,7 +39,10 @@ export function useRemoveHistory() {
     mutationFn: (movieId: number) => repo.history.remove(profileId, movieId),
     onMutate: (movieId) => {
       const prev = qc.getQueryData<HistoryItem[]>(key) ?? [];
-      qc.setQueryData(key, prev.filter((h) => h.movie_id !== movieId));
+      qc.setQueryData(
+        key,
+        prev.filter((h) => h.movie_id !== movieId),
+      );
       return { prev };
     },
     onError: (_e, _v, ctx) => ctx && qc.setQueryData(key, ctx.prev),

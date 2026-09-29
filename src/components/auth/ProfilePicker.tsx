@@ -30,7 +30,11 @@ export function ProfilePicker() {
   const [chosen, setChosen] = useState<string | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const key = [...qk.profiles(user?.id ?? 'guest'), repo.kind];
-  const { data: profiles = [], isPending } = useQuery({ queryKey: key, queryFn: () => repo.profiles.list(), enabled: ready });
+  const { data: profiles = [], isPending } = useQuery({
+    queryKey: key,
+    queryFn: () => repo.profiles.list(),
+    enabled: ready,
+  });
 
   const refresh = () => qc.invalidateQueries({ queryKey: key });
 
@@ -47,12 +51,21 @@ export function ProfilePicker() {
   };
 
   return (
-    <div className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-gutter py-20">
-      <motion.div animate={chosen ? { opacity: 0 } : { opacity: 1 }} transition={{ duration: DUR.slow, delay: 0.3 }} className="flex flex-col items-center">
-        <h1 className="mb-12 text-center font-display text-h1">{manage ? 'Manage profiles' : 'Who’s watching?'}</h1>
+    <div className="px-gutter relative flex min-h-svh flex-col items-center justify-center overflow-hidden py-20">
+      <motion.div
+        animate={chosen ? { opacity: 0 } : { opacity: 1 }}
+        transition={{ duration: DUR.slow, delay: 0.3 }}
+        className="flex flex-col items-center"
+      >
+        <h1 className="font-display text-h1 mb-12 text-center">
+          {manage ? 'Manage profiles' : 'Who’s watching?'}
+        </h1>
       </motion.div>
       <ul className="flex flex-wrap justify-center gap-8 md:gap-12">
-        {isPending && Array.from({ length: 2 }, (_, i) => <li key={i} className="skeleton size-32 rounded-[22%] md:size-40" />)}
+        {isPending &&
+          Array.from({ length: 2 }, (_, i) => (
+            <li key={i} className="skeleton size-32 rounded-[22%] md:size-40" />
+          ))}
         {profiles.map((p, i) => {
           const isChosen = chosen === p.id;
           const dim = (hovered && hovered !== p.id) || (chosen && !isChosen);
@@ -60,9 +73,21 @@ export function ProfilePicker() {
             <motion.li
               key={p.id}
               className="flex flex-col items-center gap-4"
-              style={reduced || manage ? undefined : { animation: `float-y ${5 + (i % 3)}s ease-in-out ${i * 0.4}s infinite` }}
-              animate={isChosen && !reduced ? { scale: 4, opacity: 0, z: 400 } : { scale: 1, opacity: dim ? 0.4 : 1 }}
-              transition={isChosen ? { duration: DUR.cinematic, ease: EASES.projector } : { duration: DUR.base }}
+              style={
+                reduced || manage
+                  ? undefined
+                  : { animation: `float-y ${5 + (i % 3)}s ease-in-out ${i * 0.4}s infinite` }
+              }
+              animate={
+                isChosen && !reduced
+                  ? { scale: 4, opacity: 0, z: 400 }
+                  : { scale: 1, opacity: dim ? 0.4 : 1 }
+              }
+              transition={
+                isChosen
+                  ? { duration: DUR.cinematic, ease: EASES.projector }
+                  : { duration: DUR.base }
+              }
             >
               <button
                 type="button"
@@ -71,23 +96,52 @@ export function ProfilePicker() {
                 onPointerLeave={() => setHovered(null)}
                 onFocus={() => setHovered(p.id)}
                 onBlur={() => setHovered(null)}
-                aria-label={manage ? `Edit ${p.name}` : `Watch as ${p.name}${p.is_kids ? ' (kids)' : ''}`}
+                aria-label={
+                  manage ? `Edit ${p.name}` : `Watch as ${p.name}${p.is_kids ? ' (kids)' : ''}`
+                }
                 aria-current={current?.id === p.id || undefined}
                 data-cursor="link"
-                className={cn('group/avatar relative rounded-[22%] transition-[scale,box-shadow] duration-base ease-reel hover:scale-110 focus-visible:scale-110', manage && 'animate-[wiggle_0.3s_ease-in-out_infinite]')}
+                className={cn(
+                  'group/avatar duration-base ease-reel relative rounded-[22%] transition-[scale,box-shadow] hover:scale-110 focus-visible:scale-110',
+                  manage && 'animate-[wiggle_0.3s_ease-in-out_infinite]',
+                )}
                 style={{ animationDelay: manage ? `${i * 0.05}s` : undefined }}
               >
-                <span aria-hidden="true" className="absolute -inset-3 -z-10 rounded-[26%] bg-violet opacity-0 blur-2xl transition-opacity duration-base group-hover/avatar:opacity-50 group-focus-visible/avatar:opacity-50" />
-                <Avatar avatar={p.avatar} name={p.name} size={128} blink decorative className="md:size-40" />
+                <span
+                  aria-hidden="true"
+                  className="bg-violet duration-base absolute -inset-3 -z-10 rounded-[26%] opacity-0 blur-2xl transition-opacity group-hover/avatar:opacity-50 group-focus-visible/avatar:opacity-50"
+                />
+                <Avatar
+                  avatar={p.avatar}
+                  name={p.name}
+                  size={128}
+                  blink
+                  decorative
+                  className="md:size-40"
+                />
                 {manage && (
-                  <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={SPRING} className="absolute inset-0 grid place-items-center rounded-[22%] bg-void/60">
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={SPRING}
+                    className="bg-void/60 absolute inset-0 grid place-items-center rounded-[22%]"
+                  >
                     <Pencil className="size-8" aria-hidden="true" />
                   </motion.span>
                 )}
               </button>
-              <span className={cn('text-body transition-[font-weight,color] duration-base', hovered === p.id ? 'font-extrabold text-reel' : 'font-medium text-dim')}>
+              <span
+                className={cn(
+                  'text-body duration-base transition-[font-weight,color]',
+                  hovered === p.id ? 'text-reel font-extrabold' : 'text-dim font-medium',
+                )}
+              >
                 {p.name}
-                {p.is_kids && <span className="ml-2 rounded-pill bg-amber px-2 py-0.5 text-[0.7rem] font-bold text-void">Kids</span>}
+                {p.is_kids && (
+                  <span className="rounded-pill bg-amber text-void ml-2 px-2 py-0.5 text-[0.7rem] font-bold">
+                    Kids
+                  </span>
+                )}
               </span>
             </motion.li>
           );
@@ -98,9 +152,12 @@ export function ProfilePicker() {
               type="button"
               onClick={() => setEditing('new')}
               aria-label="Add a profile"
-              className="grid size-32 place-items-center rounded-[22%] border-2 border-dashed border-line text-dim transition-colors duration-base hover:border-violet hover:text-reel md:size-40"
+              className="border-line text-dim duration-base hover:border-violet hover:text-reel grid size-32 place-items-center rounded-[22%] border-2 border-dashed transition-colors md:size-40"
             >
-              <Plus className="size-10 transition-transform duration-base ease-snap group-hover:rotate-90" aria-hidden="true" />
+              <Plus
+                className="duration-base ease-snap size-10 transition-transform group-hover:rotate-90"
+                aria-hidden="true"
+              />
             </button>
             <span className="text-dim">Add profile</span>
           </li>

@@ -13,7 +13,12 @@ export function ShareButton({ title }: { title: string }) {
   const [copied, setCopied] = useState(false);
   const share = async () => {
     const svg = ref.current?.querySelector('svg');
-    if (svg && !isReducedNow()) gsap.fromTo(svg, { y: 0 }, { y: -10, opacity: 0, duration: 0.25, ease: 'shutter', yoyo: true, repeat: 1 });
+    if (svg && !isReducedNow())
+      gsap.fromTo(
+        svg,
+        { y: 0 },
+        { y: -10, opacity: 0, duration: 0.25, ease: 'shutter', yoyo: true, repeat: 1 },
+      );
     const url = window.location.href;
     try {
       if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
@@ -29,6 +34,14 @@ export function ShareButton({ title }: { title: string }) {
     }
   };
   return (
-    <Button ref={ref} variant="icon" size="lg" label={copied ? 'Link copied' : `Share ${title}`} icon={copied ? <Check /> : <Share2 />} iconAnim="share" onClick={() => void share()} />
+    <Button
+      ref={ref}
+      variant="icon"
+      size="lg"
+      label={copied ? 'Link copied' : `Share ${title}`}
+      icon={copied ? <Check /> : <Share2 />}
+      iconAnim="share"
+      onClick={() => void share()}
+    />
   );
 }

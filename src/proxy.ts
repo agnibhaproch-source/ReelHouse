@@ -6,5 +6,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|api/tmdb|favicon.ico|icon|sounds/|og/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|wav|mp3|webm)$).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|api/tmdb|favicon.ico|icon|sounds/|og/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|wav|mp3|webm)$).*)',
+  ],
 };

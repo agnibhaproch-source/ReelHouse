@@ -32,8 +32,13 @@ function parseId(raw: string): number | null {
 /** Pre-render the top 100 trending titles; the rest render on demand (ISR 24h). */
 export async function generateStaticParams() {
   if (usingFixtures()) return [];
-  const pages = await Promise.all([1, 2, 3, 4, 5].map((p) => getTrending('week', p).catch(() => null)));
-  return pages.flatMap((p) => p?.results ?? []).slice(0, 100).map((m) => ({ id: String(m.id) }));
+  const pages = await Promise.all(
+    [1, 2, 3, 4, 5].map((p) => getTrending('week', p).catch(() => null)),
+  );
+  return pages
+    .flatMap((p) => p?.results ?? [])
+    .slice(0, 100)
+    .map((m) => ({ id: String(m.id) }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -50,7 +55,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: `/movie/${id}` },
     openGraph: { type: 'video.movie', title, description, url: `/movie/${id}` },
-    twitter: { card: 'summary_large_image', title, description, images: image ? [image] : undefined },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 
@@ -69,12 +79,20 @@ export default async function MoviePage({ params }: Props) {
 
   const [meta, recs] = await Promise.all([
     getPosterMeta(movie.poster_path),
-    withMeta((movie.recommendations?.results.length ? movie.recommendations.results : (movie.similar?.results ?? [])).slice(0, 20)),
+    withMeta(
+      (movie.recommendations?.results.length
+        ? movie.recommendations.results
+        : (movie.similar?.results ?? [])
+      ).slice(0, 20),
+    ),
   ]);
   const logo = getBestLogo(movie.images);
   const videos = pickVideos(movie.videos.results);
   const director = movie.credits.crew.find((c) => c.job === 'Director');
-  const cert = movie.release_dates?.results.find((r) => r.iso_3166_1 === 'IN' || r.iso_3166_1 === 'US')?.release_dates.find((d) => d.certification)?.certification ?? null;
+  const cert =
+    movie.release_dates?.results
+      .find((r) => r.iso_3166_1 === 'IN' || r.iso_3166_1 === 'US')
+      ?.release_dates.find((d) => d.certification)?.certification ?? null;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -86,25 +104,50 @@ export default async function MoviePage({ params }: Props) {
     datePublished: movie.release_date ?? undefined,
     genre: movie.genres.map((g) => g.name),
     duration: movie.runtime ? `PT${movie.runtime}M` : undefined,
-    director: director ? { '@type': 'Person', name: director.name, url: `${SITE_URL}/person/${director.id}` } : undefined,
-    actor: movie.credits.cast.slice(0, 5).map((c) => ({ '@type': 'Person', name: c.name, url: `${SITE_URL}/person/${c.id}` })),
+    director: director
+      ? { '@type': 'Person', name: director.name, url: `${SITE_URL}/person/${director.id}` }
+      : undefined,
+    actor: movie.credits.cast
+      .slice(0, 5)
+      .map((c) => ({ '@type': 'Person', name: c.name, url: `${SITE_URL}/person/${c.id}` })),
     aggregateRating:
       movie.vote_count > 0
-        ? { '@type': 'AggregateRating', ratingValue: movie.vote_average.toFixed(1), bestRating: '10', worstRating: '0', ratingCount: movie.vote_count }
+        ? {
+            '@type': 'AggregateRating',
+            ratingValue: movie.vote_average.toFixed(1),
+            bestRating: '10',
+            worstRating: '0',
+            ratingCount: movie.vote_count,
+          }
         : undefined,
   };
 
   return (
     <article style={{ ['--ambient' as string]: meta.color }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       <DetailTracker movie={movie} genreIds={movie.genres.map((g) => g.id)} />
-      <DetailHero movie={movie} logo={logo} videos={videos} color={meta.color} blur={meta.blur} certification={cert} />
+      <DetailHero
+        movie={movie}
+        logo={logo}
+        videos={videos}
+        color={meta.color}
+        blur={meta.blur}
+        certification={cert}
+      />
       <DetailOverview overview={movie.overview} tagline={movie.tagline} />
       <CastStrip cast={movie.credits.cast.slice(0, 20)} />
       <VideoGrid videos={videos} movie={movie} color={meta.color} />
       <DetailFacts movie={movie} />
       <WatchProviders providers={movie['watch/providers']?.results ?? {}} title={movie.title} />
-      <ReviewsSection movieId={movie.id} title={movie.title} tmdbReviews={movie.reviews?.results ?? []} tmdbAverage={movie.vote_average} />
+      <ReviewsSection
+        movieId={movie.id}
+        title={movie.title}
+        tmdbReviews={movie.reviews?.results ?? []}
+        tmdbAverage={movie.vote_average}
+      />
       <Gallery backdrops={movie.images.backdrops.slice(0, 12)} title={movie.title} />
       {recs.length > 0 && <Row rowKey={`recs-${movie.id}`} title="More like this" items={recs} />}
     </article>

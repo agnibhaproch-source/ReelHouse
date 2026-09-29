@@ -31,7 +31,15 @@ export function PinScene({ children, className, length = 2, build, fallback }: P
           return;
         }
         const tl = gsap.timeline({
-          scrollTrigger: { trigger: el, start: 'top top', end: () => `+=${window.innerHeight * length}`, pin: true, scrub: 0.6, invalidateOnRefresh: true, anticipatePin: 1 },
+          scrollTrigger: {
+            trigger: el,
+            start: 'top top',
+            end: () => `+=${window.innerHeight * length}`,
+            pin: true,
+            scrub: 0.6,
+            invalidateOnRefresh: true,
+            anticipatePin: 1,
+          },
         });
         build(tl, el);
       });

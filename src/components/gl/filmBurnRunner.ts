@@ -9,7 +9,11 @@ import { canUseWebGL } from './webglSupport';
 export function runFilmBurn(host: HTMLElement, cover: boolean): Promise<void> {
   if (!canUseWebGL()) return Promise.reject(new Error('webgl unavailable'));
   return new Promise((resolve) => {
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'high-performance' });
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: false,
+      powerPreference: 'high-performance',
+    });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.domElement.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
@@ -26,7 +30,12 @@ export function runFilmBurn(host: HTMLElement, cover: boolean): Promise<void> {
       uAmber: { value: new THREE.Color(COLORS.amber) },
       uHot: { value: new THREE.Color(COLORS.danger) },
     };
-    const material = new THREE.ShaderMaterial({ vertexShader: vert, fragmentShader: withChunks(frag), uniforms, transparent: true });
+    const material = new THREE.ShaderMaterial({
+      vertexShader: vert,
+      fragmentShader: withChunks(frag),
+      uniforms,
+      transparent: true,
+    });
     const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
     scene.add(quad);
     const duration = cover ? 650 : 750;

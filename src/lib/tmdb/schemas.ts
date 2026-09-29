@@ -12,7 +12,10 @@ export const MovieSchema = z.object({
   id: z.number(),
   title: z.string().default(''),
   original_title: z.string().optional(),
-  overview: z.string().nullish().transform((v) => v ?? ''),
+  overview: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? ''),
   poster_path: nstr,
   backdrop_path: nstr,
   release_date: nstr,
@@ -49,7 +52,10 @@ export const VideoSchema = z.object({
 export const CastSchema = z.object({
   id: z.number(),
   name: z.string(),
-  character: z.string().nullish().transform((v) => v ?? ''),
+  character: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? ''),
   profile_path: nstr,
   order: z.number().default(999),
   credit_id: z.string().optional(),
@@ -69,7 +75,10 @@ export const ImageSchema = z.object({
   width: z.number(),
   height: z.number(),
   aspect_ratio: z.number().default(1),
-  iso_639_1: z.string().nullish().transform((v) => v ?? null),
+  iso_639_1: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? null),
   vote_average: z.number().default(0),
   vote_count: z.number().default(0),
 });
@@ -112,7 +121,11 @@ export const ReleaseDatesSchema = z.object({
     z.object({
       iso_3166_1: z.string(),
       release_dates: z.array(
-        z.object({ certification: z.string().default(''), release_date: z.string(), type: z.number() }),
+        z.object({
+          certification: z.string().default(''),
+          release_date: z.string(),
+          type: z.number(),
+        }),
       ),
     }),
   ),
@@ -121,7 +134,10 @@ export const ReleaseDatesSchema = z.object({
 export const MovieDetailSchema = MovieSchema.omit({ genre_ids: true }).extend({
   genre_ids: z.array(z.number()).optional(),
   genres: z.array(GenreSchema).default([]),
-  runtime: z.number().nullish().transform((v) => v ?? null),
+  runtime: z
+    .number()
+    .nullish()
+    .transform((v) => v ?? null),
   tagline: nstr,
   status: z.string().default(''),
   budget: z.number().default(0),
@@ -155,12 +171,18 @@ export const PersonCreditSchema = MovieSchema.extend({
 export const PersonSchema = z.object({
   id: z.number(),
   name: z.string(),
-  biography: z.string().nullish().transform((v) => v ?? ''),
+  biography: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? ''),
   birthday: nstr,
   deathday: nstr,
   place_of_birth: nstr,
   profile_path: nstr,
-  known_for_department: z.string().nullish().transform((v) => v ?? ''),
+  known_for_department: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? ''),
   popularity: z.number().default(0),
   imdb_id: nstr,
   movie_credits: z
@@ -176,7 +198,10 @@ export const PersonResultSchema = z.object({
   id: z.number(),
   name: z.string(),
   profile_path: nstr,
-  known_for_department: z.string().nullish().transform((v) => v ?? ''),
+  known_for_department: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? ''),
   popularity: z.number().default(0),
   media_type: z.literal('person'),
 });

@@ -12,17 +12,28 @@ export function Biography({ text, name }: { text: string; name: string }) {
   const { reduced } = useMotionPrefs();
   const long = text.length > 600;
   return (
-    <section aria-labelledby="bio-h" className="mx-auto max-w-4xl px-gutter py-10" data-quotable>
-      <h2 id="bio-h" className="mb-4 font-display text-h2">
+    <section aria-labelledby="bio-h" className="px-gutter mx-auto max-w-4xl py-10" data-quotable>
+      <h2 id="bio-h" className="font-display text-h2 mb-4">
         Biography
       </h2>
       {text ? (
         <motion.div layout={!reduced} transition={SPRING} className="overflow-hidden">
-          <motion.p layout="position" className={cn('measure whitespace-pre-line text-reel/85', !open && long && 'line-clamp-6')}>
+          <motion.p
+            layout="position"
+            className={cn(
+              'measure text-reel/85 whitespace-pre-line',
+              !open && long && 'line-clamp-6',
+            )}
+          >
             {text}
           </motion.p>
           {long && (
-            <button type="button" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="mt-3 min-h-11 font-semibold text-cyan hover:underline">
+            <button
+              type="button"
+              aria-expanded={open}
+              onClick={() => setOpen((o) => !o)}
+              className="text-cyan mt-3 min-h-11 font-semibold hover:underline"
+            >
               {open ? 'Read less' : 'Read more'}
             </button>
           )}

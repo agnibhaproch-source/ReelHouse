@@ -32,7 +32,8 @@ async function load(): Promise<Howl> {
   return loading;
 }
 
-const enabled = () => useUiStore.getState().soundOn && typeof document !== 'undefined' && !document.hidden;
+const enabled = () =>
+  useUiStore.getState().soundOn && typeof document !== 'undefined' && !document.hidden;
 
 export async function play(name: SoundName): Promise<void> {
   if (!enabled()) return;

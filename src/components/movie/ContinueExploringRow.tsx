@@ -10,7 +10,9 @@ export function ContinueExploringRow() {
   const remove = useRemoveHistory();
   const items = (data ?? []).slice(0, 12);
   if (!items.length) return null;
-  const progress = Object.fromEntries(items.filter((h) => h.kind === 'trailer').map((h) => [h.movie_id, h.progress]));
+  const progress = Object.fromEntries(
+    items.filter((h) => h.kind === 'trailer').map((h) => [h.movie_id, h.progress]),
+  );
   return (
     <Row
       rowKey="continue"

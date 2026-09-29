@@ -23,12 +23,15 @@ export function Counter({ value, className, label }: CounterProps) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => {
-      if (e?.isIntersecting) {
-        setOn(true);
-        io.disconnect();
-      }
-    }, { rootMargin: '0px 0px -10% 0px' });
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e?.isIntersecting) {
+          setOn(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px -10% 0px' },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -39,9 +42,13 @@ export function Counter({ value, className, label }: CounterProps) {
       <span className="sr-only">{label ? `${label}: ${value}` : value}</span>
       {chars.map((ch, i) =>
         /\d/.test(ch) ? (
-          <span key={i} aria-hidden="true" className="relative inline-block h-[1.15em] overflow-hidden leading-[1.15]">
+          <span
+            key={i}
+            aria-hidden="true"
+            className="relative inline-block h-[1.15em] overflow-hidden leading-[1.15]"
+          >
             <span
-              className="flex flex-col transition-transform ease-reel"
+              className="ease-reel flex flex-col transition-transform"
               style={{
                 transform: `translateY(${on || reduced ? -Number(ch) * 10 : 0}%)`,
                 transitionDuration: reduced ? '0ms' : `calc(var(--dur-cinematic) + ${i * 60}ms)`,

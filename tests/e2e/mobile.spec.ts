@@ -5,7 +5,9 @@ test.use({ viewport: { width: 360, height: 780 } });
 test('no horizontal overflow at 360px and bottom tabs work', async ({ page }) => {
   for (const path of ['/', '/browse', '/movie/1001', '/search?q=the', '/account']) {
     await page.goto(path);
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    );
     expect(overflow, `overflow on ${path}`).toBeLessThanOrEqual(1);
   }
   await page.goto('/');

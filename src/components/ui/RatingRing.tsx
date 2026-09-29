@@ -15,7 +15,13 @@ interface RatingRingProps {
 const stroke = { amber: 'stroke-amber', cyan: 'stroke-cyan', violet: 'stroke-violet' };
 
 /** Percentage ring that draws its stroke on enter; hover thickens stroke and bumps the number (spec 33). */
-export function RatingRing({ value, size = 44, label = 'Rating', className, color = 'amber' }: RatingRingProps) {
+export function RatingRing({
+  value,
+  size = 44,
+  label = 'Rating',
+  className,
+  color = 'amber',
+}: RatingRingProps) {
   const ref = useRef<SVGSVGElement>(null);
   const [visible, setVisible] = useState(false);
   const pct = Math.round(Math.max(0, Math.min(10, value)) * 10);
@@ -43,7 +49,15 @@ export function RatingRing({ value, size = 44, label = 'Rating', className, colo
       aria-label={`${label}: ${(value || 0).toFixed(1)} out of 10`}
     >
       <svg ref={ref} viewBox="0 0 40 40" className="absolute inset-0 -rotate-90" aria-hidden="true">
-        <circle cx="20" cy="20" r={r} fill="var(--bg-void)" fillOpacity="0.6" stroke="var(--line)" strokeWidth="3" />
+        <circle
+          cx="20"
+          cy="20"
+          r={r}
+          fill="var(--bg-void)"
+          fillOpacity="0.6"
+          stroke="var(--line)"
+          strokeWidth="3"
+        />
         <circle
           cx="20"
           cy="20"
@@ -51,14 +65,17 @@ export function RatingRing({ value, size = 44, label = 'Rating', className, colo
           fill="none"
           strokeWidth="3"
           strokeLinecap="round"
-          className={cn(stroke[color], 'transition-[stroke-dashoffset,stroke-width] duration-cinematic ease-reel group-hover/ring:[stroke-width:4.5]')}
+          className={cn(
+            stroke[color],
+            'duration-cinematic ease-reel transition-[stroke-dashoffset,stroke-width] group-hover/ring:[stroke-width:4.5]',
+          )}
           strokeDasharray={c}
           strokeDashoffset={visible ? c * (1 - pct / 100) : c}
         />
       </svg>
       <span
         aria-hidden="true"
-        className="relative text-[0.7rem] font-extrabold tabular-nums transition-transform duration-fast ease-snap group-hover/ring:scale-115"
+        className="duration-fast ease-snap relative text-[0.7rem] font-extrabold tabular-nums transition-transform group-hover/ring:scale-115"
         style={{ fontSize: size * 0.27 }}
       >
         {pct ? pct : '—'}

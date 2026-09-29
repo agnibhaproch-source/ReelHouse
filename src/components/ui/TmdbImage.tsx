@@ -49,15 +49,22 @@ export function TmdbImage({
   if (!path || state === 'error') {
     return (
       <div
-        className={cn('flex flex-col items-center justify-center gap-2 overflow-hidden bg-seat p-3 text-center text-dim', fill && 'absolute inset-0', className)}
+        className={cn(
+          'bg-seat text-dim flex flex-col items-center justify-center gap-2 overflow-hidden p-3 text-center',
+          fill && 'absolute inset-0',
+          className,
+        )}
         role={alt ? 'img' : undefined}
         aria-label={alt || undefined}
         style={style}
       >
         <span aria-hidden="true" className="sprockets absolute inset-x-0 top-0 opacity-60" />
         <Film className="size-7 opacity-70" aria-hidden="true" />
-        {fallbackTitle && kind !== 'profile' && (
-          <span aria-hidden="true" className="line-clamp-3 font-display text-small leading-tight text-reel/80">
+        {fallbackTitle && kind === 'poster' && (
+          <span
+            aria-hidden="true"
+            className="font-display text-small text-reel/80 line-clamp-3 leading-tight"
+          >
             {fallbackTitle}
           </span>
         )}

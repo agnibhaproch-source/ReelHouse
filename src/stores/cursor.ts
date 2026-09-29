@@ -1,8 +1,18 @@
 import { create } from 'zustand';
 
-export type CursorMode = 'default' | 'link' | 'play' | 'drag' | 'text' | 'hidden' | 'loading' | 'magnetic';
+export type CursorMode =
+  'default' | 'link' | 'play' | 'drag' | 'text' | 'hidden' | 'loading' | 'magnetic';
 
-export const CURSOR_MODES: readonly CursorMode[] = ['default', 'link', 'play', 'drag', 'text', 'hidden', 'loading', 'magnetic'];
+export const CURSOR_MODES: readonly CursorMode[] = [
+  'default',
+  'link',
+  'play',
+  'drag',
+  'text',
+  'hidden',
+  'loading',
+  'magnetic',
+];
 
 export interface MagnetRect {
   x: number;

@@ -32,7 +32,16 @@ const ids = (list: { id: number }[]) => list.map((m) => m.id).join(',');
  * Grid (auto-fill, min 160px) with batch reveals, infinite scroll sentinel, and GSAP Flip on
  * reorder: items glide, new ones fade/scale in, removed ones scale out (fade if > 60 items).
  */
-export function MovieGrid({ movies, loadingMore, onEndReached, hasMore, className, renderExtra, onRemove, label }: MovieGridProps) {
+export function MovieGrid({
+  movies,
+  loadingMore,
+  onEndReached,
+  hasMore,
+  className,
+  renderExtra,
+  onRemove,
+  label,
+}: MovieGridProps) {
   const root = useRef<HTMLUListElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState<Item[]>(() => movies.map((m) => ({ m, leaving: false })));
@@ -46,7 +55,9 @@ export function MovieGrid({ movies, loadingMore, onEndReached, hasMore, classNam
     if (ids(current) === key) return;
     const appended = current.length > 0 && key.startsWith(ids(current));
     const next = new Set(movies.map((m) => m.id));
-    const leaving = appended ? [] : current.filter((m) => !next.has(m.id)).map((m) => ({ m, leaving: true }));
+    const leaving = appended
+      ? []
+      : current.filter((m) => !next.has(m.id)).map((m) => ({ m, leaving: true }));
     if (!appended && root.current && !isReducedNow() && movies.length <= FLIP_LIMIT) {
       flipState.current = Flip.getState(root.current.querySelectorAll('[data-flip-id]'));
     }
@@ -58,7 +69,8 @@ export function MovieGrid({ movies, loadingMore, onEndReached, hasMore, classNam
   useLayoutEffect(() => {
     const el = root.current;
     const state = flipState.current;
-    const clearLeaving = () => setItems((cur) => (cur.some((i) => i.leaving) ? cur.filter((i) => !i.leaving) : cur));
+    const clearLeaving = () =>
+      setItems((cur) => (cur.some((i) => i.leaving) ? cur.filter((i) => !i.leaving) : cur));
     if (!el) return;
     if (!state) {
       if (items.some((i) => i.leaving)) clearLeaving();
@@ -71,8 +83,14 @@ export function MovieGrid({ movies, loadingMore, onEndReached, hasMore, classNam
       ease: 'projector',
       absolute: true,
       nested: true,
-      onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: DUR.base, ease: 'reel' }),
-      onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.8, duration: DUR.fast, ease: 'shutter' }),
+      onEnter: (els) =>
+        gsap.fromTo(
+          els,
+          { opacity: 0, scale: 0.85 },
+          { opacity: 1, scale: 1, duration: DUR.base, ease: 'reel' },
+        ),
+      onLeave: (els) =>
+        gsap.to(els, { opacity: 0, scale: 0.8, duration: DUR.fast, ease: 'shutter' }),
       onComplete: clearLeaving,
     });
   }, [items]);
@@ -92,7 +110,14 @@ export function MovieGrid({ movies, loadingMore, onEndReached, hasMore, classNam
     const triggers = ScrollTrigger.batch(fresh, {
       start: 'top 95%',
       once: true,
-      onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: DUR.slow, ease: 'reel', stagger: { each: STAGGER.base, amount: STAGGER.base * STAGGER.maxItems } }),
+      onEnter: (batch) =>
+        gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          duration: DUR.slow,
+          ease: 'reel',
+          stagger: { each: STAGGER.base, amount: STAGGER.base * STAGGER.maxItems },
+        }),
     });
     return () => triggers.forEach((t) => t.kill());
   }, [items]);
@@ -101,17 +126,36 @@ export function MovieGrid({ movies, loadingMore, onEndReached, hasMore, classNam
   useEffect(() => {
     const s = sentinel.current;
     if (!s || !hasMore || !onEndReached) return;
-    const io = new IntersectionObserver(([e]) => e?.isIntersecting && onEndReached(), { rootMargin: '800px 0px' });
+    const io = new IntersectionObserver(([e]) => e?.isIntersecting && onEndReached(), {
+      rootMargin: '800px 0px',
+    });
     io.observe(s);
     return () => io.disconnect();
   }, [hasMore, onEndReached, items.length]);
 
   return (
     <>
-      <ul ref={root} aria-label={label} className={cn('relative grid grid-cols-[repeat(auto-fill,minmax(min(160px,42vw),1fr))] gap-x-4 gap-y-6', className)}>
+      <ul
+        ref={root}
+        aria-label={label}
+        className={cn(
+          'relative grid grid-cols-[repeat(auto-fill,minmax(min(160px,42vw),1fr))] gap-x-4 gap-y-6',
+          className,
+        )}
+      >
         {items.map(({ m, leaving }, i) => (
-          <li key={m.id} data-flip-id={m.id} aria-hidden={leaving || undefined} className={cn('relative', leaving && 'pointer-events-none')}>
-            <MovieCard movie={m} priority={i < 6} sizes={SIZES.gridCard} onRemove={onRemove && !leaving ? () => onRemove(m) : undefined} />
+          <li
+            key={m.id}
+            data-flip-id={m.id}
+            aria-hidden={leaving || undefined}
+            className={cn('relative', leaving && 'pointer-events-none')}
+          >
+            <MovieCard
+              movie={m}
+              priority={i < 6}
+              sizes={SIZES.gridCard}
+              onRemove={onRemove && !leaving ? () => onRemove(m) : undefined}
+            />
             {renderExtra?.(m)}
           </li>
         ))}

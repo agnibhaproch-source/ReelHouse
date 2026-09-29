@@ -30,8 +30,10 @@ export const useToastStore = create<ToastState>()((set) => ({
 }));
 
 export const toast = {
-  success: (message: string, action?: Toast['action']) => useToastStore.getState().push({ kind: 'success', message, action }),
-  error: (message: string, action?: Toast['action']) => useToastStore.getState().push({ kind: 'error', message, action }),
+  success: (message: string, action?: Toast['action']) =>
+    useToastStore.getState().push({ kind: 'success', message, action }),
+  error: (message: string, action?: Toast['action']) =>
+    useToastStore.getState().push({ kind: 'error', message, action }),
   info: (message: string, extra?: Partial<Omit<Toast, 'id' | 'kind' | 'message'>>) =>
     useToastStore.getState().push({ kind: 'info', message, ...extra }),
 };

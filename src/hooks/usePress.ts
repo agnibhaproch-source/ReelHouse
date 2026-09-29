@@ -18,11 +18,21 @@ interface PressOptions {
  * Press feedback (spec 34): scale 0.96 with `snap` on pointerdown, spring back on release,
  * plus a projector ripple from the click point. Returns pointer handlers to spread.
  */
-export function usePress<T extends HTMLElement>({ accent, scale = 0.96, sound = true, ripple = true }: PressOptions = {}) {
+export function usePress<T extends HTMLElement>({
+  accent,
+  scale = 0.96,
+  sound = true,
+  ripple = true,
+}: PressOptions = {}) {
   const onPointerDown = useCallback(
     (e: ReactPointerEvent<T>) => {
       const el = e.currentTarget;
-      if (e.button !== 0 || el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true') return;
+      if (
+        e.button !== 0 ||
+        el.hasAttribute('disabled') ||
+        el.getAttribute('aria-disabled') === 'true'
+      )
+        return;
       if (sound) void play('press');
       if (isReducedNow()) return;
       gsap.to(el, { scale, duration: DUR.instant, ease: 'snap', overwrite: 'auto' });
@@ -57,7 +67,12 @@ export function usePress<T extends HTMLElement>({ accent, scale = 0.96, sound = 
 
   const release = useCallback((e: ReactPointerEvent<T>) => {
     if (isReducedNow()) return;
-    gsap.to(e.currentTarget, { scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.5)', overwrite: 'auto' });
+    gsap.to(e.currentTarget, {
+      scale: 1,
+      duration: 0.6,
+      ease: 'elastic.out(1, 0.5)',
+      overwrite: 'auto',
+    });
   }, []);
 
   return { onPointerDown, onPointerUp: release, onPointerLeave: release, onPointerCancel: release };

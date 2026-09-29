@@ -26,7 +26,8 @@ export const localRepo: Repo = {
     },
     async create(input) {
       const list = readJSON<Profile[]>(K.profiles, []);
-      if (list.length >= MAX_PROFILES) throw new Error(`You can have up to ${MAX_PROFILES} profiles.`);
+      if (list.length >= MAX_PROFILES)
+        throw new Error(`You can have up to ${MAX_PROFILES} profiles.`);
       const p: Profile = { ...input, id: uid(), user_id: null, settings: {}, created_at: now() };
       writeJSON(K.profiles, [...list, p]);
       return p;
@@ -36,13 +37,20 @@ export const localRepo: Repo = {
       const idx = list.findIndex((p) => p.id === id);
       if (idx < 0) throw new Error('Profile not found.');
       const prev = list[idx] as Profile;
-      const next: Profile = { ...prev, ...patch, settings: { ...prev.settings, ...patch.settings } };
+      const next: Profile = {
+        ...prev,
+        ...patch,
+        settings: { ...prev.settings, ...patch.settings },
+      };
       list[idx] = next;
       writeJSON(K.profiles, list);
       return next;
     },
     async remove(id) {
-      writeJSON(K.profiles, readJSON<Profile[]>(K.profiles, []).filter((p) => p.id !== id));
+      writeJSON(
+        K.profiles,
+        readJSON<Profile[]>(K.profiles, []).filter((p) => p.id !== id),
+      );
       for (const key of [K.watch(id), K.history(id), K.ratings(id), K.likes(id)]) removeKey(key);
     },
   },
@@ -54,17 +62,27 @@ export const localRepo: Repo = {
       const list = readJSON<WatchItem[]>(K.watch(pid), []);
       const existing = list.find((w) => w.movie_id === movie.movie_id);
       if (existing) return existing;
-      const item: WatchItem = { ...movie, added_at: now(), position: list.length ? Math.min(...list.map((w) => w.position)) - 1 : 0 };
+      const item: WatchItem = {
+        ...movie,
+        added_at: now(),
+        position: list.length ? Math.min(...list.map((w) => w.position)) - 1 : 0,
+      };
       writeJSON(K.watch(pid), [item, ...list]);
       return item;
     },
     async remove(pid, movieId) {
-      writeJSON(K.watch(pid), readJSON<WatchItem[]>(K.watch(pid), []).filter((w) => w.movie_id !== movieId));
+      writeJSON(
+        K.watch(pid),
+        readJSON<WatchItem[]>(K.watch(pid), []).filter((w) => w.movie_id !== movieId),
+      );
     },
     async reorder(pid, ids) {
       const list = readJSON<WatchItem[]>(K.watch(pid), []);
       const pos = new Map(ids.map((id, i) => [id, i]));
-      writeJSON(K.watch(pid), list.map((w) => ({ ...w, position: pos.get(w.movie_id) ?? w.position })));
+      writeJSON(
+        K.watch(pid),
+        list.map((w) => ({ ...w, position: pos.get(w.movie_id) ?? w.position })),
+      );
     },
   },
   history: {
@@ -80,10 +98,16 @@ export const localRepo: Repo = {
         at: now(),
         progress: Math.max(progress, prev?.progress ?? 0),
       };
-      writeJSON(K.history(pid), [item, ...list.filter((h) => h.movie_id !== movie.movie_id)].slice(0, HISTORY_LIMIT));
+      writeJSON(
+        K.history(pid),
+        [item, ...list.filter((h) => h.movie_id !== movie.movie_id)].slice(0, HISTORY_LIMIT),
+      );
     },
     async remove(pid, movieId) {
-      writeJSON(K.history(pid), readJSON<HistoryItem[]>(K.history(pid), []).filter((h) => h.movie_id !== movieId));
+      writeJSON(
+        K.history(pid),
+        readJSON<HistoryItem[]>(K.history(pid), []).filter((h) => h.movie_id !== movieId),
+      );
     },
     async clear(pid) {
       removeKey(K.history(pid));
@@ -105,18 +129,26 @@ export const localRepo: Repo = {
       const scores = [...profiles.map((p) => p.id), 'guest']
         .map((id) => readJSON<Record<number, number>>(K.ratings(id), {})[movieId])
         .filter((s): s is number => typeof s === 'number');
-      return { average: scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0, count: scores.length };
+      return {
+        average: scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : 0,
+        count: scores.length,
+      };
     },
   },
   reviews: {
     async list(movieId, pid) {
       const likes = readJSON<string[]>(K.likes(pid), []);
-      return readJSON<SiteReview[]>(K.reviews(movieId), []).map((r) => ({ ...r, liked: likes.includes(r.id) }));
+      return readJSON<SiteReview[]>(K.reviews(movieId), []).map((r) => ({
+        ...r,
+        liked: likes.includes(r.id),
+      }));
     },
     async upsert(profile, pid, input) {
       const list = readJSON<SiteReview[]>(K.reviews(input.movie_id), []);
       const body = cleanReviewBody(input.body);
-      const existing = input.id ? list.find((r) => r.id === input.id && r.profile_id === pid) : undefined;
+      const existing = input.id
+        ? list.find((r) => r.id === input.id && r.profile_id === pid)
+        : undefined;
       const review: SiteReview = existing
         ? { ...existing, body, spoiler: input.spoiler, updated_at: now() }
         : {
@@ -132,7 +164,10 @@ export const localRepo: Repo = {
             likes: 0,
             liked: false,
           };
-      writeJSON(K.reviews(input.movie_id), existing ? list.map((r) => (r.id === review.id ? review : r)) : [review, ...list]);
+      writeJSON(
+        K.reviews(input.movie_id),
+        existing ? list.map((r) => (r.id === review.id ? review : r)) : [review, ...list],
+      );
       return review;
     },
     async remove(pid, reviewId) {
@@ -141,7 +176,11 @@ export const localRepo: Repo = {
         const key = localStorage.key(i);
         if (!key?.startsWith('rh:reviews:')) continue;
         const list = readJSON<SiteReview[]>(key, []);
-        if (list.some((r) => r.id === reviewId && r.profile_id === pid)) writeJSON(key, list.filter((r) => r.id !== reviewId));
+        if (list.some((r) => r.id === reviewId && r.profile_id === pid))
+          writeJSON(
+            key,
+            list.filter((r) => r.id !== reviewId),
+          );
       }
     },
     async like(pid, reviewId, on) {
@@ -154,7 +193,12 @@ export const localRepo: Repo = {
         if (!key?.startsWith('rh:reviews:')) continue;
         const list = readJSON<SiteReview[]>(key, []);
         if (list.some((r) => r.id === reviewId))
-          writeJSON(key, list.map((r) => (r.id === reviewId ? { ...r, likes: Math.max(0, r.likes + (on ? 1 : -1)) } : r)));
+          writeJSON(
+            key,
+            list.map((r) =>
+              r.id === reviewId ? { ...r, likes: Math.max(0, r.likes + (on ? 1 : -1)) } : r,
+            ),
+          );
       }
     },
     async report() {

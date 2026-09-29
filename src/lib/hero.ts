@@ -41,7 +41,9 @@ export async function getHeroSlides(prefs: RequestPrefs = {}): Promise<HeroSlide
       overview: m.overview || d?.overview || '',
       backdrop: m.backdrop_path,
       poster: m.poster_path,
-      logo: logo ? { path: logo.file_path, ratio: logo.aspect_ratio || logo.width / logo.height } : null,
+      logo: logo
+        ? { path: logo.file_path, ratio: logo.aspect_ratio || logo.width / logo.height }
+        : null,
       year: (m.release_date ?? '').slice(0, 4),
       rating: m.vote_average,
       runtime: d?.runtime ?? null,

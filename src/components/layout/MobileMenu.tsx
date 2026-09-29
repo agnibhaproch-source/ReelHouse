@@ -39,8 +39,18 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
     const el = panel.current;
     let split: SplitText | null = null;
     if (el && !isReducedNow()) {
-      split = SplitText.create(el.querySelectorAll('[data-split]'), { type: 'lines', mask: 'lines', aria: 'none' });
-      gsap.from(split.lines, { yPercent: 110, duration: DUR.slow, ease: 'reel', stagger: 0.04, delay: 0.15 });
+      split = SplitText.create(el.querySelectorAll('[data-split]'), {
+        type: 'lines',
+        mask: 'lines',
+        aria: 'none',
+      });
+      gsap.from(split.lines, {
+        yPercent: 110,
+        duration: DUR.slow,
+        ease: 'reel',
+        stagger: 0.04,
+        delay: 0.15,
+      });
     }
     return () => {
       start();
@@ -48,7 +58,8 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
     };
   }, [open, stop, start]);
 
-  const line = 'absolute left-1/2 h-0.5 w-5 -translate-x-1/2 rounded-pill bg-reel transition-[top,rotate,opacity] duration-base ease-snap';
+  const line =
+    'absolute left-1/2 h-0.5 w-5 -translate-x-1/2 rounded-pill bg-reel transition-[top,rotate,opacity] duration-base ease-snap';
 
   return (
     <>
@@ -60,9 +71,17 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
         onClick={() => set('mobileMenuOpen', !open)}
         className="relative z-(--z-modal) size-11 md:hidden"
       >
-        <span aria-hidden="true" className={line} style={{ top: open ? 21 : 15, rotate: open ? '45deg' : '0deg' }} />
+        <span
+          aria-hidden="true"
+          className={line}
+          style={{ top: open ? 21 : 15, rotate: open ? '45deg' : '0deg' }}
+        />
         <span aria-hidden="true" className={line} style={{ top: 21, opacity: open ? 0 : 1 }} />
-        <span aria-hidden="true" className={line} style={{ top: open ? 21 : 27, rotate: open ? '-45deg' : '0deg' }} />
+        <span
+          aria-hidden="true"
+          className={line}
+          style={{ top: open ? 21 : 27, rotate: open ? '-45deg' : '0deg' }}
+        />
       </button>
       {typeof document !== 'undefined' &&
         createPortal(
@@ -74,14 +93,22 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
                 role="dialog"
                 aria-modal="true"
                 aria-label="Menu"
-                className="fixed inset-0 z-(--z-modal) overflow-y-auto bg-void px-gutter pt-24 pb-32 md:hidden"
+                className="bg-void px-gutter fixed inset-0 z-(--z-modal) overflow-y-auto pt-24 pb-32 md:hidden"
                 initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
                 animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-                exit={{ clipPath: 'inset(0% 0% 100% 0%)', transition: { duration: DUR.fast, ease: EASES.shutter } }}
+                exit={{
+                  clipPath: 'inset(0% 0% 100% 0%)',
+                  transition: { duration: DUR.fast, ease: EASES.shutter },
+                }}
                 transition={{ duration: DUR.base, ease: EASES.projector }}
                 data-lenis-prevent
               >
-                <button type="button" onClick={close} aria-label="Close menu" className="absolute top-3.5 right-gutter grid size-11 place-items-center rounded-full hover:bg-reel/10">
+                <button
+                  type="button"
+                  onClick={close}
+                  aria-label="Close menu"
+                  className="right-gutter hover:bg-reel/10 absolute top-3.5 grid size-11 place-items-center rounded-full"
+                >
                   <X className="size-6" aria-hidden="true" />
                 </button>
                 <nav aria-label="Mobile">
@@ -95,27 +122,40 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
                       { href: '/account', label: 'Settings' },
                     ].map((l) => (
                       <li key={l.href}>
-                        <TransitionLink href={l.href} onClick={close} className="block py-1 font-display text-h1" aria-current={pathname === l.href ? 'page' : undefined}>
+                        <TransitionLink
+                          href={l.href}
+                          onClick={close}
+                          className="font-display text-h1 block py-1"
+                          aria-current={pathname === l.href ? 'page' : undefined}
+                        >
                           <span data-split>{l.label}</span>
                         </TransitionLink>
                       </li>
                     ))}
                   </ul>
-                  <h2 className="mt-10 mb-3 text-small font-semibold text-dim">Genres</h2>
+                  <h2 className="text-small text-dim mt-10 mb-3 font-semibold">Genres</h2>
                   <ul className="flex flex-wrap gap-2">
                     {genres.slice(0, 12).map((g) => (
                       <li key={g.href}>
-                        <TransitionLink href={g.href} onClick={close} className="inline-flex min-h-11 items-center rounded-pill border border-line px-4 text-small">
+                        <TransitionLink
+                          href={g.href}
+                          onClick={close}
+                          className="rounded-pill border-line text-small inline-flex min-h-11 items-center border px-4"
+                        >
                           {g.label}
                         </TransitionLink>
                       </li>
                     ))}
                   </ul>
-                  <h2 className="mt-8 mb-3 text-small font-semibold text-dim">Languages</h2>
+                  <h2 className="text-small text-dim mt-8 mb-3 font-semibold">Languages</h2>
                   <ul className="flex flex-wrap gap-2">
                     {languages.map((g) => (
                       <li key={g.href}>
-                        <TransitionLink href={g.href} onClick={close} className="inline-flex min-h-11 items-center rounded-pill border border-line px-4 text-small">
+                        <TransitionLink
+                          href={g.href}
+                          onClick={close}
+                          className="rounded-pill border-line text-small inline-flex min-h-11 items-center border px-4"
+                        >
                           {g.label}
                         </TransitionLink>
                       </li>

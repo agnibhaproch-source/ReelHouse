@@ -26,7 +26,13 @@ function focusHeading() {
 }
 
 function inViewport(r: DOMRect) {
-  return r.bottom > 0 && r.top < window.innerHeight && r.right > 0 && r.left < window.innerWidth && r.width > 0;
+  return (
+    r.bottom > 0 &&
+    r.top < window.innerHeight &&
+    r.right > 0 &&
+    r.left < window.innerWidth &&
+    r.width > 0
+  );
 }
 
 /**
@@ -80,7 +86,12 @@ export function TransitionLayer() {
           .timeline({ onComplete: resolve })
           .to(topEl, { yPercent: 0, duration: 0.5, ease: 'shutter' }, 0)
           .to(botEl, { yPercent: 0, duration: 0.5, ease: 'shutter' }, 0)
-          .fromTo(seam.current, { scaleX: 0, opacity: 1 }, { scaleX: 1, duration: 0.18, ease: 'reel' }, 0.4)
+          .fromTo(
+            seam.current,
+            { scaleX: 0, opacity: 1 },
+            { scaleX: 1, duration: 0.18, ease: 'reel' },
+            0.4,
+          )
           .to(seam.current, { opacity: 0, duration: 0.2 }, 0.58);
       });
     const openShutter = () =>
@@ -108,7 +119,11 @@ export function TransitionLayer() {
       await gsap.fromTo(
         el,
         { '--burn': cover ? '0%' : '150%' },
-        { '--burn': cover ? '150%' : '0%', duration: cover ? 0.6 : 0.7, ease: cover ? 'shutter' : 'reel' },
+        {
+          '--burn': cover ? '150%' : '0%',
+          duration: cover ? 0.6 : 0.7,
+          ease: cover ? 'shutter' : 'reel',
+        },
       );
       if (!cover) el.style.opacity = '0';
     };
@@ -155,7 +170,15 @@ export function TransitionLayer() {
           gsap.to(fade.current, { opacity: 0, duration: 0.5, delay: 0.2 });
           if (target && tr && inViewport(tr)) {
             gsap.set(target, { opacity: 0 });
-            await gsap.to(clone, { left: tr.left, top: tr.top, width: tr.width, height: tr.height, borderRadius: 6, duration: 0.8, ease: 'projector' });
+            await gsap.to(clone, {
+              left: tr.left,
+              top: tr.top,
+              width: tr.width,
+              height: tr.height,
+              borderRadius: 6,
+              duration: 0.8,
+              ease: 'projector',
+            });
             gsap.set(target, { opacity: 1 });
           }
           intro();
@@ -222,17 +245,44 @@ export function TransitionLayer() {
     const topEl = top.current!;
     const botEl = bottom.current!;
     void waitForPage(800).then(async () => {
-      const card = lastDetail.id ? document.querySelector<HTMLElement>(`[data-poster-id="${lastDetail.id}"]`) : null;
+      const card = lastDetail.id
+        ? document.querySelector<HTMLElement>(`[data-poster-id="${lastDetail.id}"]`)
+        : null;
       const cr = card?.getBoundingClientRect();
-      if (fromDetail && card && cr && inViewport(cr) && lastDetail.rect && lastDetail.src && !isReducedNow()) {
+      if (
+        fromDetail &&
+        card &&
+        cr &&
+        inViewport(cr) &&
+        lastDetail.rect &&
+        lastDetail.src &&
+        !isReducedNow()
+      ) {
         const clone = document.createElement('img');
         clone.src = lastDetail.src;
         clone.alt = '';
         const r = lastDetail.rect;
-        Object.assign(clone.style, { position: 'fixed', left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, objectFit: 'cover', borderRadius: '6px', zIndex: 'var(--z-transition)', pointerEvents: 'none' });
+        Object.assign(clone.style, {
+          position: 'fixed',
+          left: `${r.left}px`,
+          top: `${r.top}px`,
+          width: `${r.width}px`,
+          height: `${r.height}px`,
+          objectFit: 'cover',
+          borderRadius: '6px',
+          zIndex: 'var(--z-transition)',
+          pointerEvents: 'none',
+        });
         document.body.appendChild(clone);
         gsap.set(card, { opacity: 0 });
-        await gsap.to(clone, { left: cr.left, top: cr.top, width: cr.width, height: cr.height, duration: 0.7, ease: 'projector' });
+        await gsap.to(clone, {
+          left: cr.left,
+          top: cr.top,
+          width: cr.width,
+          height: cr.height,
+          duration: 0.7,
+          ease: 'projector',
+        });
         gsap.set(card, { opacity: 1 });
         clone.remove();
       } else {
@@ -245,11 +295,24 @@ export function TransitionLayer() {
   }, [pathname]);
 
   return (
-    <div ref={root} aria-hidden="true" className="pointer-events-none fixed inset-0 z-(--z-transition)">
-      <div ref={top} className="absolute inset-x-0 top-0 h-[50.5vh] bg-seat will-change-transform" />
-      <div ref={bottom} className="absolute inset-x-0 bottom-0 h-[50.5vh] bg-seat will-change-transform" />
-      <div ref={seam} className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 scale-x-0 bg-cyan opacity-0 shadow-[0_0_24px_var(--marquee-cyan)]" />
-      <div ref={fade} className="absolute inset-0 bg-void opacity-0" />
+    <div
+      ref={root}
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-0 z-(--z-transition)"
+    >
+      <div
+        ref={top}
+        className="bg-seat absolute inset-x-0 top-0 h-[50.5vh] will-change-transform"
+      />
+      <div
+        ref={bottom}
+        className="bg-seat absolute inset-x-0 bottom-0 h-[50.5vh] will-change-transform"
+      />
+      <div
+        ref={seam}
+        className="bg-cyan absolute inset-x-0 top-1/2 h-px -translate-y-1/2 scale-x-0 opacity-0 shadow-[0_0_24px_var(--marquee-cyan)]"
+      />
+      <div ref={fade} className="bg-void absolute inset-0 opacity-0" />
       <div ref={burn} className="film-burn absolute inset-0 opacity-0" />
     </div>
   );

@@ -9,7 +9,12 @@ interface PreviewState {
   source: PreviewSource;
   /** Element to return focus to. */
   returnFocus: HTMLElement | null;
-  open: (movie: Movie, anchor: DOMRect, source: PreviewSource, returnFocus?: HTMLElement | null) => void;
+  open: (
+    movie: Movie,
+    anchor: DOMRect,
+    source: PreviewSource,
+    returnFocus?: HTMLElement | null,
+  ) => void;
   close: () => void;
 }
 

@@ -14,18 +14,31 @@ export function PosterWall({ posters }: { posters: (string | null)[] }) {
           <div key={c} className="flex w-1/3 max-w-60 flex-col">
             <div
               className="flex flex-col gap-4"
-              style={reduced ? undefined : { animation: `wall-${c % 2 ? 'down' : 'up'} ${60 + c * 12}s linear infinite` }}
+              style={
+                reduced
+                  ? undefined
+                  : { animation: `wall-${c % 2 ? 'down' : 'up'} ${60 + c * 12}s linear infinite` }
+              }
             >
               {[...col, ...col].map((p, i) => (
-                <div key={i} className="relative aspect-[2/3] w-full overflow-hidden rounded-poster bg-seat">
-                  <TmdbImage path={p} kind="poster" alt="" sizes="240px" loading={i < 4 ? 'eager' : 'lazy'} />
+                <div
+                  key={i}
+                  className="rounded-poster bg-seat relative aspect-[2/3] w-full overflow-hidden"
+                >
+                  <TmdbImage
+                    path={p}
+                    kind="poster"
+                    alt=""
+                    sizes="240px"
+                    loading={i < 4 ? 'eager' : 'lazy'}
+                  />
                 </div>
               ))}
             </div>
           </div>
         ))}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-void/40 via-void/60 to-void" />
+      <div className="from-void/40 via-void/60 to-void absolute inset-0 bg-gradient-to-r" />
     </div>
   );
 }

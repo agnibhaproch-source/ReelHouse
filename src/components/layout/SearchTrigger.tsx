@@ -26,7 +26,7 @@ export function SearchTrigger() {
     <div className="relative size-11">
       <motion.span
         aria-hidden="true"
-        className="absolute top-0 right-0 h-11 w-56 origin-right rounded-pill border border-line bg-aisle"
+        className="rounded-pill border-line bg-aisle absolute top-0 right-0 h-11 w-56 origin-right border"
         initial={false}
         animate={
           morph
@@ -41,9 +41,12 @@ export function SearchTrigger() {
         aria-label="Search (press / or ⌘K)"
         aria-keyshortcuts="/ Control+K Meta+K"
         data-cursor="link"
-        className="group relative grid size-11 place-items-center rounded-full text-reel transition-colors duration-fast hover:bg-reel/10"
+        className="group text-reel duration-fast hover:bg-reel/10 relative grid size-11 place-items-center rounded-full transition-colors"
       >
-        <Search className="size-5 transition-transform duration-base ease-snap group-hover:scale-110" aria-hidden="true" />
+        <Search
+          className="duration-base ease-snap size-5 transition-transform group-hover:scale-110"
+          aria-hidden="true"
+        />
       </button>
     </div>
   );

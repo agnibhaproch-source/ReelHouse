@@ -35,7 +35,15 @@ export const GENRES: readonly GenreConfig[] = RAW.map(([id, name]) => ({
   slug: name === 'Science Fiction' ? 'sci-fi' : slugify(name),
 }));
 
-export const HOME_GENRE_ROWS = ['action', 'comedy', 'horror', 'sci-fi', 'romance', 'animation', 'thriller'] as const;
+export const HOME_GENRE_ROWS = [
+  'action',
+  'comedy',
+  'horror',
+  'sci-fi',
+  'romance',
+  'animation',
+  'thriller',
+] as const;
 
 /** Genres excluded for kids profiles. */
 export const KIDS_EXCLUDED_GENRES = [27, 53, 80, 10752] as const;

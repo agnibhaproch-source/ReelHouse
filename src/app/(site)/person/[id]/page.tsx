@@ -37,13 +37,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const image = tmdbImage(p.profile_path, 'h632');
   return {
     title: p.name,
-    description: truncate(p.biography || `${p.name} — ${p.known_for_department}. Filmography, photos and more on Reelhouse.`, 160),
+    description: truncate(
+      p.biography ||
+        `${p.name} — ${p.known_for_department}. Filmography, photos and more on Reelhouse.`,
+      160,
+    ),
     alternates: { canonical: `/person/${id}` },
     openGraph: { type: 'profile', title: p.name, images: image ? [image] : undefined },
   };
 }
 
-const dateFmt = (d: string | null) => (d ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(Date.parse(d)) : null);
+const dateFmt = (d: string | null) =>
+  d
+    ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(
+        Date.parse(d),
+      )
+    : null;
 
 export default async function PersonPage({ params }: Props) {
   const id = parseId((await params).id);
@@ -61,7 +70,9 @@ export default async function PersonPage({ params }: Props) {
   const credits: PersonCredit[] = [...person.movie_credits.cast, ...person.movie_credits.crew];
   const seen = new Set<number>();
   const unique = credits.filter((c) => (seen.has(c.id) ? false : (seen.add(c.id), true)));
-  const knownFor = await withMeta([...unique].sort((a, b) => b.popularity - a.popularity).slice(0, 16));
+  const knownFor = await withMeta(
+    [...unique].sort((a, b) => b.popularity - a.popularity).slice(0, 16),
+  );
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -79,17 +90,34 @@ export default async function PersonPage({ params }: Props) {
 
   return (
     <article>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
-      <header className="mx-auto grid max-w-7xl gap-10 px-gutter pt-32 pb-12 md:grid-cols-[minmax(220px,320px)_1fr] md:items-end">
-        <div className="relative aspect-[2/3] w-[min(60vw,320px)] overflow-hidden rounded-modal bg-seat shadow-2xl max-md:mx-auto">
-          <TmdbImage path={person.profile_path} kind="profile" alt={`${person.name} portrait`} sizes={SIZES.detailPoster} priority fallbackTitle={person.name} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
+      <header className="px-gutter mx-auto grid max-w-7xl gap-10 pt-32 pb-12 md:grid-cols-[minmax(220px,320px)_1fr] md:items-end">
+        <div className="rounded-modal bg-seat relative aspect-[2/3] w-[min(60vw,320px)] overflow-hidden shadow-2xl max-md:mx-auto">
+          <TmdbImage
+            path={person.profile_path}
+            kind="profile"
+            alt={`${person.name} portrait`}
+            sizes={SIZES.detailPoster}
+            priority
+            fallbackTitle={person.name}
+          />
         </div>
         <div className="flex flex-col gap-4 max-md:text-center">
-          {person.known_for_department && <p className="text-small font-semibold text-cyan">{person.known_for_department}</p>}
-          <SplitHeading as="h1" by="chars" trigger="mount" className="font-display text-hero leading-[0.9]">
+          {person.known_for_department && (
+            <p className="text-small text-cyan font-semibold">{person.known_for_department}</p>
+          )}
+          <SplitHeading
+            as="h1"
+            by="chars"
+            trigger="mount"
+            className="font-display text-hero leading-[0.9]"
+          >
             {person.name}
           </SplitHeading>
-          <dl className="flex flex-wrap gap-x-8 gap-y-2 text-small max-md:justify-center">
+          <dl className="text-small flex flex-wrap gap-x-8 gap-y-2 max-md:justify-center">
             {person.birthday && (
               <div>
                 <dt className="text-dim">Born</dt>
@@ -117,7 +145,9 @@ export default async function PersonPage({ params }: Props) {
       </header>
 
       <Biography text={person.biography} name={person.name} />
-      {knownFor.length > 0 && <Row rowKey={`known-${person.id}`} title="Known for" items={knownFor} />}
+      {knownFor.length > 0 && (
+        <Row rowKey={`known-${person.id}`} title="Known for" items={knownFor} />
+      )}
       <Filmography credits={unique} />
       <PhotoMasonry photos={person.images.profiles.slice(0, 18)} name={person.name} />
     </article>

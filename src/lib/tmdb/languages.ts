@@ -29,7 +29,9 @@ export function getLanguage(code: string): LanguageConfig | undefined {
 }
 
 export function languageName(code: string): string {
-  return getLanguage(code)?.name ?? new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code;
+  return (
+    getLanguage(code)?.name ?? new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code
+  );
 }
 
 /** TMDB content-language options for the settings page (`language` param). */

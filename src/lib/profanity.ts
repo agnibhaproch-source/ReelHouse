@@ -1,7 +1,18 @@
 import { MAX_REVIEW_LENGTH } from './data/types';
 
 /** Small, deliberately conservative list; masks rather than rejects. */
-const WORDS = ['fuck', 'shit', 'bitch', 'cunt', 'asshole', 'bastard', 'dick', 'slut', 'whore', 'motherfucker'];
+const WORDS = [
+  'fuck',
+  'shit',
+  'bitch',
+  'cunt',
+  'asshole',
+  'bastard',
+  'dick',
+  'slut',
+  'whore',
+  'motherfucker',
+];
 const RE = new RegExp(`\\b(${WORDS.join('|')})(s|es|ed|ing)?\\b`, 'gi');
 
 export function maskProfanity(text: string): string {
