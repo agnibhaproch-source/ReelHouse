@@ -136,7 +136,7 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
           )
         )}
         {!isIcon && children && (
-          <span className={cn('transition-opacity duration-fast', loading && 'opacity-70')}>
+          <span>
             {typeof children === 'string' ? <RollText>{children}</RollText> : children}
           </span>
         )}
@@ -168,6 +168,7 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
         className={classes}
         aria-label={isIcon ? label : (rest as AsLink)['aria-label']}
         data-cursor={magnetic ? 'magnetic' : 'link'}
+        data-pressable
         {...handlers}
       >
         {content}
@@ -175,21 +176,22 @@ export const Button = forwardRef<HTMLElement, ButtonProps>(function Button(props
     );
   }
 
-  const { type = 'button', disabled, ...buttonRest } = rest as AsButton;
+  const { type = 'button', disabled, 'aria-label': ariaLabel, onClick, ...buttonRest } = rest as AsButton;
   return (
     <button
+      {...buttonRest}
       ref={(n) => {
         localRef.current = n;
       }}
       type={type}
       disabled={disabled}
       aria-busy={loading || undefined}
-      aria-label={isIcon ? label : buttonRest['aria-label']}
+      aria-label={isIcon ? label : ariaLabel}
       data-cursor={magnetic ? 'magnetic' : 'link'}
+      data-pressable
       className={classes}
-      {...buttonRest}
       {...handlers}
-      onClick={loading ? (e) => e.preventDefault() : buttonRest.onClick}
+      onClick={loading ? (e) => e.preventDefault() : onClick}
     >
       {content}
     </button>

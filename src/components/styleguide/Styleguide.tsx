@@ -348,7 +348,7 @@ export function Styleguide() {
           </Button>
         </div>
         <div className="mt-10 max-w-lg">
-          <Tabs label="Demo tabs" value={tab} onChange={setTab} items={[{ id: 'one', label: 'Overview' }, { id: 'two', label: 'Cast' }, { id: 'three', label: 'Reviews' }]} />
+          <Tabs label="Demo tabs" controlsPanels={false} value={tab} onChange={setTab} items={[{ id: 'one', label: 'Overview' }, { id: 'two', label: 'Cast' }, { id: 'three', label: 'Reviews' }]} />
         </div>
         <Modal open={modal !== null} onClose={() => setModal(null)} title={`${modal ?? ''} modal`} variant={modal ?? 'center'} description="Focus is trapped; Esc closes and returns focus.">
           <div className="mt-6 flex gap-3">

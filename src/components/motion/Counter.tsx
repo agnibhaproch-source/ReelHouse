@@ -35,7 +35,8 @@ export function Counter({ value, className, label }: CounterProps) {
 
   const chars = [...value];
   return (
-    <span ref={ref} className={cn('inline-flex tabular-nums', className)} aria-label={label ? `${label}: ${value}` : value} role="text">
+    <span ref={ref} className={cn('inline-flex tabular-nums', className)}>
+      <span className="sr-only">{label ? `${label}: ${value}` : value}</span>
       {chars.map((ch, i) =>
         /\d/.test(ch) ? (
           <span key={i} aria-hidden="true" className="relative inline-block h-[1.15em] overflow-hidden leading-[1.15]">

@@ -54,16 +54,16 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       if (reduced) return;
       gsap.set(img, { scale: 1.15 });
       gsap.set(logo, { clipPath: 'inset(0% 100% 0% 0%)' });
-      gsap.set(buttons, { autoAlpha: 0, scale: 0.8 });
-      gsap.set(overview, { autoAlpha: 0 });
+      gsap.set(buttons, { opacity: 0, scale: 0.8 });
+      gsap.set(overview, { opacity: 0 });
       const cancel = whenIntroReady(() => {
-        const split = overview ? SplitText.create(overview, { type: 'lines', mask: 'lines', aria: 'auto' }) : null;
+        const split = overview ? SplitText.create(overview, { type: 'lines', mask: 'lines', aria: 'none' }) : null;
         const tl = gsap.timeline();
         tl.to(img, { scale: 1, duration: 1.8, ease: 'reel' }, 0)
           .to(logo, { clipPath: 'inset(0% 0% 0% 0%)', duration: DUR.cinematic, ease: 'projector' }, 0.2)
-          .set(overview, { autoAlpha: 1 }, 0.5);
+          .set(overview, { opacity: 1 }, 0.5);
         if (split) tl.from(split.lines, { yPercent: 110, duration: DUR.slow, ease: 'reel', stagger: 0.06 }, 0.5);
-        tl.to(buttons, { autoAlpha: 1, scale: 1, duration: DUR.base, ease: 'snap', stagger: 0.06 }, 0.8);
+        tl.to(buttons, { opacity: 1, scale: 1, duration: DUR.base, ease: 'snap', stagger: 0.06 }, 0.8);
       });
       return cancel;
     },
@@ -76,7 +76,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       if (reduced || !root.current) return;
       const st = { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true };
       gsap.to(media.current, { yPercent: 40 * 0.6, ease: 'none', scrollTrigger: st });
-      gsap.to(text.current, { yPercent: 20, autoAlpha: 0, ease: 'none', scrollTrigger: { ...st, end: '60% top' } });
+      gsap.to(text.current, { yPercent: 20, opacity: 0, ease: 'none', scrollTrigger: { ...st, end: '60% top' } });
     },
     { scope: root, dependencies: [reduced] },
   );
@@ -115,7 +115,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       const textEl = text.current;
       const shutters = el.querySelectorAll('[data-hero-shutter]');
       const tl = gsap.timeline({ onComplete: done });
-      tl.to(textEl, { yPercent: -8, autoAlpha: 0, duration: DUR.fast, ease: 'shutter' }, 0);
+      tl.to(textEl, { yPercent: -8, opacity: 0, duration: DUR.fast, ease: 'shutter' }, 0);
       if (glReady) {
         // WebGL displacement handles the image; swap the DOM image once it covers.
         tl.call(() => setShown(n), [], 0.9);
@@ -124,7 +124,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
           .call(() => setShown(n), [], 0.45)
           .to(shutters, { scaleY: 0, duration: 0.7, ease: 'reel' }, 0.6);
       }
-      tl.fromTo(textEl, { yPercent: 8, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: DUR.slow, ease: 'reel' }, glReady ? 1 : 0.75);
+      tl.fromTo(textEl, { yPercent: 8, opacity: 0 }, { yPercent: 0, opacity: 1, duration: DUR.slow, ease: 'reel' }, glReady ? 1 : 0.75);
     },
     [index, slides.length, glReady],
   );

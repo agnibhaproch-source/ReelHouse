@@ -188,13 +188,13 @@ export function Row({ title, rowKey, href, source, initial, items, ranked, prior
       const titleEl = el.querySelector('[data-row-title]');
       const cards = Array.from(el.querySelectorAll('[data-card]')).slice(0, 12);
       if (reduced) {
-        gsap.from([titleEl, ...cards], { autoAlpha: 0, duration: DUR.fast, scrollTrigger: { trigger: el, start: 'top bottom-=60', once: true } });
+        gsap.from([titleEl, ...cards], { opacity: 0, duration: DUR.fast, scrollTrigger: { trigger: el, start: 'top bottom-=60', once: true } });
         return;
       }
       const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top bottom-=60', once: true } });
       tl.fromTo(titleEl, { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: DUR.slow, ease: 'projector' });
-      tl.from(cards.slice(0, STAGGER.maxItems), { y: 40, autoAlpha: 0, duration: DUR.slow, ease: 'reel', stagger: STAGGER.base }, '<0.1');
-      if (cards.length > STAGGER.maxItems) tl.from(cards.slice(STAGGER.maxItems), { y: 40, autoAlpha: 0, duration: DUR.slow, ease: 'reel' }, '<0.2');
+      tl.from(cards.slice(0, STAGGER.maxItems), { y: 40, opacity: 0, duration: DUR.slow, ease: 'reel', stagger: STAGGER.base }, '<0.1');
+      if (cards.length > STAGGER.maxItems) tl.from(cards.slice(STAGGER.maxItems), { y: 40, opacity: 0, duration: DUR.slow, ease: 'reel' }, '<0.2');
       if (ranked) {
         gsap.fromTo(el.querySelectorAll('[data-rank-numeral]'), { yPercent: 18 }, { yPercent: -18, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
       }

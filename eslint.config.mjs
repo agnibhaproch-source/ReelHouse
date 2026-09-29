@@ -12,6 +12,11 @@ const config = [
     },
   },
   {
+    // Playwright fixtures use a `use()` callback that is not a React hook.
+    files: ['tests/e2e/**'],
+    rules: { 'react-hooks/rules-of-hooks': 'off' },
+  },
+  {
     ignores: ['.next/**', 'node_modules/**', 'coverage/**', 'playwright-report/**', 'test-results/**', 'next-env.d.ts', 'public/**'],
   },
 ];

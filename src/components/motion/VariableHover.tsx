@@ -65,7 +65,8 @@ export function VariableHover({ text, as = 'span', className, radius = 220 }: Va
   }, [reduced, finePointer, radius]);
 
   return (
-    <Tag ref={ref} className={cn('font-display', className)} aria-label={text}>
+    <Tag ref={ref} className={cn('font-display', className)}>
+      <span className="sr-only">{text}</span>
       {[...text].map((ch, i) => (
         <span key={i} data-c aria-hidden="true" className="inline-block transition-[font-variation-settings] duration-fast" style={{ fontVariationSettings: "'wght' 300, 'SOFT' 0, 'opsz' 144" }}>
           {ch === ' ' ? ' ' : ch}

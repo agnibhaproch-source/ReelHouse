@@ -35,14 +35,15 @@ export function SplitHeading({ children, as = 'h2', className, by = 'words', tri
       const el = ref.current;
       if (!el) return;
       if (reduced) {
-        gsap.from(el, { autoAlpha: 0, duration: DUR.fast, delay, scrollTrigger: trigger === 'scroll' ? { trigger: el, start: 'top 90%', once: true } : undefined });
+        gsap.from(el, { opacity: 0, duration: DUR.fast, delay, scrollTrigger: trigger === 'scroll' ? { trigger: el, start: 'top 90%', once: true } : undefined });
         return;
       }
       let played = false;
       SplitText.create(el, {
         type: by === 'chars' ? 'words,chars' : by,
         mask: by === 'chars' ? 'words' : by,
-        aria: 'auto',
+        // aria-label is only valid on headings; other tags keep their text readable.
+        aria: /^h[1-6]$/.test(as) ? 'auto' : 'none',
         autoSplit: true,
         onSplit(self: SplitText) {
           const pieces = by === 'chars' ? self.chars : by === 'words' ? self.words : self.lines;

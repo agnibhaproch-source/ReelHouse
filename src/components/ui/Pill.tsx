@@ -40,7 +40,7 @@ export function Pill({ children, selected = false, onToggle, href, className, si
 
   if (href) {
     return (
-      <Link href={href} className={cn(cls, sizing, state, className)} data-cursor="link" {...press}>
+      <Link href={href} className={cn(cls, sizing, state, className)} data-cursor="link" data-pressable {...press}>
         {inner}
       </Link>
     );
@@ -52,6 +52,7 @@ export function Pill({ children, selected = false, onToggle, href, className, si
       onClick={() => onToggle?.(!selected)}
       className={cn(cls, sizing, state, className)}
       data-cursor="link"
+      data-pressable
       {...press}
     >
       {inner}

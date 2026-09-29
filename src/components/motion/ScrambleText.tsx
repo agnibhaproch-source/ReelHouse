@@ -52,7 +52,8 @@ export function ScrambleText({ text, as = 'span', className, loop, duration = 90
   }, [text, loop, duration, reduced]);
 
   return (
-    <Tag className={className} aria-label={text} id={id} tabIndex={tabIndex}>
+    <Tag className={className} id={id} tabIndex={tabIndex}>
+      <span className="sr-only">{text}</span>
       <span aria-hidden="true">{reduced ? text : out}</span>
     </Tag>
   );

@@ -9,7 +9,7 @@ export function LanguageMarquee() {
       <TransitionLink
         key={l.code}
         href={`/language/${l.code}`}
-        className="group flex items-baseline gap-4 px-6 font-display text-[clamp(2.5rem,7vw,6rem)] leading-none whitespace-nowrap text-reel/30 transition-colors duration-base hover:text-reel"
+        className="group flex items-baseline gap-4 px-6 font-display text-[clamp(2.5rem,7vw,6rem)] leading-none whitespace-nowrap text-reel/45 transition-colors duration-base hover:text-reel"
       >
         {l.native}
         <span className="font-ui text-small text-dim transition-colors group-hover:text-cyan">{l.name}</span>

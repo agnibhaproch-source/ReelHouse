@@ -25,7 +25,8 @@ export function ScrubText({ text, as = 'p', className }: { text: string; as?: Te
     { scope: ref, dependencies: [reduced, text], revertOnUpdate: true },
   );
   return (
-    <Tag ref={ref} className={className} aria-label={text}>
+    <Tag ref={ref} className={className}>
+      <span className="sr-only">{text}</span>
       {words.map((w, i) => (
         <span key={i} data-w aria-hidden="true">
           {w}{' '}

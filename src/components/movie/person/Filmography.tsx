@@ -32,7 +32,7 @@ export function Filmography({ credits }: { credits: PersonCredit[] }) {
         gsap.from(n, { scale: 0, duration: DUR.base, ease: 'snap', scrollTrigger: { trigger: n, start: 'top 72%', toggleActions: 'play none none reverse' } }),
       );
       gsap.utils.toArray<HTMLElement>('[data-year-items]').forEach((n) =>
-        gsap.from(n, { autoAlpha: 0, x: 24, duration: DUR.slow, ease: 'reel', scrollTrigger: { trigger: n, start: 'top 80%', once: true } }),
+        gsap.from(n, { opacity: 0, x: 24, duration: DUR.slow, ease: 'reel', scrollTrigger: { trigger: n, start: 'top 80%', once: true } }),
       );
     },
     { scope: root, dependencies: [reduced, credits.length], revertOnUpdate: true },

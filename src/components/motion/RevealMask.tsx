@@ -14,7 +14,7 @@ export function RevealMask({ children, className, direction = 'up' }: { children
     () => {
       if (!ref.current) return;
       if (reduced) {
-        gsap.from(ref.current, { autoAlpha: 0, duration: DUR.fast, scrollTrigger: { trigger: ref.current, start: 'top 90%', once: true } });
+        gsap.from(ref.current, { opacity: 0, duration: DUR.fast, scrollTrigger: { trigger: ref.current, start: 'top 90%', once: true } });
         return;
       }
       gsap.fromTo(

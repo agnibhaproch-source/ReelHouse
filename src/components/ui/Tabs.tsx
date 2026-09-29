@@ -12,6 +12,8 @@ export interface TabItem {
 
 interface TabsProps {
   items: TabItem[];
+  /** Set false when the tabs don't control TabPanels (e.g. a filter-style switcher). */
+  controlsPanels?: boolean;
   value: string;
   onChange: (id: string) => void;
   label: string;
@@ -20,7 +22,7 @@ interface TabsProps {
 }
 
 /** Tablist with a sliding active indicator (Motion layoutId) and arrow-key navigation. */
-export function Tabs({ items, value, onChange, label, className, idPrefix }: TabsProps) {
+export function Tabs({ items, value, onChange, label, className, idPrefix, controlsPanels = true }: TabsProps) {
   const auto = useId();
   const prefix = idPrefix ?? auto;
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -50,7 +52,7 @@ export function Tabs({ items, value, onChange, label, className, idPrefix }: Tab
             type="button"
             id={`${prefix}-tab-${t.id}`}
             aria-selected={selected}
-            aria-controls={`${prefix}-panel-${t.id}`}
+            aria-controls={controlsPanels ? `${prefix}-panel-${t.id}` : undefined}
             tabIndex={selected ? 0 : -1}
             onClick={() => onChange(t.id)}
             onKeyDown={(e) => onKey(e, i)}
@@ -72,9 +74,8 @@ export function Tabs({ items, value, onChange, label, className, idPrefix }: Tab
 }
 
 export function TabPanel({ id, value, prefix, children, className }: { id: string; value: string; prefix: string; children: ReactNode; className?: string }) {
-  if (id !== value) return null;
   return (
-    <div role="tabpanel" id={`${prefix}-panel-${id}`} aria-labelledby={`${prefix}-tab-${id}`} tabIndex={0} className={className}>
+    <div role="tabpanel" id={`${prefix}-panel-${id}`} aria-labelledby={`${prefix}-tab-${id}`} tabIndex={0} hidden={id !== value} className={className}>
       {children}
     </div>
   );

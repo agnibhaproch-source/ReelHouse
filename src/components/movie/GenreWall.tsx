@@ -19,7 +19,7 @@ export function GenreWall() {
           <TransitionLink
             key={g.slug}
             href={`/browse/${g.slug}`}
-            className="font-display leading-[1.05] text-reel/25 transition-[color,text-shadow,font-variation-settings] duration-base ease-reel [font-variation-settings:'SOFT'_0,'wght'_500] hover:text-reel hover:[font-variation-settings:'SOFT'_100,'wght'_800] hover:[text-shadow:0_0_40px_var(--marquee-violet)] focus-visible:text-reel"
+            className="font-display leading-[1.05] text-reel/45 transition-[color,text-shadow,font-variation-settings] duration-base ease-reel [font-variation-settings:'SOFT'_0,'wght'_500] hover:text-reel hover:[font-variation-settings:'SOFT'_100,'wght'_800] hover:[text-shadow:0_0_40px_var(--marquee-violet)] focus-visible:text-reel"
             style={{ fontSize: `clamp(2rem, ${4 + ((i * 7) % 5)}vw, ${4.5 + ((i * 3) % 4)}rem)` }}
           >
             {g.name}

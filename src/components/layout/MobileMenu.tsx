@@ -39,7 +39,7 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
     const el = panel.current;
     let split: SplitText | null = null;
     if (el && !isReducedNow()) {
-      split = SplitText.create(el.querySelectorAll('[data-split]'), { type: 'lines', mask: 'lines', aria: 'auto' });
+      split = SplitText.create(el.querySelectorAll('[data-split]'), { type: 'lines', mask: 'lines', aria: 'none' });
       gsap.from(split.lines, { yPercent: 110, duration: DUR.slow, ease: 'reel', stagger: 0.04, delay: 0.15 });
     }
     return () => {

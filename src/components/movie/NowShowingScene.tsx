@@ -31,19 +31,19 @@ export function NowShowingScene({ movies }: { movies: Movie[] }) {
         const n = cards.length;
         gsap.set(cards, { transformPerspective: 1200, transformOrigin: '50% 100%' });
         // Stack
-        cards.forEach((c, i) => gsap.set(c, { xPercent: -50, x: 0, y: i * -8, z: -i * 60, rotateY: -12, rotateZ: (i - n / 2) * 1.5, autoAlpha: 1 }));
-        gsap.set(el.querySelector('[data-ns-title]'), { autoAlpha: 0, y: 30 });
+        cards.forEach((c, i) => gsap.set(c, { xPercent: -50, x: 0, y: i * -8, z: -i * 60, rotateY: -12, rotateZ: (i - n / 2) * 1.5, opacity: 1 }));
+        gsap.set(el.querySelector('[data-ns-title]'), { opacity: 0, y: 30 });
         // Fan out
         tl.to(cards, { rotateZ: (i) => (i - (n - 1) / 2) * 14, x: (i) => (i - (n - 1) / 2) * 60, y: (i) => Math.abs(i - (n - 1) / 2) * 24, z: 0, rotateY: 0, duration: 1, ease: 'power2.inOut' }, 0);
         // Rotate + settle into a line
         tl.to(cards, { rotateZ: 0, rotateY: 360, x: (i) => (i - (n - 1) / 2) * (Math.min(window.innerWidth, 1400) / n), y: 0, duration: 1.4, ease: 'power3.inOut', stagger: 0.05 }, 1);
-        tl.to(el.querySelector('[data-ns-title]'), { autoAlpha: 1, y: 0, duration: 0.6 }, 1.8);
+        tl.to(el.querySelector('[data-ns-title]'), { opacity: 1, y: 0, duration: 0.6 }, 1.8);
         // Background colour journey
         colors.forEach((c, i) => tl.to(bg.current, { backgroundColor: c, duration: 0.5, ease: 'none' }, (i / colors.length) * 2.4));
         tl.to(bg.current, { backgroundColor: COLORS.void, duration: 0.4 }, 2.4);
       }}
       fallback={(el) => {
-        gsap.from(el.querySelectorAll('[data-ns-card]'), { autoAlpha: 0, y: 30, stagger: 0.05, scrollTrigger: { trigger: el, start: 'top 80%', once: true } });
+        gsap.from(el.querySelectorAll('[data-ns-card]'), { opacity: 0, y: 30, stagger: 0.05, scrollTrigger: { trigger: el, start: 'top 80%', once: true } });
       }}
     >
       <div ref={bg} aria-hidden="true" className="absolute inset-0 -z-10 bg-void opacity-25 transition-none" />

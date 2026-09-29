@@ -67,7 +67,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
       if (reduced || !root.current) return;
       gsap.fromTo('[data-kenburns]', { scale: 1 }, { scale: 1.08, duration: 20, ease: 'none', repeat: -1, yoyo: true });
       gsap.to('[data-detail-backdrop]', { yPercent: 18, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true } });
-      const intro = () => gsap.from('[data-detail-meta] > *', { y: 24, autoAlpha: 0, duration: DUR.slow, ease: 'reel', stagger: 0.05 });
+      const intro = () => gsap.from('[data-detail-meta] > *', { y: 24, opacity: 0, duration: DUR.slow, ease: 'reel', stagger: 0.05 });
       window.addEventListener(PAGE_INTRO_EVENT, intro, { once: true });
       return () => window.removeEventListener(PAGE_INTRO_EVENT, intro);
     },

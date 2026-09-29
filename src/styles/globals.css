@@ -561,3 +561,13 @@ html.gl-grain .grain {
   from { transform: translateY(-50%); }
   to { transform: translateY(0); }
 }
+
+/* DOM image hidden once its WebGL plane is live (gallery) */
+[data-gl-live='true'] img {
+  opacity: 0 !important;
+}
+
+/* Reveal-on-scroll uses opacity only, so hidden content stays focusable; reveal it on focus. */
+:where([data-card], [data-flip-id], .reveal-root, .reveal-root > *):focus-within {
+  opacity: 1 !important;
+}

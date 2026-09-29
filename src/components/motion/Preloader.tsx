@@ -83,7 +83,7 @@ export function Preloader() {
       finished = true;
       cancelAnimationFrame(raf);
       stopTracking();
-      const split = SplitText.create(q('[data-wordmark]'), { type: 'chars', mask: 'chars', aria: 'auto' });
+      const split = SplitText.create(q('[data-wordmark]'), { type: 'chars', mask: 'chars', aria: 'hidden' });
       gsap
         .timeline({ onComplete: finish })
         .to(q('[data-leader]'), { scale: 0, duration: 0.35, ease: 'shutter' })
@@ -152,7 +152,7 @@ export function Preloader() {
             3
           </span>
         </div>
-        <p data-wordmark className="invisible absolute font-display text-[clamp(3rem,10vw,7rem)] leading-none tracking-tight text-reel">
+        <p data-wordmark aria-hidden="true" className="invisible absolute font-display text-[clamp(3rem,10vw,7rem)] leading-none tracking-tight text-reel">
           Reelhouse
         </p>
       </div>

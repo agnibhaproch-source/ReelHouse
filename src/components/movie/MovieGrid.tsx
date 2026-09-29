@@ -71,8 +71,8 @@ export function MovieGrid({ movies, loadingMore, onEndReached, hasMore, classNam
       ease: 'projector',
       absolute: true,
       nested: true,
-      onEnter: (els) => gsap.fromTo(els, { autoAlpha: 0, scale: 0.85 }, { autoAlpha: 1, scale: 1, duration: DUR.base, ease: 'reel' }),
-      onLeave: (els) => gsap.to(els, { autoAlpha: 0, scale: 0.8, duration: DUR.fast, ease: 'shutter' }),
+      onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: DUR.base, ease: 'reel' }),
+      onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.8, duration: DUR.fast, ease: 'shutter' }),
       onComplete: clearLeaving,
     });
   }, [items]);
@@ -88,11 +88,11 @@ export function MovieGrid({ movies, loadingMore, onEndReached, hasMore, classNam
       return true;
     });
     if (!fresh.length || isReducedNow()) return;
-    gsap.set(fresh, { autoAlpha: 0, y: 30 });
+    gsap.set(fresh, { opacity: 0, y: 30 });
     const triggers = ScrollTrigger.batch(fresh, {
       start: 'top 95%',
       once: true,
-      onEnter: (batch) => gsap.to(batch, { autoAlpha: 1, y: 0, duration: DUR.slow, ease: 'reel', stagger: { each: STAGGER.base, amount: STAGGER.base * STAGGER.maxItems } }),
+      onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: DUR.slow, ease: 'reel', stagger: { each: STAGGER.base, amount: STAGGER.base * STAGGER.maxItems } }),
     });
     return () => triggers.forEach((t) => t.kill());
   }, [items]);

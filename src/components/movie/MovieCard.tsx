@@ -159,6 +159,7 @@ export function MovieCard({ movie, rank, priority, className, progress, onRemove
             data-cursor="play"
             data-cursor-label="Preview"
             data-poster-id={movie.id}
+            data-pressable
             onClick={onClick}
             onKeyDown={onKeyDown}
             onPointerEnter={onEnter}

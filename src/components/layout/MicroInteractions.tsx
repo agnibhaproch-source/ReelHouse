@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { useUiStore } from '@/stores/ui';
 import { toast } from '@/stores/toast';
 import { watchTitle } from '@/lib/tab-title';
+import { play } from '@/lib/sound';
+import { isReducedNow } from '@/hooks/useMotionPrefs';
 
 const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 const IDLE_MS = 30_000;
@@ -74,6 +76,35 @@ export function MicroInteractions() {
       set('lightsDown', false);
     };
   }, [pathname, set]);
+
+  // Press feedback for every button/link that isn't already a Pressable (spec 34). Uses WAAPI on
+  // the independent `scale` property so it never clobbers transforms or transitions.
+  useEffect(() => {
+    const SELECTOR = 'button, a[href], [role="button"], [role="tab"], [role="switch"], [role="option"], summary';
+    let pressed: { el: HTMLElement; anim: Animation } | null = null;
+    const release = () => {
+      if (!pressed) return;
+      const { el, anim } = pressed;
+      pressed = null;
+      el.animate([{ scale: '0.96' }, { scale: '1' }], { duration: 420, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' }).onfinish = () => anim.cancel();
+    };
+    const onDown = (e: PointerEvent) => {
+      if (e.button !== 0 || isReducedNow()) return;
+      const el = (e.target as Element | null)?.closest<HTMLElement>(SELECTOR);
+      if (!el || el.closest('[data-pressable], [data-no-press]') || el.matches(':disabled, [aria-disabled="true"]')) return;
+      if (typeof el.animate !== 'function') return;
+      void play('press');
+      pressed = { el, anim: el.animate([{ scale: '1' }, { scale: '0.96' }], { duration: 120, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'forwards' }) };
+    };
+    window.addEventListener('pointerdown', onDown, { passive: true });
+    window.addEventListener('pointerup', release, { passive: true });
+    window.addEventListener('pointercancel', release, { passive: true });
+    return () => {
+      window.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointerup', release);
+      window.removeEventListener('pointercancel', release);
+    };
+  }, []);
 
   // Offline / online
   useEffect(() => {
