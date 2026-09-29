@@ -1,0 +1,130 @@
+'use client';
+
+import { AnimatePresence, motion, type PanInfo } from 'motion/react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { EASES, DUR, SPRING } from '@/lib/tokens';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { useLenis } from '@/hooks/useLenis';
+import { useMotionPrefs } from '@/hooks/useMotionPrefs';
+import { useMediaQuery, QUERIES } from '@/hooks/useMediaQuery';
+
+export type ModalVariant = 'center' | 'sheet' | 'fullscreen';
+
+interface ModalProps {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  /** Visually hide the title (still labels the dialog). */
+  hideTitle?: boolean;
+  description?: string;
+  /** `center` becomes a bottom sheet on mobile automatically. */
+  variant?: ModalVariant;
+  children: ReactNode;
+  className?: string;
+  showClose?: boolean;
+}
+
+/**
+ * Modal: focus trap, Esc closes, restores focus, aria-modal, scroll lock via Lenis stop()
+ * (spec 14). Mobile sheets drag to dismiss with velocity (spec 62).
+ */
+export function Modal({ open, onClose, title, hideTitle, description, variant = 'center', children, className, showClose = true }: ModalProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const descId = useId();
+  const { stop, start } = useLenis();
+  const { reduced } = useMotionPrefs();
+  const mobile = useMediaQuery(QUERIES.mobile);
+  const effective: ModalVariant = variant === 'center' && mobile ? 'sheet' : variant;
+  useFocusTrap(ref, open, onClose);
+
+  useEffect(() => {
+    if (!open) return;
+    stop();
+    const prev = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      start();
+      document.documentElement.style.overflow = prev;
+    };
+  }, [open, stop, start]);
+
+  const panelMotion =
+    reduced
+      ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }
+      : effective === 'sheet'
+        ? { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } }
+        : effective === 'fullscreen'
+          ? { initial: { opacity: 0, scale: 0.98 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.98 } }
+          : { initial: { opacity: 0, y: 24, scale: 0.97 }, animate: { opacity: 1, y: 0, scale: 1 }, exit: { opacity: 0, y: 12, scale: 0.98 } };
+
+  const onDragEnd = (_: unknown, info: PanInfo) => {
+    if (info.offset.y > 120 || info.velocity.y > 600) onClose();
+  };
+
+  if (typeof document === 'undefined') return null;
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-(--z-modal)" data-lenis-prevent>
+          <motion.div
+            aria-hidden="true"
+            className="absolute inset-0 bg-void/80 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: DUR.fast } }}
+            transition={{ duration: DUR.base }}
+            onClick={onClose}
+          />
+          <motion.div
+            ref={ref}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            aria-describedby={description ? descId : undefined}
+            tabIndex={-1}
+            {...panelMotion}
+            transition={effective === 'sheet' ? SPRING : { duration: DUR.base, ease: EASES.reel }}
+            drag={effective === 'sheet' && !reduced ? 'y' : false}
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={onDragEnd}
+            className={cn(
+              'absolute overflow-y-auto bg-aisle text-reel shadow-2xl outline-none',
+              effective === 'center' && 'top-1/2 left-1/2 max-h-[88svh] w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-modal p-6 md:p-8',
+              effective === 'sheet' && 'inset-x-0 bottom-0 max-h-[90svh] rounded-t-modal p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]',
+              effective === 'fullscreen' && 'inset-0 bg-void',
+              className,
+            )}
+          >
+            {effective === 'sheet' && <div aria-hidden="true" className="mx-auto mb-4 h-1 w-10 rounded-pill bg-line" />}
+            <h2 id={titleId} className={cn('mb-2 pr-10 font-display text-h3', hideTitle && 'sr-only')}>
+              {title}
+            </h2>
+            {description && (
+              <p id={descId} className="mb-4 text-small text-dim">
+                {description}
+              </p>
+            )}
+            {showClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                data-cursor="link"
+                className="absolute top-4 right-4 z-10 grid size-11 place-items-center rounded-full text-dim transition-colors duration-fast hover:bg-reel/10 hover:text-reel"
+              >
+                <X className="size-5 transition-transform duration-base ease-snap hover:rotate-90" />
+              </button>
+            )}
+            {children}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body,
+  );
+}
