@@ -44,7 +44,7 @@ export default async function HomePage() {
         </div>
       )}
 
-      <div className="relative z-[1] -mt-[12vh] max-md:-mt-4">
+      <div className={hero.data?.length ? 'relative z-[1] -mt-[12vh] max-md:-mt-4' : 'relative z-[1]'}>
         {trendingRow && <Row rowKey={trendingRow.key} title={trendingRow.title} source={trendingRow.source} initial={trending.data ?? undefined} priorityCount={6} sprockets />}
         <ContinueExploringRow />
         {top10Row && <Row rowKey={top10Row.key} title={top10Row.title} source={top10Row.source} initial={top10.data ?? undefined} ranked />}

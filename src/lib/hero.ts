@@ -25,7 +25,9 @@ export interface HeroSlide {
 /** Top 5 trending titles with a good backdrop, preferring ones with an English logo (spec 21). */
 export async function getHeroSlides(prefs: RequestPrefs = {}): Promise<HeroSlide[]> {
   const trending = await getTrending('day', 1, prefs);
-  const candidates = trending.results.filter((m) => m.backdrop_path || m.poster_path).slice(0, 10);
+  const withArt = trending.results.filter((m) => m.backdrop_path || m.poster_path);
+  // Demo fixtures have no artwork — fall back to the top titles so the billboard still renders.
+  const candidates = (withArt.length >= 3 ? withArt : trending.results).slice(0, 10);
   const details = await Promise.all(candidates.map((m) => getMovie(m.id, prefs).catch(() => null)));
   const slides: HeroSlide[] = [];
   for (let i = 0; i < candidates.length; i++) {

@@ -1,6 +1,4 @@
 import 'server-only';
-import sharp from 'sharp';
-import { getAverageColor } from 'fast-average-color-node';
 import { IMAGE_SIZE, tmdbImage } from './images';
 import type { Movie, PosterMeta } from './types';
 import { fallbackGlow } from './color';
@@ -14,6 +12,8 @@ async function compute(path: string): Promise<PosterMeta> {
   const res = await fetch(url, { cache: 'force-cache' });
   if (!res.ok) throw new Error(`poster ${res.status}`);
   const buf = Buffer.from(await res.arrayBuffer());
+  // Native modules load lazily so a broken sharp install degrades to fallback colours, not a crash.
+  const [{ default: sharp }, { getAverageColor }] = await Promise.all([import('sharp'), import('fast-average-color-node')]);
   const [avg, tiny] = await Promise.all([
     getAverageColor(buf, { algorithm: 'dominant', ignoredColor: [[0, 0, 0, 255, 24], [255, 255, 255, 255, 24]] }),
     sharp(buf).resize(10, 15, { fit: 'cover' }).webp({ quality: 40 }).toBuffer(),

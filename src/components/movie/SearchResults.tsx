@@ -99,7 +99,7 @@ export function SearchResults() {
   return (
     <div className="px-gutter pt-32 pb-10">
       <h1 className="mb-6 font-display text-h1">{term ? <>Results for “{term}”</> : 'Search'}</h1>
-      <Input variant="search" label="Search movies" placeholder="Search for a title, actor or director" value={q} onChange={(e) => setQ(e.currentTarget.value)} icon={<Search />} className="mb-6 max-w-2xl" autoFocus={!q} />
+      <Input variant="search" type="search" label="Search movies" placeholder="Search for a title, actor or director" value={q} onChange={(e) => setQ(e.currentTarget.value)} icon={<Search />} className="mb-6 max-w-2xl" autoFocus={!q} />
 
       {all.length > 0 && (
         <div className="mb-8 flex flex-col gap-3">

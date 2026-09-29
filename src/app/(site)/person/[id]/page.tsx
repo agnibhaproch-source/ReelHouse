@@ -17,6 +17,11 @@ import { StatusBanner } from '@/components/layout/StatusBanner';
 
 export const revalidate = 86400;
 
+/** Render on first request, then cache (ISR). */
+export function generateStaticParams() {
+  return [];
+}
+
 type Props = { params: Promise<{ id: string }> };
 
 const parseId = (raw: string) => {

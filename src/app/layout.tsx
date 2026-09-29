@@ -69,8 +69,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Preloader />
         </Providers>
         <Grain />
-        <Analytics />
-        <SpeedInsights />
+        {/* Vercel serves these scripts only on its own deployments */}
+        {process.env.VERCEL && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );

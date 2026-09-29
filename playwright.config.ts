@@ -5,6 +5,8 @@ const PORT = 3100;
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
+  workers: process.env.CI ? 2 : 3,
+  expect: { timeout: 10_000 },
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
@@ -12,8 +14,9 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   projects: [
-    { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
+    { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testIgnore: /(mobile|visual)\.spec\.ts/ },
     { name: 'mobile', use: { ...devices['Pixel 7'] }, testMatch: /mobile\.spec\.ts/ },
+    { name: 'visual', use: { ...devices['Desktop Chrome'] }, testMatch: /visual\.spec\.ts/ },
   ],
   webServer: {
     command: `pnpm build && pnpm start -p ${PORT}`,
