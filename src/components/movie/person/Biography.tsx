@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { useState } from 'react';
 import { SPRING } from '@/lib/tokens';
 import { useMotionPrefs } from '@/hooks/useMotionPrefs';
@@ -17,8 +17,8 @@ export function Biography({ text, name }: { text: string; name: string }) {
         Biography
       </h2>
       {text ? (
-        <motion.div layout={!reduced} transition={SPRING} className="overflow-hidden">
-          <motion.p
+        <m.div layout={!reduced} transition={SPRING} className="overflow-hidden">
+          <m.p
             layout="position"
             className={cn(
               'measure text-reel/85 whitespace-pre-line',
@@ -26,7 +26,7 @@ export function Biography({ text, name }: { text: string; name: string }) {
             )}
           >
             {text}
-          </motion.p>
+          </m.p>
           {long && (
             <button
               type="button"
@@ -37,7 +37,7 @@ export function Biography({ text, name }: { text: string; name: string }) {
               {open ? 'Read less' : 'Read more'}
             </button>
           )}
-        </motion.div>
+        </m.div>
       ) : (
         <p className="text-dim">We don’t have a biography for {name} yet.</p>
       )}

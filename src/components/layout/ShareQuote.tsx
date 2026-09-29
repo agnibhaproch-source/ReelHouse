@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Quote } from 'lucide-react';
@@ -64,7 +64,7 @@ export function ShareQuote() {
   return (
     <AnimatePresence>
       {enabled && sel && (
-        <motion.button
+        <m.button
           key="share-quote"
           type="button"
           data-share-quote
@@ -77,7 +77,7 @@ export function ShareQuote() {
           transition={SPRING}
         >
           <Quote className="size-3.5" aria-hidden="true" /> Share quote
-        </motion.button>
+        </m.button>
       )}
     </AnimatePresence>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
@@ -87,7 +87,7 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
         createPortal(
           <AnimatePresence>
             {open && (
-              <motion.div
+              <m.div
                 ref={panel}
                 id="mobile-menu"
                 role="dialog"
@@ -166,7 +166,7 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
                     <MotionToggle />
                   </div>
                 </nav>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>,
           document.body,

@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DUR, EASES, SPRING } from '@/lib/tokens';
@@ -25,7 +25,7 @@ export function SubmitButton({
   const { reduced } = useMotionPrefs();
   const round = state === 'loading' || state === 'success';
   return (
-    <motion.button
+    <m.button
       type="submit"
       layout={!reduced}
       transition={SPRING}
@@ -42,25 +42,20 @@ export function SubmitButton({
     >
       <AnimatePresence mode="wait" initial={false}>
         {state === 'loading' ? (
-          <motion.span
-            key="l"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <m.span key="l" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <FilmReelSpinner className="size-5" label="Working" />
-          </motion.span>
+          </m.span>
         ) : state === 'success' ? (
-          <motion.span
+          <m.span
             key="s"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ duration: DUR.base, ease: EASES.snap }}
           >
             <Check className="size-5" aria-label="Done" />
-          </motion.span>
+          </m.span>
         ) : (
-          <motion.span
+          <m.span
             key="t"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -68,9 +63,9 @@ export function SubmitButton({
             className="whitespace-nowrap"
           >
             {children}
-          </motion.span>
+          </m.span>
         )}
       </AnimatePresence>
-    </motion.button>
+    </m.button>
   );
 }

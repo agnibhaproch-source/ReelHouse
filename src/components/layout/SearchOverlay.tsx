@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
@@ -167,7 +167,7 @@ export function SearchOverlay() {
   const renderOption = (o: Option, i: number) => {
     const selected = i === activeIndex;
     return (
-      <motion.li
+      <m.li
         key={o.id}
         id={optionId(o)}
         role="option"
@@ -183,7 +183,7 @@ export function SearchOverlay() {
         data-cursor="link"
       >
         {selected && (
-          <motion.span
+          <m.span
             layoutId="search-highlight"
             transition={SPRING}
             className="bg-reel/8 absolute inset-0 -z-10 rounded-[10px]"
@@ -191,7 +191,7 @@ export function SearchOverlay() {
           />
         )}
         {selected && (
-          <motion.span
+          <m.span
             layoutId="search-bar"
             transition={SPRING}
             className="rounded-pill bg-violet absolute inset-y-2 left-0 w-0.5"
@@ -249,7 +249,7 @@ export function SearchOverlay() {
             </span>
           )}
         </div>
-      </motion.li>
+      </m.li>
     );
   };
 
@@ -259,7 +259,7 @@ export function SearchOverlay() {
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-(--z-modal)" data-lenis-prevent>
-          <motion.div
+          <m.div
             aria-hidden="true"
             className="bg-void/85 absolute inset-0 backdrop-blur-md"
             initial={{ opacity: 0 }}
@@ -267,7 +267,7 @@ export function SearchOverlay() {
             exit={{ opacity: 0 }}
             onClick={close}
           />
-          <motion.div
+          <m.div
             aria-hidden="true"
             className="bg-ink absolute inset-x-0 top-0 h-[8vh]"
             initial={{ y: '-100%' }}
@@ -275,7 +275,7 @@ export function SearchOverlay() {
             exit={{ y: '-100%' }}
             transition={{ duration: DUR.slow, ease: EASES.projector }}
           />
-          <motion.div
+          <m.div
             aria-hidden="true"
             className="bg-ink absolute inset-x-0 bottom-0 h-[8vh]"
             initial={{ y: '100%' }}
@@ -283,7 +283,7 @@ export function SearchOverlay() {
             exit={{ y: '100%' }}
             transition={{ duration: DUR.slow, ease: EASES.projector }}
           />
-          <motion.div
+          <m.div
             ref={panel}
             role="dialog"
             aria-modal="true"
@@ -336,25 +336,25 @@ export function SearchOverlay() {
               <ul id={listId} role="listbox" aria-label="Search results" className="flex flex-col">
                 <AnimatePresence initial={false}>
                   {showResults && movies.length > 0 && (
-                    <motion.li
+                    <m.li
                       key="h-movies"
                       role="presentation"
                       className="text-small text-dim px-3 pt-2 pb-1 font-semibold"
                     >
                       Movies
-                    </motion.li>
+                    </m.li>
                   )}
                   {options
                     .filter((o) => o.kind === 'movie' || o.kind === 'recent')
                     .map((o) => renderOption(o, options.indexOf(o)))}
                   {showResults && people.length > 0 && (
-                    <motion.li
+                    <m.li
                       key="h-people"
                       role="presentation"
                       className="text-small text-dim px-3 pt-3 pb-1 font-semibold"
                     >
                       People
-                    </motion.li>
+                    </m.li>
                   )}
                   {options
                     .filter((o) => o.kind === 'person' || o.kind === 'all')
@@ -395,7 +395,7 @@ export function SearchOverlay() {
               <span>Enter to open</span>
               <span>Esc to close</span>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,

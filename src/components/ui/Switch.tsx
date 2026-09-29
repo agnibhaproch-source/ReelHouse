@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { useId } from 'react';
 import { cn } from '@/lib/utils';
 import { SPRING } from '@/lib/tokens';
@@ -61,7 +61,7 @@ export function Switch({
             checked ? 'opacity-100' : 'opacity-0',
           )}
         />
-        <motion.span
+        <m.span
           aria-hidden="true"
           layout
           transition={SPRING}

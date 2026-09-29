@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useState } from 'react';
 import { Flag, Heart, Pencil, Trash2 } from 'lucide-react';
 import type { TmdbReview } from '@/lib/tmdb/types';
@@ -30,7 +30,7 @@ function ExpandableText({ text, spoiler }: { text: string; spoiler?: boolean }) 
   const { reduced } = useMotionPrefs();
   const long = text.length > 420;
   return (
-    <motion.div layout={!reduced} transition={SPRING} className="relative">
+    <m.div layout={!reduced} transition={SPRING} className="relative">
       {spoiler && !revealed && (
         <button
           type="button"
@@ -57,7 +57,7 @@ function ExpandableText({ text, spoiler }: { text: string; spoiler?: boolean }) 
           {open ? 'Show less' : 'Read more'}
         </button>
       )}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -91,7 +91,7 @@ function HeartBurst({
         />
         <AnimatePresence>
           {on && (
-            <motion.span
+            <m.span
               key="burst"
               aria-hidden="true"
               className="border-danger absolute inset-0 rounded-full border-2"
@@ -159,7 +159,7 @@ export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
           <ul className="grid gap-5 lg:grid-cols-2">
             <AnimatePresence initial={false}>
               {site.map((r) => (
-                <motion.li
+                <m.li
                   key={r.id}
                   layout={!reduced}
                   initial={{ opacity: 0, y: 12 }}
@@ -212,7 +212,7 @@ export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
                       </button>
                     )}
                   </div>
-                </motion.li>
+                </m.li>
               ))}
             </AnimatePresence>
           </ul>

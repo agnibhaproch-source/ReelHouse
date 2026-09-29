@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { LogIn, LogOut, Settings, Users, Bookmark } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
@@ -56,7 +56,7 @@ export function ProfileMenu() {
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             ref={panel}
             id={id}
             role="dialog"
@@ -98,7 +98,7 @@ export function ProfileMenu() {
                 )}
               </>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

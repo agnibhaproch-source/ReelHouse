@@ -3,7 +3,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
-import { Flip } from 'gsap/Flip';
 import { CustomEase } from 'gsap/CustomEase';
 import { useGSAP } from '@gsap/react';
 import { EASES, DUR } from './tokens';
@@ -12,7 +11,7 @@ let registered = false;
 
 export function registerGsap(): void {
   if (registered || typeof window === 'undefined') return;
-  gsap.registerPlugin(ScrollTrigger, SplitText, Flip, CustomEase, useGSAP);
+  gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase, useGSAP);
   for (const [name, [a, b, c, d]] of Object.entries(EASES)) {
     CustomEase.create(name, `M0,0 C${a},${b} ${c},${d} 1,1`);
   }
@@ -23,4 +22,4 @@ export function registerGsap(): void {
 
 registerGsap();
 
-export { gsap, ScrollTrigger, SplitText, Flip, CustomEase, useGSAP };
+export { gsap, ScrollTrigger, SplitText, CustomEase, useGSAP };

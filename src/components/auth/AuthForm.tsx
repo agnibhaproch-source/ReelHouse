@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail } from 'lucide-react';
-import { getSupabaseBrowser } from '@/lib/supabase/client';
 import { safeNext } from '@/lib/supabase/config';
+import { useSession } from '@/hooks/useSession';
 import {
   authErrorMessage,
   LoginSchema,
@@ -50,7 +50,7 @@ function GoogleIcon() {
 
 /** Login / signup / forgot-password form (spec 50) with specific errors and submit morph. */
 export function AuthForm({ mode }: { mode: Mode }) {
-  const sb = getSupabaseBrowser();
+  const { sb, accountsEnabled } = useSession();
   const router = useRouter();
   const sp = useSearchParams();
   const next = safeNext(sp.get('next'), '/profiles');
@@ -137,7 +137,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     if (error) fail(authErrorMessage(error));
   };
 
-  if (!sb) {
+  if (!accountsEnabled) {
     return (
       <div className="flex flex-col gap-4">
         <h1 className="font-display text-h1">{copy.title}</h1>

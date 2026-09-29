@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { usePathname } from 'next/navigation';
 import { Bookmark, Home, Search, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -52,7 +52,7 @@ export function BottomTabBar() {
           const inner = (
             <>
               {t.active && (
-                <motion.span
+                <m.span
                   layoutId="tab-pill"
                   transition={SPRING}
                   className="rounded-pill bg-violet/20 absolute inset-x-3 inset-y-1.5 -z-10"

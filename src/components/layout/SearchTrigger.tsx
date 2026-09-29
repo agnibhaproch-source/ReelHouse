@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useUiStore } from '@/stores/ui';
@@ -24,7 +24,7 @@ export function SearchTrigger() {
 
   return (
     <div className="relative size-11">
-      <motion.span
+      <m.span
         aria-hidden="true"
         className="rounded-pill border-line bg-aisle absolute top-0 right-0 h-11 w-56 origin-right border"
         initial={false}

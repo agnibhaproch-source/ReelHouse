@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { ChevronDown } from 'lucide-react';
@@ -31,13 +31,13 @@ function Collage({ params }: { params: Record<string, string | number> }) {
     },
     staleTime: 60 * 60_000,
   });
-  const posters = (data?.results ?? []).filter((m) => m.poster_path).slice(0, 3);
+  const posters = (data?.results ?? []).filter((movie) => movie.poster_path).slice(0, 3);
   return (
     <div className="relative h-full min-h-56" aria-hidden="true">
       <AnimatePresence>
-        {posters.map((m, i) => (
-          <motion.div
-            key={`${qs}-${m.id}`}
+        {posters.map((movie, i) => (
+          <m.div
+            key={`${qs}-${movie.id}`}
             className="rounded-poster absolute top-1/2 left-1/2 aspect-[2/3] w-28 overflow-hidden shadow-2xl"
             initial={{ opacity: 0, rotate: 0, x: '-50%', y: '-40%' }}
             animate={{
@@ -49,8 +49,8 @@ function Collage({ params }: { params: Record<string, string | number> }) {
             exit={{ opacity: 0 }}
             transition={{ duration: DUR.slow, ease: EASES.reel, delay: i * 0.06 }}
           >
-            <TmdbImage path={m.poster_path} kind="poster" alt="" sizes="112px" />
-          </motion.div>
+            <TmdbImage path={movie.poster_path} kind="poster" alt="" sizes="112px" />
+          </m.div>
         ))}
       </AnimatePresence>
     </div>
@@ -165,7 +165,7 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             id={id}
             role="region"
             aria-label={label}
@@ -186,7 +186,7 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
             <div className="px-gutter mx-auto grid max-w-7xl grid-cols-[1fr_280px] gap-10 py-8">
               <ul className="grid grid-cols-3 gap-x-6 gap-y-1">
                 {items.map((item, i) => (
-                  <motion.li
+                  <m.li
                     key={item.href}
                     initial={reduced ? false : { opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -212,7 +212,7 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
                       </span>
                       {item.sub && <span className="font-ui text-small text-dim">{item.sub}</span>}
                     </TransitionLink>
-                  </motion.li>
+                  </m.li>
                 ))}
                 {seeAll && (
                   <li className="col-span-3 mt-3">
@@ -228,7 +228,7 @@ export function MegaMenu({ label, items, active, seeAll }: MegaMenuProps) {
               </ul>
               {items[hot] && <Collage params={items[hot].params} />}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
@@ -205,13 +205,13 @@ export function PreviewLayer() {
   return createPortal(
     <AnimatePresence>
       {movie && pos && (
-        <motion.div
+        <m.div
           key={movie.id}
           ref={panel}
           role="dialog"
           aria-label={`${movie.title} preview`}
           data-cursor="default"
-          className="border-line bg-aisle absolute z-(--z-preview) overflow-hidden rounded-[10px] border shadow-[0_30px_80px_rgb(0_0_0/0.65)]"
+          className="absolute z-(--z-preview) rounded-[10px] shadow-[0_30px_80px_rgb(0_0_0/0.65)]"
           style={{
             left: pos.left,
             top: pos.top,
@@ -237,13 +237,15 @@ export function PreviewLayer() {
             className="pointer-events-none absolute -inset-10 -z-10 opacity-40 blur-3xl"
             style={{ background: 'var(--glow)' }}
           />
-          <PreviewBody movie={movie} compact={false} />
+          <div className="border-line bg-aisle overflow-hidden rounded-[10px] border">
+            <PreviewBody movie={movie} compact={false} />
+          </div>
           {keyboard && (
             <p className="sr-only" aria-live="polite">
               Preview open. Press Escape to close.
             </p>
           )}
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>,
     document.body,

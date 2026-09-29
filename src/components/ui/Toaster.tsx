@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useEffect } from 'react';
 import { AlertCircle, CheckCircle2, Info, WifiOff } from 'lucide-react';
 import { useToastStore, type Toast as ToastT } from '@/stores/toast';
@@ -25,7 +25,7 @@ function ToastItem({ t }: { t: ToastT }) {
           ? AlertCircle
           : Info;
   return (
-    <motion.li
+    <m.li
       layout={!reduced}
       initial={reduced ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -70,7 +70,7 @@ function ToastItem({ t }: { t: ToastT }) {
           {t.action.label}
         </button>
       )}
-    </motion.li>
+    </m.li>
   );
 }
 

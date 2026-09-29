@@ -2,11 +2,14 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
+import { LazyMotion } from 'motion/react';
 import { useState, type ReactNode } from 'react';
 import '@/lib/gsap';
 import { SmoothScrollProvider } from '@/components/motion/SmoothScrollProvider';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 import { SettingsSync } from '@/components/providers/SettingsSync';
+
+const loadMotionFeatures = () => import('@/lib/motion-features').then((m) => m.default);
 
 const Devtools =
   process.env.NODE_ENV === 'development'
@@ -31,12 +34,14 @@ export function Providers({ children }: { children: ReactNode }) {
   );
   return (
     <QueryClientProvider client={client}>
-      <SessionProvider>
-        <SmoothScrollProvider>
-          <SettingsSync />
-          {children}
-        </SmoothScrollProvider>
-      </SessionProvider>
+      <LazyMotion features={loadMotionFeatures}>
+        <SessionProvider>
+          <SmoothScrollProvider>
+            <SettingsSync />
+            {children}
+          </SmoothScrollProvider>
+        </SessionProvider>
+      </LazyMotion>
       <Devtools buttonPosition="bottom-left" />
     </QueryClientProvider>
   );

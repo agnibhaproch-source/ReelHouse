@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion, type PanInfo } from 'motion/react';
+import { AnimatePresence, m, type PanInfo } from 'motion/react';
 import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
@@ -87,7 +87,7 @@ export function Modal({
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-(--z-modal)" data-lenis-prevent>
-          <motion.div
+          <m.div
             aria-hidden="true"
             className="bg-void/80 absolute inset-0 backdrop-blur-sm"
             initial={{ opacity: 0 }}
@@ -96,7 +96,7 @@ export function Modal({
             transition={{ duration: DUR.base }}
             onClick={onClose}
           />
-          <motion.div
+          <m.div
             ref={ref}
             role="dialog"
             aria-modal="true"
@@ -145,7 +145,7 @@ export function Modal({
               </button>
             )}
             {children}
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,

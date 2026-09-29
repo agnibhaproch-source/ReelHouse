@@ -46,4 +46,5 @@ One line per dependency (spec 01), then the architectural calls that deviate fro
 - **Sound.** No licensed samples. `scripts/generate-sounds.mjs` synthesises the sprite procedurally (original work, CC0) into `public/sounds/ui.wav`. The spec's `.webm`/`.mp3` pair needs ffmpeg; WAV plays everywhere Howler does. Re-encode it if bundle size matters.
 - **TMDB logo.** The footer shows a neutral "TMDB" text badge plus the required disclaimer. Drop the official logo from themoviedb.org/about/logos-attribution into `public/` before launch.
 - **Monitoring.** `lib/monitoring.ts` is the single capture point. Sentry isn't installed because it needs a DSN and an auth token for source maps; `docs/README.md` has the steps to enable it.
+- **Bundle.** Motion uses `LazyMotion` with `m` components (features load async); Supabase is a dynamic import exposed through `useSession().sb`. See `docs/perf/README.md` for the measured first load and the remaining gap to the 200 KB budget.
 - **Recommendations** are a server action. Seeds (list + likes) come from the client because guests have no server-side data. The TMDB calls behind them are cached for 6h per seed.

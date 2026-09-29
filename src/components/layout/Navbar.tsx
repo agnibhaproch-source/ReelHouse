@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { usePathname } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -162,7 +162,7 @@ export function Navbar() {
 
 function Underline() {
   return (
-    <motion.span
+    <m.span
       layoutId="nav-underline"
       transition={SPRING}
       className="rounded-pill bg-cyan absolute inset-x-3 bottom-1 h-0.5"

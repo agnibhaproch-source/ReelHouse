@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion, type Variants } from 'motion/react';
+import { AnimatePresence, m, type Variants } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
@@ -241,20 +241,20 @@ export function Cursor() {
       ))}
       {/* Ring */}
       <div ref={posRef} className="absolute top-0 left-0" style={{ willChange: 'transform' }}>
-        <motion.div
+        <m.div
           initial={false}
           animate={{ scale: visible ? 1 : 0, opacity: visible ? 1 : 0 }}
           transition={{ duration: DUR.base, ease: EASES.reel }}
         >
           <div ref={stretchRef}>
-            <motion.div
+            <m.div
               className="relative -translate-x-1/2 -translate-y-1/2"
               style={{ width: BASE, height: BASE }}
               variants={ringVariants}
               initial={false}
               animate={effectiveMode}
             >
-              <motion.div
+              <m.div
                 animate={{ scale: pressed ? 0.8 : 1 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 18 }}
                 className="size-full"
@@ -318,13 +318,13 @@ export function Cursor() {
                     />
                   )}
                 </svg>
-              </motion.div>
-            </motion.div>
+              </m.div>
+            </m.div>
           </div>
           {/* Contextual content (not stretched or spun) */}
           <AnimatePresence>
             {(effectiveMode === 'play' || effectiveMode === 'drag') && (
-              <motion.div
+              <m.div
                 key={effectiveMode}
                 initial={{ opacity: 0, scale: 0.6 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -344,15 +344,15 @@ export function Cursor() {
                     <ChevronRight className="size-3 animate-[drag-right_1.2s_var(--ease-reel)_infinite]" />
                   </span>
                 )}
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
-        </motion.div>
+        </m.div>
       </div>
       {/* Magnetic frame */}
       <AnimatePresence>
         {magnet && (
-          <motion.div
+          <m.div
             key="magnet"
             className="border-reel/80 absolute rounded-full border"
             initial={{ opacity: 0, scale: 1.3 }}
@@ -373,7 +373,7 @@ export function Cursor() {
       {/* Text caret */}
       <AnimatePresence>
         {effectiveMode === 'text' && visible && (
-          <motion.div
+          <m.div
             key="caret"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -382,12 +382,12 @@ export function Cursor() {
             ref={undefined}
           >
             <CaretFollower />
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
       {/* Dot */}
       <div ref={dotRef} className="absolute top-0 left-0" style={{ willChange: 'transform' }}>
-        <motion.div
+        <m.div
           className="bg-reel size-1.5 rounded-full"
           animate={{ scale: pressed ? 1.6 : showDot ? 1 : 0, opacity: visible && showDot ? 1 : 0 }}
           transition={{ duration: 0.3, ease: EASES.reel }}
@@ -395,7 +395,7 @@ export function Cursor() {
       </div>
       {/* Release flash */}
       {flashes.map(({ id, x, y }) => (
-        <motion.div
+        <m.div
           key={id}
           className="border-reel absolute size-10 rounded-full border"
           style={{ left: x - 20, top: y - 20 }}

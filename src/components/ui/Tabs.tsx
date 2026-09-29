@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { useId, useRef, type KeyboardEvent, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { SPRING } from '@/lib/tokens';
@@ -88,7 +88,7 @@ export function Tabs({
           >
             {t.label}
             {selected && (
-              <motion.span
+              <m.span
                 layoutId={`${prefix}-indicator`}
                 transition={SPRING}
                 className="rounded-pill bg-cyan absolute inset-x-2 -bottom-px h-0.5"

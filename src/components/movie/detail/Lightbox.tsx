@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { TmdbImage as TmdbImageT } from '@/lib/tmdb/types';
 import { DUR, EASES } from '@/lib/tokens';
@@ -39,7 +39,7 @@ export function Lightbox({ images, index, onIndex, title, kind = 'backdrop' }: P
       >
         <AnimatePresence mode="wait">
           {img && (
-            <motion.div
+            <m.div
               key={img.file_path}
               className="relative max-h-[86svh] w-full max-w-[min(92vw,1600px)]"
               style={{ aspectRatio: `${img.aspect_ratio || img.width / img.height}` }}
@@ -55,7 +55,7 @@ export function Lightbox({ images, index, onIndex, title, kind = 'backdrop' }: P
                 sizes="92vw"
                 className="object-contain"
               />
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
         {n > 1 && (

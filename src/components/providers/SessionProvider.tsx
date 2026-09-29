@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import type { User } from '@supabase/supabase-js';
-import { getSupabaseBrowser } from '@/lib/supabase/client';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { loadSupabaseBrowser } from '@/lib/supabase/client';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
 import { localRepo, readGuestWatchlist, clearGuestWatchlist } from '@/lib/data/local';
 import { createSupabaseRepo } from '@/lib/data/supabase';
@@ -18,11 +18,23 @@ import { Button } from '@/components/ui/Button';
 
 /** Auth + active profile + persistence backend (specs 50–52). */
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const sb = getSupabaseBrowser();
   const router = useRouter();
   const qc = useQueryClient();
+  const [sb, setSb] = useState<SupabaseClient | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [ready, setReady] = useState(!sb);
+  const [ready, setReady] = useState(!isSupabaseConfigured());
+
+  useEffect(() => {
+    let alive = true;
+    void loadSupabaseBrowser().then((c) => {
+      if (!alive) return;
+      if (c) setSb(c);
+      else setReady(true);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
   const profile = useProfileStore((s) => s.current);
   const setCurrent = useProfileStore((s) => s.setCurrent);
   const [mergeHandledFor, setMergeHandledFor] = useState<string | null>(null);
@@ -106,6 +118,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const value: SessionValue = {
     ready,
+    sb,
     user,
     repo,
     profile,

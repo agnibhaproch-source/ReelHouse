@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { SkipForward, Volume2, VolumeX, X, RotateCw } from 'lucide-react';
@@ -179,7 +179,7 @@ export function TrailerPlayer() {
     <AnimatePresence>
       {open && movie && (
         <div className="fixed inset-0 z-(--z-modal)" data-lenis-prevent>
-          <motion.div
+          <m.div
             className="bg-ink/90 absolute inset-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -190,7 +190,7 @@ export function TrailerPlayer() {
           />
           {/* Ambient light */}
           {backdrop && (
-            <motion.div
+            <m.div
               aria-hidden="true"
               className="pointer-events-none absolute inset-0 overflow-hidden"
               initial={{ opacity: 0 }}
@@ -204,10 +204,10 @@ export function TrailerPlayer() {
                 className="absolute inset-0 mix-blend-color"
                 style={{ background: color ?? 'var(--marquee-violet)' }}
               />
-            </motion.div>
+            </m.div>
           )}
           {/* Letterbox */}
-          <motion.div
+          <m.div
             aria-hidden="true"
             className="bg-ink absolute inset-x-0 top-0 h-[7vh]"
             initial={{ y: '-100%' }}
@@ -215,7 +215,7 @@ export function TrailerPlayer() {
             exit={{ y: '-100%' }}
             transition={{ duration: DUR.slow, ease: EASES.projector }}
           />
-          <motion.div
+          <m.div
             aria-hidden="true"
             className="bg-ink absolute inset-x-0 bottom-0 h-[7vh]"
             initial={{ y: '100%' }}
@@ -231,7 +231,7 @@ export function TrailerPlayer() {
             aria-label={`Trailer: ${movie.title}`}
             className="absolute inset-0 flex flex-col items-center justify-center gap-4 overflow-y-auto px-4 py-[9vh]"
           >
-            <motion.div
+            <m.div
               className="rounded-modal bg-ink relative w-full overflow-hidden shadow-[0_40px_120px_rgb(0_0_0/0.8)] max-md:rounded-none"
               style={{ maxWidth: w, aspectRatio: '16 / 9' }}
               initial={reduced ? { opacity: 0 } : from}
@@ -268,9 +268,9 @@ export function TrailerPlayer() {
                   )}
                 </div>
               )}
-            </motion.div>
+            </m.div>
 
-            <motion.div
+            <m.div
               className="flex w-full flex-wrap items-center gap-2"
               style={{ maxWidth: w }}
               initial={{ opacity: 0, y: 10 }}
@@ -310,7 +310,7 @@ export function TrailerPlayer() {
                 onClick={close}
                 data-autofocus
               />
-            </motion.div>
+            </m.div>
 
             <p className="text-small text-dim flex items-center gap-2 md:hidden portrait:flex landscape:hidden">
               <RotateCw className="size-4" aria-hidden="true" /> Rotate your phone for a bigger
@@ -318,7 +318,7 @@ export function TrailerPlayer() {
             </p>
 
             {videos.length > 1 && (
-              <motion.ul
+              <m.ul
                 className="no-scrollbar flex w-full gap-3 overflow-x-auto pb-2"
                 style={{ maxWidth: w }}
                 initial={{ opacity: 0 }}
@@ -355,7 +355,7 @@ export function TrailerPlayer() {
                     </button>
                   </li>
                 ))}
-              </motion.ul>
+              </m.ul>
             )}
           </div>
         </div>

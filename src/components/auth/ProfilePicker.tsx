@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -52,7 +52,7 @@ export function ProfilePicker() {
 
   return (
     <div className="px-gutter relative flex min-h-svh flex-col items-center justify-center overflow-hidden py-20">
-      <motion.div
+      <m.div
         animate={chosen ? { opacity: 0 } : { opacity: 1 }}
         transition={{ duration: DUR.slow, delay: 0.3 }}
         className="flex flex-col items-center"
@@ -60,7 +60,7 @@ export function ProfilePicker() {
         <h1 className="font-display text-h1 mb-12 text-center">
           {manage ? 'Manage profiles' : 'Who’s watching?'}
         </h1>
-      </motion.div>
+      </m.div>
       <ul className="flex flex-wrap justify-center gap-8 md:gap-12">
         {isPending &&
           Array.from({ length: 2 }, (_, i) => (
@@ -70,7 +70,7 @@ export function ProfilePicker() {
           const isChosen = chosen === p.id;
           const dim = (hovered && hovered !== p.id) || (chosen && !isChosen);
           return (
-            <motion.li
+            <m.li
               key={p.id}
               className="flex flex-col items-center gap-4"
               style={
@@ -120,14 +120,14 @@ export function ProfilePicker() {
                   className="md:size-40"
                 />
                 {manage && (
-                  <motion.span
+                  <m.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={SPRING}
                     className="bg-void/60 absolute inset-0 grid place-items-center rounded-[22%]"
                   >
                     <Pencil className="size-8" aria-hidden="true" />
-                  </motion.span>
+                  </m.span>
                 )}
               </button>
               <span
@@ -143,7 +143,7 @@ export function ProfilePicker() {
                   </span>
                 )}
               </span>
-            </motion.li>
+            </m.li>
           );
         })}
         {!isPending && profiles.length < MAX_PROFILES && !chosen && (

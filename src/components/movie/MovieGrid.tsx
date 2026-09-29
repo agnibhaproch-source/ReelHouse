@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { gsap, Flip, ScrollTrigger } from '@/lib/gsap';
+import { Flip } from 'gsap/Flip';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
+
+gsap.registerPlugin(Flip);
 import { DUR, STAGGER } from '@/lib/tokens';
 import { SIZES } from '@/lib/tmdb/images';
 import type { Movie } from '@/lib/tmdb/types';

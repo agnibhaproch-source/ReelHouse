@@ -6,7 +6,6 @@ import { useUiStore } from '@/stores/ui';
 import { useSession } from '@/hooks/useSession';
 import { useMediaQuery, QUERIES } from '@/hooks/useMediaQuery';
 import { useClearHistory, useHistory } from '@/hooks/useHistory';
-import { getSupabaseBrowser } from '@/lib/supabase/client';
 import { CONTENT_LANGUAGES, REGIONS } from '@/lib/tmdb/languages';
 import { PasswordSchema, authErrorMessage } from '@/lib/auth-schemas';
 import { track } from '@/lib/analytics';
@@ -72,7 +71,7 @@ export function AccountSettings() {
   const [tab, setTab] = useState<Section>(initial);
   const ui = useUiStore();
   const osReduced = useMediaQuery(QUERIES.reducedMotion);
-  const { profile, repo, user, accountsEnabled, selectProfile, signOut } = useSession();
+  const { profile, repo, user, sb, accountsEnabled, selectProfile, signOut } = useSession();
   const { data: history = [] } = useHistory();
   const clearHistory = useClearHistory();
   const [confirmClear, setConfirmClear] = useState(false);
@@ -81,7 +80,6 @@ export function AccountSettings() {
   const [confirmText, setConfirmText] = useState('');
   const [pw, setPw] = useState('');
   const [pwError, setPwError] = useState<string | null>(null);
-  const sb = getSupabaseBrowser();
   const google = user?.identities?.some((i) => i.provider === 'google');
 
   const changePassword = async () => {

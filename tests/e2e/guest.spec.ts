@@ -27,6 +27,7 @@ test('guest: home → card → detail → trailer (or no-trailer state) → back
 
 test('search by keyboard: / → type → arrows → Enter', async ({ page }) => {
   await page.goto('/');
+  await page.waitForLoadState('networkidle'); // shortcuts attach after hydration
   await page.keyboard.press('/');
   const box = page.getByRole('combobox', { name: /search movies and people/i });
   await expect(box).toBeFocused();
