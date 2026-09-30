@@ -257,7 +257,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
                 alt=""
                 sizes={SIZES.hero}
                 priority={shown === 0}
-                fallbackTitle={slide.title}
+                plain
               />
             </div>
             <div className="absolute inset-0 md:hidden">
@@ -269,7 +269,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
                 sizes="100vw"
                 priority={shown === 0}
                 blurDataURL={slide.blur}
-                fallbackTitle={slide.title}
+                plain
               />
             </div>
           </div>

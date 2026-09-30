@@ -13,6 +13,8 @@ interface TmdbImageProps {
   sizes: string;
   /** Title shown on the designed fallback. */
   fallbackTitle?: string;
+  /** Full-bleed decorative image: the fallback is a plain surface with no icon or title. */
+  plain?: boolean;
   blurDataURL?: string | null;
   priority?: boolean;
   fill?: boolean;
@@ -34,6 +36,7 @@ export function TmdbImage({
   alt,
   sizes,
   fallbackTitle,
+  plain,
   blurDataURL,
   priority,
   fill = true,
@@ -58,17 +61,21 @@ export function TmdbImage({
         aria-label={alt || undefined}
         style={style}
       >
-        <span aria-hidden="true" className="sprockets absolute inset-x-0 top-0 opacity-60" />
-        <Film className="size-7 opacity-70" aria-hidden="true" />
-        {fallbackTitle && kind === 'poster' && (
-          <span
-            aria-hidden="true"
-            className="font-display text-small text-reel/80 line-clamp-3 leading-tight"
-          >
-            {fallbackTitle}
-          </span>
+        {!plain && (
+          <>
+            <span aria-hidden="true" className="sprockets absolute inset-x-0 top-0 opacity-60" />
+            <Film className="size-7 opacity-70" aria-hidden="true" />
+            {fallbackTitle && kind === 'poster' && (
+              <span
+                aria-hidden="true"
+                className="font-display text-small text-reel/80 line-clamp-3 leading-tight"
+              >
+                {fallbackTitle}
+              </span>
+            )}
+            <span aria-hidden="true" className="sprockets absolute inset-x-0 bottom-0 opacity-60" />
+          </>
         )}
-        <span aria-hidden="true" className="sprockets absolute inset-x-0 bottom-0 opacity-60" />
       </div>
     );
   }

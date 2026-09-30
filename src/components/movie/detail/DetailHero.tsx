@@ -114,7 +114,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
             alt=""
             sizes="100vw"
             priority
-            fallbackTitle={movie.title}
+            plain
           />
         </div>
         <div aria-hidden="true" className="vignette absolute inset-0" />
