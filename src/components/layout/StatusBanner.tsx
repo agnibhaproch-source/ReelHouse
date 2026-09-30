@@ -30,10 +30,9 @@ export function StatusBanner({
       <p>
         {kind === 'fixtures' ? (
           <>
-            Running on demo data. Add{' '}
-            <code className="bg-void/60 rounded px-1">TMDB_READ_TOKEN</code> to{' '}
-            <code className="bg-void/60 rounded px-1">.env.local</code> to load real movies, posters
-            and trailers.
+            Demo catalogue: real films, but no posters, trailers or cast, and approximate dates and
+            ratings. Add <code className="bg-void/60 rounded px-1">TMDB_READ_TOKEN</code> to{' '}
+            <code className="bg-void/60 rounded px-1">.env.local</code> for live TMDB data.
           </>
         ) : (
           'Showing saved results. Live data is unavailable right now.'

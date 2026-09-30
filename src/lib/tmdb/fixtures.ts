@@ -1,110 +1,48 @@
 /**
  * Offline demo catalogue used when TMDB_READ_TOKEN is missing or TMDB_FIXTURES=1
- * (local demos, CI, Playwright). All titles and people are invented; there are no image
- * paths or video keys, so the UI's designed fallbacks render instead of real artwork.
+ * (local demos, CI, Playwright). Real films (see fixture-catalogue.ts) with approximate
+ * runtimes, ratings and dates, and no artwork, trailers, cast, reviews or availability —
+ * those come from TMDB with a token. People are the films' directors.
  */
 import type { Params } from './client';
 import { genreById } from './genres';
+import { CATALOGUE, CATALOGUE_COLLECTIONS } from './fixture-catalogue';
 
-const A = [
-  'Last',
-  'Silent',
-  'Neon',
-  'Midnight',
-  'Paper',
-  'Velvet',
-  'Hollow',
-  'Golden',
-  'Crimson',
-  'Distant',
-];
-const B = [
-  'Projectionist',
-  'Matinee',
-  'Harbor',
-  'Monsoon',
-  'Signal',
-  'Orchard',
-  'Frontier',
-  'Lantern',
-  'Echo',
-  'Reel',
-];
-const LANGS = ['en', 'hi', 'ta', 'te', 'ml', 'ko', 'ja', 'kn', 'es', 'fr', 'bn', 'mr'];
-const GENRE_POOL = [28, 12, 16, 35, 80, 18, 14, 27, 9648, 10749, 878, 53, 10751, 99];
-const FIRST = [
-  'Asha',
-  'Min-jun',
-  'Kenji',
-  'Lucía',
-  'Arjun',
-  'Priya',
-  'Élodie',
-  'Tomás',
-  'Meera',
-  'Soo-ah',
-];
-const LAST = ['Varma', 'Park', 'Sato', 'Moreau', 'Iyer', 'Kapoor', 'Reyes', 'Nair', 'Kim', 'Duval'];
-
-const MOVIE_COUNT = 90;
-const PERSON_COUNT = 40;
+const pad = (n: number) => String(n).padStart(2, '0');
 
 function rand(seed: number): number {
   const x = Math.sin(seed * 9301 + 49297) * 233280;
   return x - Math.floor(x);
 }
 
-const pad = (n: number) => String(n).padStart(2, '0');
+const MOVIES = CATALOGUE.map(([title, year, lang, genres, , , rating, overview], i) => ({
+  id: 1001 + i,
+  title,
+  original_title: title,
+  overview,
+  poster_path: null,
+  backdrop_path: null,
+  // Approximate: the year is real, the day isn't (the demo banner says so).
+  release_date: `${year}-${pad(1 + Math.floor(rand(i) * 12))}-${pad(1 + Math.floor(rand(i + 7) * 27))}`,
+  vote_average: rating,
+  vote_count: Math.floor(2000 + rand(i + 3) * 20000),
+  // Newer films trend higher; list order breaks ties.
+  popularity: Math.round((Math.max(0, year - 1950) * 12 + (90 - i) * 3) * 10) / 10,
+  genre_ids: genres,
+  original_language: lang,
+  adult: false,
+}));
 
-function isoDaysAgo(days: number): string {
-  const d = new Date(Date.UTC(2026, 8, 1) - days * 86_400_000);
-  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
-}
-
-/** Days from today (real clock) — the last few demo films are always upcoming. */
-function isoDaysFromNow(days: number): string {
-  const d = new Date(Date.now() + days * 86_400_000);
-  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
-}
-const UPCOMING_FROM = 78;
-
-function movie(i: number) {
-  const id = 1001 + i;
-  const title = `The ${A[i % A.length]} ${B[Math.floor(i / A.length) % B.length]}`;
-  const g1 = GENRE_POOL[i % GENRE_POOL.length] as number;
-  const g2 = GENRE_POOL[(i * 7 + 3) % GENRE_POOL.length] as number;
-  const days = i < 8 ? i * 3 : Math.floor(rand(i) * 9000);
-  const upcoming = i >= UPCOMING_FROM;
-  return {
-    id,
-    title,
-    original_title: title,
-    overview: `A demo synopsis for ${title}. When the last reel goes missing, a small-town projectionist follows a trail of torn frames across three cities — and discovers the film was never meant to be finished.`,
-    poster_path: null,
-    backdrop_path: null,
-    release_date: upcoming ? isoDaysFromNow((i - UPCOMING_FROM + 1) * 8) : isoDaysAgo(days),
-    vote_average: Math.round((5.2 + rand(i + 11) * 3.6) * 10) / 10,
-    vote_count: Math.floor(200 + rand(i + 3) * 9000),
-    popularity: Math.round((1000 - i * 9 + rand(i) * 40) * 10) / 10,
-    genre_ids: g1 === g2 ? [g1] : [g1, g2],
-    original_language: LANGS[i % LANGS.length] as string,
-    adult: false,
-  };
-}
-
-const MOVIES = Array.from({ length: MOVIE_COUNT }, (_, i) => movie(i));
-
-function person(i: number) {
-  return {
-    id: 5001 + i,
-    name: `${FIRST[i % FIRST.length]} ${LAST[(i * 3) % LAST.length]}`,
-    profile_path: null,
-    known_for_department: i % 5 === 0 ? 'Directing' : 'Acting',
-    popularity: 100 - i,
-  };
-}
-
-const PEOPLE = Array.from({ length: PERSON_COUNT }, (_, i) => person(i));
+const DIRECTORS = [...new Set(CATALOGUE.map((r) => r[4]))];
+const PEOPLE = DIRECTORS.map((name, i) => ({
+  id: 5001 + i,
+  name,
+  profile_path: null,
+  known_for_department: 'Directing',
+  popularity: CATALOGUE.filter((r) => r[4] === name).length * 10 + (DIRECTORS.length - i),
+}));
+const directorOf = (movieIndex: number) =>
+  PEOPLE.find((p) => p.name === CATALOGUE[movieIndex]?.[4]) ?? null;
 
 function page<T>(items: T[], p: number, size = 20) {
   const total_pages = Math.max(1, Math.ceil(items.length / size));
@@ -122,40 +60,9 @@ function rotate<T>(items: T[], by: number): T[] {
   return [...items.slice(k), ...items.slice(0, k)];
 }
 
-const SERVICES = ['Netflix', 'Prime Video', 'JioHotstar', 'Apple TV', 'ZEE5', 'SonyLIV', 'MUBI'];
-
-/** Demo "where to watch": service names only (no logos), deterministic per film; some films have none. */
-function demoProviders(i: number) {
-  if (i % 4 === 3) return {};
-  const pick = (k: number, n: number) =>
-    Array.from({ length: n }, (_, j) => {
-      const idx = (i * 3 + k + j * 2) % SERVICES.length;
-      return {
-        provider_id: 900 + idx,
-        provider_name: SERVICES[idx]!,
-        logo_path: null,
-        display_priority: j,
-      };
-    });
-  const region = {
-    link: 'https://www.justwatch.com/',
-    flatrate: pick(0, 1 + (i % 2)),
-    rent: pick(1, 2),
-  };
-  return { IN: region, US: region };
-}
-
-/** Demo collections: films grouped by title word (three short "sagas"). */
-const COLLECTIONS = [
-  { id: 7001, name: 'The Projectionist Saga', match: 'Projectionist', take: 5 },
-  { id: 7002, name: 'The Monsoon Chronicles', match: 'Monsoon', take: 4 },
-  { id: 7003, name: 'Lantern Nights Collection', match: 'Lantern', take: 3 },
-].map((c) => ({
+const COLLECTIONS = CATALOGUE_COLLECTIONS.map((c) => ({
   ...c,
-  parts: MOVIES.filter((m) => m.title.includes(c.match) && m.id < 1001 + UPCOMING_FROM).slice(
-    0,
-    c.take,
-  ),
+  parts: c.titles.map((t) => MOVIES.find((m) => m.title === t)).filter((m) => m !== undefined),
 }));
 
 function collectionOf(id: number) {
@@ -169,114 +76,84 @@ function collection(id: number) {
   return {
     id: c.id,
     name: c.name,
-    overview: `An invented demo collection: ${c.parts.length} films that share a world, a crew and one stubborn projector.`,
+    overview: '',
     poster_path: null,
     backdrop_path: null,
     parts: c.parts,
   };
 }
 
+/** Recommendations: films sharing the most genres (then the same language), best rated first. */
+function similarTo(base: (typeof MOVIES)[number]) {
+  return MOVIES.filter((m) => m.id !== base.id)
+    .map((m) => ({
+      m,
+      score:
+        m.genre_ids.filter((g) => base.genre_ids.includes(g)).length * 2 +
+        (m.original_language === base.original_language ? 1 : 0) +
+        m.vote_average / 10,
+    }))
+    .sort((a, b) => b.score - a.score)
+    .map((x) => x.m);
+}
+
 function detail(id: number) {
-  const base = MOVIES.find((m) => m.id === id);
-  if (!base) return null;
   const i = id - 1001;
-  const cast = Array.from({ length: 10 }, (_, k) => {
-    const p = PEOPLE[(i + k) % PEOPLE.length]!;
-    return {
-      id: p.id,
-      name: p.name,
-      character: `Role ${k + 1}`,
-      profile_path: null,
-      order: k,
-      credit_id: `c${id}-${k}`,
-    };
-  });
-  const director = PEOPLE[(i * 3) % PEOPLE.length]!;
-  const rec = rotate(MOVIES, i + 1).slice(0, 12);
+  const base = MOVIES[i];
+  const row = CATALOGUE[i];
+  if (!base || !row) return null;
+  const director = directorOf(i);
+  const similar = similarTo(base);
   return {
     ...base,
     genres: base.genre_ids.map((gid) => ({ id: gid, name: genreById(gid)?.name ?? 'Drama' })),
-    runtime: 92 + (i % 60),
-    tagline: 'Every frame remembers.',
+    runtime: row[5],
+    tagline: null,
     status: 'Released',
-    budget: 1_000_000 * (5 + (i % 40)),
-    revenue: 1_000_000 * (12 + (i % 90)),
+    budget: 0,
+    revenue: 0,
     imdb_id: null,
     homepage: null,
-    spoken_languages: [
-      { english_name: 'English', iso_639_1: base.original_language, name: 'English' },
-    ],
+    spoken_languages: [],
     production_companies: [],
     videos: { results: [] },
     credits: {
-      cast,
-      crew: [
-        {
-          id: director.id,
-          name: director.name,
-          job: 'Director',
-          department: 'Directing',
-          profile_path: null,
-        },
-        {
-          id: director.id + 1,
-          name: PEOPLE[(i * 3 + 1) % PEOPLE.length]!.name,
-          job: 'Screenplay',
-          department: 'Writing',
-          profile_path: null,
-        },
-      ],
+      cast: [],
+      crew: director
+        ? [
+            {
+              id: director.id,
+              name: director.name,
+              job: 'Director',
+              department: 'Directing',
+              profile_path: null,
+            },
+          ]
+        : [],
     },
     images: { backdrops: [], posters: [], logos: [] },
-    similar: page(rotate(MOVIES, i + 20), 1),
-    recommendations: page(rec, 1),
-    release_dates: {
-      results: [
-        {
-          iso_3166_1: 'IN',
-          release_dates: [
-            { certification: 'U/A', release_date: `${base.release_date}T00:00:00.000Z`, type: 3 },
-          ],
-        },
-      ],
-    },
-    'watch/providers': { results: demoProviders(i) },
+    similar: page(similar.slice(12), 1),
+    recommendations: page(similar.slice(0, 12), 1),
+    release_dates: { results: [] },
+    'watch/providers': { results: {} },
     belongs_to_collection: collectionOf(id),
-    reviews: {
-      page: 1,
-      total_pages: 1,
-      total_results: 1,
-      results: [
-        {
-          id: `r${id}`,
-          author: 'demo_critic',
-          content:
-            'A demo review. The pacing is patient, the score is gorgeous, and the final reel lands.',
-          created_at: '2026-01-10T10:00:00.000Z',
-          author_details: { rating: 8, avatar_path: null, username: 'demo_critic' },
-        },
-      ],
-    },
+    reviews: { page: 1, total_pages: 1, total_results: 0, results: [] },
   };
 }
 
 function personDetail(id: number) {
   const p = PEOPLE.find((x) => x.id === id);
   if (!p) return null;
-  const i = id - 5001;
-  const credits = rotate(MOVIES, i * 2)
-    .slice(0, 14)
-    .map((m, k) => ({ ...m, character: `Role ${k + 1}`, credit_id: `pc${id}-${k}` }));
+  const films = MOVIES.filter((_, i) => CATALOGUE[i]?.[4] === p.name);
+  const credits = films.map((m) => ({ ...m, job: 'Director', credit_id: `pd${id}-${m.id}` }));
   return {
     ...p,
-    biography: `${p.name} is an invented performer in the Reelhouse demo catalogue. Their work spans festival dramas, genre thrillers and one very long musical.`,
-    birthday: `19${70 + (i % 25)}-0${(i % 9) + 1}-1${i % 9}`,
+    biography: '',
+    birthday: null,
     deathday: null,
-    place_of_birth: ['Mumbai, India', 'Seoul, South Korea', 'Chennai, India', 'Lyon, France'][
-      i % 4
-    ],
+    place_of_birth: null,
     imdb_id: null,
-    movie_credits: { cast: credits, crew: [] },
+    movie_credits: { cast: [], crew: credits },
     images: { profiles: [] },
   };
 }
@@ -327,10 +204,20 @@ export function fixtureResponse(path: string, params: Params): unknown {
       [...MOVIES].sort((a, b) => b.vote_average - a.vote_average),
       p,
     );
-  if (path === '/movie/upcoming') return page(rotate(MOVIES, 30), p);
-  if (path === '/movie/now_playing') return page(MOVIES.slice(0, 20), p);
+  // No real release schedule offline: "upcoming" is empty in demo mode.
+  if (path === '/movie/upcoming') return page([], p);
+  if (path === '/movie/now_playing')
+    return page(
+      [...MOVIES].sort((a, b) => b.release_date.localeCompare(a.release_date)).slice(0, 20),
+      p,
+    );
   if (path === '/genre/movie/list')
-    return { genres: GENRE_POOL.map((id) => ({ id, name: genreById(id)?.name ?? 'Drama' })) };
+    return {
+      genres: [...new Set(MOVIES.flatMap((m) => m.genre_ids))].map((id) => ({
+        id,
+        name: genreById(id)?.name ?? 'Drama',
+      })),
+    };
   if (path === '/discover/movie') return discover(params);
   if (path === '/search/multi' || path === '/search/movie') {
     const q = String(params.query ?? '')

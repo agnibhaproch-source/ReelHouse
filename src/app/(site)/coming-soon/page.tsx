@@ -10,6 +10,7 @@ import { MovieCard } from '@/components/movie/MovieCard';
 import { RemindButton } from '@/components/movie/RemindButton';
 import { EmptyState } from '@/components/layout/EmptyState';
 import { StatusBanner } from '@/components/layout/StatusBanner';
+import { usingFixtures } from '@/lib/tmdb/client';
 
 export const metadata: Metadata = {
   title: 'Coming soon',
@@ -63,8 +64,14 @@ export default async function ComingSoonPage() {
       {pages.every((p) => p.error) && <StatusBanner kind="down" />}
       {films.length === 0 ? (
         <EmptyState
-          title="Nothing scheduled yet."
-          body="Check back soon — new dates land every week."
+          title={
+            usingFixtures() ? 'The release calendar needs live data.' : 'Nothing scheduled yet.'
+          }
+          body={
+            usingFixtures()
+              ? 'Add TMDB_READ_TOKEN to .env.local to see real upcoming releases and set reminders.'
+              : 'Check back soon — new dates land every week.'
+          }
         />
       ) : (
         <div className="px-gutter mx-auto max-w-6xl pb-16">

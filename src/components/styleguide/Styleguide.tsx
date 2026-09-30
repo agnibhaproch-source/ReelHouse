@@ -61,8 +61,8 @@ const SPACES = [4, 8, 12, 16, 24, 32, 40, 48, 56, 64, 80, 96];
 
 const DEMO_MOVIE: Movie = {
   id: 1001,
-  title: 'The Last Projectionist',
-  overview: 'A demo card.',
+  title: 'Spirited Away',
+  overview: 'A girl wanders into a spirit world and must work in a bathhouse to free her parents.',
   poster_path: null,
   backdrop_path: null,
   release_date: new Date(Date.now() - 5 * 86_400_000).toISOString().slice(0, 10),

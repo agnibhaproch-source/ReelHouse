@@ -270,8 +270,12 @@ describe('fixtures mode', () => {
     const res = await getTrending('week');
     expect(res.results.length).toBeGreaterThan(0);
     const detail = await getMovie(res.results[0]!.id);
-    expect(detail.credits.cast.length).toBeGreaterThan(0);
-    expect((await getPerson(5001)).name).toBeTruthy();
+    expect(detail.credits.crew.find((c) => c.job === 'Director')?.name).toBeTruthy();
+    const parasite = await getMovie(1001);
+    expect(parasite).toMatchObject({ title: 'Parasite', original_language: 'ko' });
+    expect(parasite.credits.crew[0]?.name).toBe('Bong Joon-ho');
+    const person = await getPerson(parasite.credits.crew[0]!.id);
+    expect(person.movie_credits.crew.map((c) => c.title)).toContain('Memories of Murder');
     await expect(getMovie(1)).rejects.toMatchObject({ kind: 'not_found' });
   });
 
