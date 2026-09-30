@@ -366,3 +366,32 @@ describe('rows, redirects and transitions', () => {
     await expect(waitForPage(10)).resolves.toBe('timeout');
   });
 });
+
+describe('shared lists + calendar', () => {
+  it('round-trips ids through the URL codec and rejects junk', async () => {
+    const { encodeListIds, decodeListIds, cleanListName, sharedListPath, SHARED_LIST_MAX } =
+      await import('@/lib/shared-list');
+    const ids = [550, 27205, 1001, 299534];
+    expect(decodeListIds(encodeListIds(ids))).toEqual(ids);
+    expect(decodeListIds('zz.!!.-1.0.a<b>.1a')).toEqual([Number.parseInt('zz', 36), 46]);
+    expect(
+      decodeListIds(Array.from({ length: 99 }, (_, i) => (i + 1).toString(36)).join('.')),
+    ).toHaveLength(SHARED_LIST_MAX);
+    expect(cleanListName('  \u0007Hi\n ')).toBe('Hi');
+    expect(cleanListName('')).toBe('A Reelhouse list');
+    expect(sharedListPath([10], 'Sunday picks')).toBe('/list?i=a&n=Sunday+picks');
+  });
+  it('builds an all-day release event', async () => {
+    const { releaseIcs } = await import('@/lib/ics');
+    const ics = releaseIcs({
+      id: 7,
+      title: 'Dune; Part Two',
+      date: '2026-12-31',
+      url: 'https://x.test/movie/7',
+    });
+    expect(ics).toContain('DTSTART;VALUE=DATE:20261231');
+    expect(ics).toContain('DTEND;VALUE=DATE:20270101');
+    expect(ics).toContain(String.raw`SUMMARY:Dune\; Part Two — out today`);
+    expect(ics.split('\r\n')[0]).toBe('BEGIN:VCALENDAR');
+  });
+});

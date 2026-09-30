@@ -16,6 +16,9 @@ const Cursor = dynamic(() => import('@/components/motion/Cursor').then((m) => m.
 const GLLayer = dynamic(() => import('@/components/gl/GLLayer').then((m) => m.GLLayer), {
   ssr: false,
 });
+const ReminderWatcher = dynamic(() => import('./ReminderWatcher').then((m) => m.ReminderWatcher), {
+  ssr: false,
+});
 const ShareQuote = dynamic(() => import('./ShareQuote').then((m) => m.ShareQuote), { ssr: false });
 const SearchOverlay = dynamic(() => import('./SearchOverlay').then((m) => m.SearchOverlay), {
   ssr: false,
@@ -79,6 +82,7 @@ export function GlobalLayer() {
       {idle && (
         <>
           <ShareQuote />
+          <ReminderWatcher />
           <GLLayer />
           <Cursor />
         </>

@@ -160,6 +160,22 @@ export const MovieDetailSchema = MovieSchema.omit({ genre_ids: true }).extend({
   release_dates: ReleaseDatesSchema.optional(),
   'watch/providers': z.object({ results: z.record(z.string(), WatchRegionSchema) }).optional(),
   reviews: paginated(TmdbReviewSchema).optional(),
+  belongs_to_collection: z
+    .object({ id: z.number(), name: z.string(), poster_path: nstr, backdrop_path: nstr })
+    .nullish()
+    .transform((v) => v ?? null),
+});
+
+export const CollectionSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  overview: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? ''),
+  poster_path: nstr,
+  backdrop_path: nstr,
+  parts: z.array(MovieSchema).default([]),
 });
 
 export const PersonCreditSchema = MovieSchema.extend({

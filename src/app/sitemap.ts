@@ -14,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, lastModified: now, changeFrequency: 'daily', priority: 1 },
     { url: `${SITE_URL}/browse`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${SITE_URL}/coming-soon`, lastModified: now, changeFrequency: 'daily', priority: 0.7 },
     ...GENRES.map((g) => ({
       url: `${SITE_URL}/browse/${g.slug}`,
       lastModified: now,

@@ -88,7 +88,9 @@ export function Navbar() {
           ? 'languages'
           : pathname.startsWith('/my-list')
             ? '/my-list'
-            : null;
+            : pathname.startsWith('/coming-soon')
+              ? '/coming-soon'
+              : null;
 
   return (
     <header
@@ -139,6 +141,7 @@ export function Navbar() {
             <MegaMenu label="Languages" items={languageItems} active={activeKey === 'languages'} />
             {activeKey === 'languages' && <Underline />}
           </div>
+          <NavLink href="/coming-soon" label="Coming soon" active={activeKey === '/coming-soon'} />
           <NavLink
             href={links[1]!.href}
             label={links[1]!.label}

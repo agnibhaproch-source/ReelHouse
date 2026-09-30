@@ -22,7 +22,8 @@ const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
     title: 'Browse',
     links: [
       { href: '/', label: 'Home' },
-      { href: '/browse', label: 'All genres' },
+      { href: '/browse', label: 'Moods & genres' },
+      { href: '/coming-soon', label: 'Coming soon' },
       ...GENRES.slice(0, 4).map((g) => ({ href: `/browse/${g.slug}`, label: g.name })),
       { href: '/search', label: 'Search' },
     ],

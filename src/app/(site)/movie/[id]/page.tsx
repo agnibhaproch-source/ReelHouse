@@ -17,6 +17,7 @@ import { DetailFacts } from '@/components/movie/detail/DetailFacts';
 import { WatchProviders } from '@/components/movie/detail/WatchProviders';
 import { ReviewsSection } from '@/components/movie/detail/ReviewsSection';
 import { Gallery } from '@/components/movie/detail/Gallery';
+import { CollectionBand } from '@/components/movie/detail/CollectionBand';
 import { DetailTracker } from '@/components/movie/detail/DetailTracker';
 import { FilmLeader } from '@/components/motion/FilmLeader';
 import { Row } from '@/components/movie/Row';
@@ -151,6 +152,7 @@ export default async function MoviePage({ params }: Props) {
       <CastStrip cast={movie.credits.cast.slice(0, 20)} movieId={movie.id} />
       <VideoGrid videos={videos} movie={movie} color={color} />
       <DetailFacts movie={movie} />
+      {movie.belongs_to_collection && <CollectionBand collection={movie.belongs_to_collection} />}
       <WatchProviders providers={movie['watch/providers']?.results ?? {}} title={movie.title} />
       <ReviewsSection
         movieId={movie.id}

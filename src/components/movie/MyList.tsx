@@ -17,6 +17,7 @@ import { TransitionLink } from '@/components/layout/TransitionLink';
 import { SplitHeading } from '@/components/motion/SplitHeading';
 import { MovieGrid } from './MovieGrid';
 import { Row } from './Row';
+import { ShareListButton } from './ShareListButton';
 
 type Sort = 'custom' | 'added' | 'title' | 'rating';
 const SORTS: { id: Sort; label: string }[] = [
@@ -160,6 +161,7 @@ export function MyList() {
             <span className="text-small text-dim ml-auto">
               {items.length} title{items.length === 1 ? '' : 's'}
             </span>
+            <ShareListButton ids={items.map((w) => w.movie_id)} />
           </div>
           {sort === 'custom' ? (
             <Reorder.Group

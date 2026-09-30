@@ -2,6 +2,7 @@ import 'server-only';
 import { REVALIDATE, tmdbFetch, type Params } from './client';
 import { KIDS_EXCLUDED_GENRES } from './genres';
 import {
+  CollectionSchema,
   GenreListSchema,
   MovieDetailSchema,
   MovieListSchema,
@@ -11,6 +12,7 @@ import {
   PersonSchema,
 } from './schemas';
 import type {
+  Collection,
   DiscoverParams,
   Genre,
   Movie,
@@ -115,6 +117,48 @@ export function getMovie(id: number, prefs: RequestPrefs = {}): Promise<MovieDet
       include_video_language: 'en,null',
     },
     { schema: MovieDetailSchema, revalidate: REVALIDATE.details, language: prefs.language },
+  );
+}
+
+/** The movie alone (no appended credits/images/…) — cheap enough to fetch a list of ids. */
+export async function getMovieBasic(id: number, prefs: RequestPrefs = {}): Promise<Movie> {
+  const m = await tmdbFetch(
+    `/movie/${id}`,
+    {},
+    { schema: MovieDetailSchema, revalidate: REVALIDATE.details, language: prefs.language },
+  );
+  return { ...m, genre_ids: m.genres.map((g) => g.id) };
+}
+
+const isoDay = (d: Date) => d.toISOString().slice(0, 10);
+
+/** Theatrical/digital releases from today through the next ~4 months, soonest first. */
+export function getComingSoon(page = 1, prefs: RequestPrefs = {}): Promise<Paginated<Movie>> {
+  const today = new Date();
+  const until = new Date(today.getTime() + 120 * 86_400_000);
+  const params: Params = {
+    sort_by: 'primary_release_date.asc',
+    'primary_release_date.gte': isoDay(today),
+    'primary_release_date.lte': isoDay(until),
+    'popularity.gte': 4,
+    with_release_type: '2|3|4',
+    region: prefs.region,
+    include_adult: false,
+    page,
+  };
+  return listOf(
+    '/discover/movie',
+    prefs.kids ? { ...params, ...kidsParams(prefs.region) } : params,
+    prefs,
+    REVALIDATE.lists,
+  );
+}
+
+export function getCollection(id: number, prefs: RequestPrefs = {}): Promise<Collection> {
+  return tmdbFetch(
+    `/collection/${id}`,
+    {},
+    { schema: CollectionSchema, revalidate: REVALIDATE.details, language: prefs.language },
   );
 }
 

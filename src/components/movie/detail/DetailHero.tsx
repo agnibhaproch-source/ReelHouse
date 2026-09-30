@@ -22,6 +22,7 @@ import { PlayTrailerButton } from '../PlayTrailerButton';
 import { RateButton } from './RateButton';
 import { ShareButton } from './ShareButton';
 import { WatchCta } from './WatchCta';
+import { RemindButton } from '../RemindButton';
 
 const DustField = dynamic(() => import('@/components/gl/DustField').then((m) => m.DustField), {
   ssr: false,
@@ -215,6 +216,12 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
             <RateButton movieId={movie.id} title={movie.title} tmdbAverage={movie.vote_average} />
             <ShareButton title={movie.title} />
           </div>
+          {movie.release_date && movie.release_date > new Date().toISOString().slice(0, 10) && (
+            <div className="flex flex-wrap items-center gap-3 max-md:justify-center">
+              <p className="meta-caps text-amber">Out {movie.release_date}</p>
+              <RemindButton movie={movie} />
+            </div>
+          )}
           {videos.length === 0 && <p className="text-small text-dim">No trailer available.</p>}
         </div>
       </div>

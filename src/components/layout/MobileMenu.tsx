@@ -122,7 +122,8 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
                   <ul className="flex flex-col gap-1">
                     {[
                       { href: '/', label: 'Home' },
-                      { href: '/browse', label: 'Genres' },
+                      { href: '/browse', label: 'Moods & genres' },
+                      { href: '/coming-soon', label: 'Coming soon' },
                       { href: '/search', label: 'Search' },
                       { href: '/my-list', label: 'My list' },
                       { href: '/profiles', label: 'Profiles' },

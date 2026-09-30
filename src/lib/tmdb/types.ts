@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type {
   CastSchema,
+  CollectionSchema,
   CrewSchema,
   GenreSchema,
   ImageSchema,
@@ -36,6 +37,7 @@ export interface PosterMeta {
 export type Movie = z.output<typeof MovieSchema> & { meta?: PosterMeta };
 export type MovieDetail = z.output<typeof MovieDetailSchema>;
 export type Person = z.output<typeof PersonSchema>;
+export type Collection = z.output<typeof CollectionSchema>;
 
 export interface Paginated<T> {
   page: number;

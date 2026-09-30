@@ -61,12 +61,20 @@ function isoDaysAgo(days: number): string {
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 }
 
+/** Days from today (real clock) — the last few demo films are always upcoming. */
+function isoDaysFromNow(days: number): string {
+  const d = new Date(Date.now() + days * 86_400_000);
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+}
+const UPCOMING_FROM = 78;
+
 function movie(i: number) {
   const id = 1001 + i;
   const title = `The ${A[i % A.length]} ${B[Math.floor(i / A.length) % B.length]}`;
   const g1 = GENRE_POOL[i % GENRE_POOL.length] as number;
   const g2 = GENRE_POOL[(i * 7 + 3) % GENRE_POOL.length] as number;
   const days = i < 8 ? i * 3 : Math.floor(rand(i) * 9000);
+  const upcoming = i >= UPCOMING_FROM;
   return {
     id,
     title,
@@ -74,7 +82,7 @@ function movie(i: number) {
     overview: `A demo synopsis for ${title}. When the last reel goes missing, a small-town projectionist follows a trail of torn frames across three cities — and discovers the film was never meant to be finished.`,
     poster_path: null,
     backdrop_path: null,
-    release_date: isoDaysAgo(days),
+    release_date: upcoming ? isoDaysFromNow((i - UPCOMING_FROM + 1) * 8) : isoDaysAgo(days),
     vote_average: Math.round((5.2 + rand(i + 11) * 3.6) * 10) / 10,
     vote_count: Math.floor(200 + rand(i + 3) * 9000),
     popularity: Math.round((1000 - i * 9 + rand(i) * 40) * 10) / 10,
@@ -135,6 +143,37 @@ function demoProviders(i: number) {
     rent: pick(1, 2),
   };
   return { IN: region, US: region };
+}
+
+/** Demo collections: films grouped by title word (three short "sagas"). */
+const COLLECTIONS = [
+  { id: 7001, name: 'The Projectionist Saga', match: 'Projectionist', take: 5 },
+  { id: 7002, name: 'The Monsoon Chronicles', match: 'Monsoon', take: 4 },
+  { id: 7003, name: 'Lantern Nights Collection', match: 'Lantern', take: 3 },
+].map((c) => ({
+  ...c,
+  parts: MOVIES.filter((m) => m.title.includes(c.match) && m.id < 1001 + UPCOMING_FROM).slice(
+    0,
+    c.take,
+  ),
+}));
+
+function collectionOf(id: number) {
+  const c = COLLECTIONS.find((x) => x.parts.some((m) => m.id === id));
+  return c ? { id: c.id, name: c.name, poster_path: null, backdrop_path: null } : null;
+}
+
+function collection(id: number) {
+  const c = COLLECTIONS.find((x) => x.id === id);
+  if (!c) return null;
+  return {
+    id: c.id,
+    name: c.name,
+    overview: `An invented demo collection: ${c.parts.length} films that share a world, a crew and one stubborn projector.`,
+    poster_path: null,
+    backdrop_path: null,
+    parts: c.parts,
+  };
 }
 
 function detail(id: number) {
@@ -202,6 +241,7 @@ function detail(id: number) {
       ],
     },
     'watch/providers': { results: demoProviders(i) },
+    belongs_to_collection: collectionOf(id),
     reviews: {
       page: 1,
       total_pages: 1,
@@ -266,6 +306,7 @@ function discover(params: Params) {
   const sort = String(params.sort_by ?? 'popularity.desc');
   items.sort((a, b) => {
     if (sort.startsWith('vote_average')) return b.vote_average - a.vote_average;
+    if (sort === 'primary_release_date.asc') return a.release_date.localeCompare(b.release_date);
     if (sort.startsWith('primary_release_date'))
       return b.release_date.localeCompare(a.release_date);
     if (sort.startsWith('title')) return a.title.localeCompare(b.title);
@@ -314,6 +355,7 @@ export function fixtureResponse(path: string, params: Params): unknown {
   }
   if ((m = /^\/movie\/(\d+)$/.exec(path))) return detail(Number(m[1]));
   if ((m = /^\/person\/(\d+)$/.exec(path))) return personDetail(Number(m[1]));
+  if ((m = /^\/collection\/(\d+)$/.exec(path))) return collection(Number(m[1]));
   if ((m = /^\/person\/(\d+)\/movie_credits$/.exec(path)))
     return personDetail(Number(m[1]))?.movie_credits ?? null;
   return null;
