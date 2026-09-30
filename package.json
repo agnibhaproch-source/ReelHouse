@@ -30,6 +30,7 @@
     ]
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.129.0",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.9.1",
     "@sentry/nextjs": "^11.1.0",

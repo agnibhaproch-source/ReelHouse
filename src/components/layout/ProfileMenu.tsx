@@ -79,6 +79,9 @@ export function ProfileMenu() {
             <TransitionLink href="/my-list" className={item} onClick={close}>
               <Bookmark className="size-4" aria-hidden="true" /> My list
             </TransitionLink>
+            <TransitionLink href="/taste" className={item} onClick={close}>
+              Your taste
+            </TransitionLink>
             <TransitionLink href="/profiles" className={item} onClick={close}>
               <Users className="size-4" aria-hidden="true" /> Switch profile
             </TransitionLink>

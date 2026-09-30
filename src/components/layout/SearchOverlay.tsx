@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { Clock, Search, X, ArrowRight } from 'lucide-react';
+import { Clock, Search, X, ArrowRight, Sparkles } from 'lucide-react';
 import { useUiStore } from '@/stores/ui';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useLenis } from '@/hooks/useLenis';
@@ -36,7 +36,8 @@ type Option =
   | { kind: 'movie'; id: string; movie: Movie }
   | { kind: 'person'; id: string; person: PersonResult }
   | { kind: 'recent'; id: string; q: string }
-  | { kind: 'all'; id: string; q: string };
+  | { kind: 'all'; id: string; q: string }
+  | { kind: 'ask'; id: string; q: string };
 
 function useDebounced<T>(value: T, ms: number): T {
   const [v, setV] = useState(value);
@@ -106,6 +107,8 @@ export function SearchOverlay() {
         ...movies.map((m) => ({ kind: 'movie' as const, id: `m${m.id}`, movie: m })),
         ...people.map((p) => ({ kind: 'person' as const, id: `p${p.id}`, person: p })),
         ...(movies.length || people.length ? [{ kind: 'all' as const, id: 'all', q: term }] : []),
+        // Descriptions ("a funny heist film from the 2000s") read better as filters than titles.
+        ...(term.split(' ').length >= 3 ? [{ kind: 'ask' as const, id: 'ask', q: term }] : []),
       ]
     : recent.map((r) => ({ kind: 'recent' as const, id: `r${r}`, q: r }));
   const activeIndex = Math.min(active, Math.max(0, options.length - 1));
@@ -142,6 +145,7 @@ export function SearchOverlay() {
     track('search_submit');
     if (o.kind === 'movie') go(`/movie/${o.movie.id}`);
     else if (o.kind === 'person') go(`/person/${o.person.id}`);
+    else if (o.kind === 'ask') go(`/ask?q=${encodeURIComponent(o.q)}`);
     else go(`/search?q=${encodeURIComponent(o.q)}`);
   };
 
@@ -255,6 +259,12 @@ export function SearchOverlay() {
               See all results for “{o.q}” <ArrowRight className="size-4" aria-hidden="true" />
             </span>
           )}
+          {o.kind === 'ask' && (
+            <span className="text-violet flex flex-1 items-center gap-2 font-semibold">
+              <Sparkles className="size-4" aria-hidden="true" /> Describe it instead: find films
+              like “{o.q}”
+            </span>
+          )}
         </div>
       </m.li>
     );
@@ -364,7 +374,7 @@ export function SearchOverlay() {
                     </m.li>
                   )}
                   {options
-                    .filter((o) => o.kind === 'person' || o.kind === 'all')
+                    .filter((o) => o.kind === 'person' || o.kind === 'all' || o.kind === 'ask')
                     .map((o) => renderOption(o, options.indexOf(o)))}
                 </AnimatePresence>
               </ul>

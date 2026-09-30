@@ -395,3 +395,74 @@ describe('shared lists + calendar', () => {
     expect(ics.split('\r\n')[0]).toBe('BEGIN:VCALENDAR');
   });
 });
+
+describe('taste profile', () => {
+  it('weights views, list and ratings and groups by genre, language and decade', async () => {
+    const { buildTaste } = await import('@/lib/taste');
+    const snap = (id: number, g: number[], lang: string, date: string) => ({
+      movie_id: id,
+      title: `M${id}`,
+      poster_path: null,
+      genre_ids: g,
+      original_language: lang,
+      release_date: date,
+    });
+    const history = [
+      {
+        ...snap(1, [18], 'hi', '1995-01-01'),
+        kind: 'view' as const,
+        at: '2026-03-01T00:00:00Z',
+        progress: 0,
+      },
+      {
+        ...snap(2, [18, 35], 'ko', '2019-05-01'),
+        kind: 'view' as const,
+        at: '2025-12-01T00:00:00Z',
+        progress: 0,
+      },
+    ];
+    const list = [{ ...snap(2, [18, 35], 'ko', '2019-05-01'), added_at: '', position: 0 }];
+    const t = buildTaste(history, list, { 1: 10, 2: 5 }, new Date('2026-06-01T00:00:00Z'));
+    expect(t.films).toBe(2);
+    expect(t.averageRating).toBe(7.5);
+    // film 1: 1 view + 10/5 = 3; film 2: 1 view + 1 list + 5/5 = 3 → Drama 6, Comedy 3
+    expect(t.genres[0]).toMatchObject({ label: 'Drama', value: 6 });
+    expect(t.genres[1]).toMatchObject({ label: 'Comedy', value: 3 });
+    expect(t.decades.map((d) => d.label)).toEqual(['1990s', '2010s']);
+    expect(t.year).toMatchObject({ year: 2026, views: 1, topGenre: 'Drama' });
+  });
+});
+
+describe('ask: natural-language filters', () => {
+  it('parses genres, language, runtime, decade, quality and exclusions', async () => {
+    const { interpretRules, interpretationToQuery, interpretationChips, isEmptyInterpretation } =
+      await import('@/lib/nl-search');
+    const a = interpretRules('A slow-burn Korean thriller under 2 hours');
+    expect(a.genres).toEqual([53]);
+    expect(a.languages).toEqual(['ko']);
+    expect(a.runtimeMax).toBe(120);
+    const q = interpretationToQuery(a);
+    expect(q).toMatchObject({
+      with_genres: '53',
+      with_original_language: 'ko',
+      'with_runtime.lte': '120',
+    });
+    expect(interpretationChips(a)).toEqual(['Korean', 'Thriller', 'Under 2h']);
+
+    const b = interpretRules('acclaimed sci-fi from the 90s, nothing scary');
+    expect(b.genres).toEqual([878]);
+    expect(b.excludeGenres).toEqual([27]);
+    expect([b.yearFrom, b.yearTo]).toEqual([1990, 1999]);
+    expect(b).toMatchObject({ ratingMin: 7.5, sort: 'top' });
+
+    const c = interpretRules('funny bollywood romcom 2010s');
+    expect(c.genres).toEqual([35, 10749]);
+    expect(c.languages).toEqual(['hi']);
+    expect([c.yearFrom, c.yearTo]).toEqual([2010, 2019]);
+    expect(interpretationToQuery(c).with_genres).toBe('35,10749');
+
+    expect(isEmptyInterpretation(interpretRules('asdf qwerty'))).toBe(true);
+    const d = interpretRules('feel-good korean film');
+    expect(d).toMatchObject({ genres: [35], languages: ['ko'], ratingMin: null });
+  });
+});

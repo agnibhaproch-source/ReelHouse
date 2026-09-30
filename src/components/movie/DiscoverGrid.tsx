@@ -28,13 +28,15 @@ interface DiscoverGridProps {
   fixed: FixedDiscover;
   initial?: Paginated<Movie>;
   label: string;
+  /** Copy for the no-results state when the page's own (fixed) filters are the likely cause. */
+  emptyBody?: string;
 }
 
 /**
  * Browse grid (spec 26): sort chips, filter drawer, infinite scroll, Flip reorder on change.
  * Filters are mirrored into the URL (shareable) without a server round-trip.
  */
-export function DiscoverGrid({ fixed, initial, label }: DiscoverGridProps) {
+export function DiscoverGrid({ fixed, initial, label, emptyBody }: DiscoverGridProps) {
   const sp = useSearchParams();
   const [filters, setFilters] = useState<Filters>(() =>
     parseFilters(new URLSearchParams(sp.toString())),
@@ -121,25 +123,29 @@ export function DiscoverGrid({ fixed, initial, label }: DiscoverGridProps) {
       ) : movies.length === 0 ? (
         <EmptyState
           title="No titles match these filters."
-          body="Widen the year range or lower the minimum rating."
+          body={
+            count || !emptyBody ? 'Widen the year range or lower the minimum rating.' : emptyBody
+          }
         >
-          <Button
-            variant="secondary"
-            onClick={() =>
-              update({
-                ...filters,
-                from: 1950,
-                to: new Date().getFullYear() + 1,
-                rating: 0,
-                runtimeMin: 0,
-                runtimeMax: 240,
-                lang: null,
-                genre: null,
-              })
-            }
-          >
-            Reset filters
-          </Button>
+          {count > 0 && (
+            <Button
+              variant="secondary"
+              onClick={() =>
+                update({
+                  ...filters,
+                  from: 1950,
+                  to: new Date().getFullYear() + 1,
+                  rating: 0,
+                  runtimeMin: 0,
+                  runtimeMax: 240,
+                  lang: null,
+                  genre: null,
+                })
+              }
+            >
+              Reset filters
+            </Button>
+          )}
         </EmptyState>
       ) : (
         <MovieGrid
