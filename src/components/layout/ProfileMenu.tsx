@@ -82,6 +82,9 @@ export function ProfileMenu() {
             <TransitionLink href="/taste" className={item} onClick={close}>
               Your taste
             </TransitionLink>
+            <TransitionLink href="/party" className={item} onClick={close}>
+              Watch party
+            </TransitionLink>
             <TransitionLink href="/profiles" className={item} onClick={close}>
               <Users className="size-4" aria-hidden="true" /> Switch profile
             </TransitionLink>

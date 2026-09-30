@@ -127,6 +127,7 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
                       { href: '/search', label: 'Search' },
                       { href: '/my-list', label: 'My list' },
                       { href: '/taste', label: 'Your taste' },
+                      { href: '/party', label: 'Watch party' },
                       { href: '/profiles', label: 'Profiles' },
                       { href: '/account', label: 'Settings' },
                     ].map((l) => (
