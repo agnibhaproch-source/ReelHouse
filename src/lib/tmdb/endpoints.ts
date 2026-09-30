@@ -121,7 +121,10 @@ export function getMovie(id: number, prefs: RequestPrefs = {}): Promise<MovieDet
 }
 
 /** The movie alone (no appended credits/images/…) — cheap enough to fetch a list of ids. */
-export async function getMovieBasic(id: number, prefs: RequestPrefs = {}): Promise<Movie> {
+export async function getMovieBasic(
+  id: number,
+  prefs: RequestPrefs = {},
+): Promise<Movie & { runtime: number | null }> {
   const m = await tmdbFetch(
     `/movie/${id}`,
     {},

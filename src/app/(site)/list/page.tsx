@@ -34,7 +34,7 @@ export default async function SharedListPage({ searchParams }: Props) {
   const prefs = await getRequestPrefs();
   const results = await Promise.all(ids.map((id) => safe(getMovieBasic(id, prefs))));
   const movies = await withMeta(
-    results.map((r) => r.data).filter((m): m is Movie => Boolean(m)),
+    results.map((r) => r.data).filter((m) => m !== null) as Movie[],
     12,
   );
   const backdrops = movies.map((m) => m.backdrop_path).filter((b): b is string => Boolean(b));

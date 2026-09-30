@@ -219,6 +219,13 @@ export function MovieCard({
                     'radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgb(255 255 255 / 0.45), transparent 55%)',
                 }}
               />
+              {/* Light sweep: a band of projector light crosses the poster on hover */}
+              <span
+                aria-hidden="true"
+                className="card-sweep pointer-events-none absolute inset-0 overflow-hidden"
+              >
+                <span />
+              </span>
               {/* Lit edge: a hairline highlight so posters read as objects, not flat tiles */}
               <span
                 aria-hidden="true"

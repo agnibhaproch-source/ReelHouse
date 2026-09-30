@@ -83,3 +83,9 @@ export function uid(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
+
+/** One item per UTC day, rotating through `pool` (stable for everyone on the same day). */
+export function pickOfTheDay<T>(pool: readonly T[], now: number = Date.now()): T | undefined {
+  if (!pool.length) return undefined;
+  return pool[Math.floor(now / 86_400_000) % pool.length];
+}

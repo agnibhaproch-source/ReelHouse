@@ -466,3 +466,17 @@ describe('ask: natural-language filters', () => {
     expect(d).toMatchObject({ genres: [35], languages: ['ko'], ratingMin: null });
   });
 });
+
+describe('pick of the day', () => {
+  it('is stable within a UTC day and rotates daily', async () => {
+    const { pickOfTheDay } = await import('@/lib/utils');
+    const day = 86_400_000;
+    expect(pickOfTheDay(['a', 'b', 'c'], 10 * day + 5)).toBe(
+      pickOfTheDay(['a', 'b', 'c'], 10 * day + day - 1),
+    );
+    expect(pickOfTheDay(['a', 'b', 'c'], 10 * day)).not.toBe(
+      pickOfTheDay(['a', 'b', 'c'], 11 * day),
+    );
+    expect(pickOfTheDay([], 0)).toBeUndefined();
+  });
+});

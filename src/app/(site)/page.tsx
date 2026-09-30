@@ -10,6 +10,8 @@ import { Row } from '@/components/movie/Row';
 import { NowShowingScene } from '@/components/movie/NowShowingScene';
 import { GenreWall } from '@/components/movie/GenreWall';
 import { MoodStrip } from '@/components/movie/MoodStrip';
+import { FilmOfTheDay } from '@/components/movie/FilmOfTheDay';
+import { pickOfTheDay } from '@/lib/utils';
 import { LanguageMarquee } from '@/components/movie/LanguageMarquee';
 import { RecommendationRows } from '@/components/movie/RecommendationRows';
 import { ContinueExploringRow } from '@/components/movie/ContinueExploringRow';
@@ -37,6 +39,11 @@ export default async function HomePage() {
   const down = [hero, trending, top10].every((r) => r.error);
   const rows = homeRows();
   const [trendingRow, top10Row, ...rest] = rows;
+  // Film of the day: a well-rated trending film, rotated per UTC day.
+  const pool = (trending.data?.results ?? []).filter(
+    (m) => m.vote_average >= 7.5 && m.backdrop_path,
+  );
+  const filmOfTheDay = pickOfTheDay(pool);
   const early = rest.slice(0, 3); // popular in India, new, top rated
   const later = rest.slice(3);
   const langRows = later.filter((r) => r.key.startsWith('lang-'));
@@ -90,6 +97,8 @@ export default async function HomePage() {
       </div>
 
       <MoodStrip />
+
+      {filmOfTheDay && <FilmOfTheDay movie={filmOfTheDay} />}
 
       {nowPlaying.data && <NowShowingScene movies={nowPlaying.data} />}
 

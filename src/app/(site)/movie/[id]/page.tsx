@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getMovie, getTrending } from '@/lib/tmdb/endpoints';
+import { getMovie, getMovieBasic, getPerson, getTrending } from '@/lib/tmdb/endpoints';
 import { getPosterMeta, withMeta } from '@/lib/tmdb/meta';
 import { getBestLogo, tmdbImage } from '@/lib/tmdb/images';
 import { pickVideos } from '@/lib/tmdb/videos';
@@ -20,6 +20,8 @@ import { WatchProviders } from '@/components/movie/detail/WatchProviders';
 import { ReviewsSection } from '@/components/movie/detail/ReviewsSection';
 import { Gallery } from '@/components/movie/detail/Gallery';
 import { CollectionBand } from '@/components/movie/detail/CollectionBand';
+import { DoubleFeature } from '@/components/movie/detail/DoubleFeature';
+import { toSnapshot } from '@/lib/snapshot';
 import { DetailTracker } from '@/components/movie/detail/DetailTracker';
 import { FilmLeader } from '@/components/motion/FilmLeader';
 import { Row } from '@/components/movie/Row';
@@ -93,6 +95,18 @@ export default async function MoviePage({ params }: Props) {
     ),
   ]);
   const color = movie.poster_path ? meta.color : fallbackGlow(movie.title);
+
+  // Double feature: the director's best-known other film, else the top recommendation.
+  const pairDirector = movie.credits.crew.find((c) => c.job === 'Director');
+  const byDirector = pairDirector
+    ? ((await safe(getPerson(pairDirector.id))).data?.movie_credits.crew ?? [])
+        .filter((c) => c.job === 'Director' && c.id !== movie.id && !c.adult)
+        .sort((a, b) => b.vote_count - a.vote_count)[0]
+    : undefined;
+  const companionId = byDirector?.id ?? recs[0]?.id;
+  const companion = companionId ? (await safe(getMovieBasic(companionId))).data : null;
+  const companionReason =
+    byDirector && pairDirector ? `Also directed by ${pairDirector.name}` : 'A natural pairing';
   const logo = getBestLogo(movie.images);
   const videos = pickVideos(movie.videos.results);
   const director = movie.credits.crew.find((c) => c.job === 'Director');
@@ -156,6 +170,13 @@ export default async function MoviePage({ params }: Props) {
       <CastStrip cast={movie.credits.cast.slice(0, 20)} movieId={movie.id} />
       <VideoGrid videos={videos} movie={movie} color={color} />
       <DetailFacts movie={movie} />
+      {companion && (
+        <DoubleFeature
+          movie={{ ...toSnapshot(movie), runtime: movie.runtime }}
+          companion={companion}
+          reason={companionReason}
+        />
+      )}
       {movie.belongs_to_collection && <CollectionBand collection={movie.belongs_to_collection} />}
       <WatchProviders providers={movie['watch/providers']?.results ?? {}} title={movie.title} />
       <ReviewsSection

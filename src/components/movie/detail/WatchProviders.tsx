@@ -24,6 +24,8 @@ export function WatchProviders({
   title: string;
 }) {
   const region = useUiStore((s) => s.region);
+  // No availability data at all (built-in catalogue): leave the section out entirely.
+  const hasAny = Object.keys(providers).length > 0;
   const data = providers[region];
   const regionName = REGIONS.find((r) => r.value === region)?.label ?? region;
   const groups = data
@@ -32,6 +34,7 @@ export function WatchProviders({
       )
     : [];
 
+  if (!hasAny) return null;
   return (
     <section aria-labelledby="providers-h" className="px-gutter py-12">
       <SplitHeading id="providers-h" className="font-display text-h2 mb-2">
