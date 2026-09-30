@@ -81,7 +81,7 @@ flowchart LR
 
 ### Monitoring (optional Sentry)
 
-`src/lib/monitoring.ts` is the single capture point, used by every error boundary. To enable Sentry: `pnpm add @sentry/nextjs`, run `npx @sentry/wizard -i nextjs`, and forward `captureError` to `Sentry.captureException`. Set `NEXT_PUBLIC_SENTRY_DSN` and `SENTRY_AUTH_TOKEN` (source maps) in Vercel.
+`src/lib/monitoring.ts` is the single capture point, used by every error boundary. Sentry is already wired (`src/instrumentation.ts`, `src/instrumentation-client.ts`, `src/lib/sentry-options.ts`) and turns on when `NEXT_PUBLIC_SENTRY_DSN` is set. For readable stack traces, also set `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` in Vercel so builds upload source maps (they're deleted from the output afterwards).
 
 ## Attribution
 
