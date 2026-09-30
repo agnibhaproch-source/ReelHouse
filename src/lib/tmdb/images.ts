@@ -28,6 +28,8 @@ export const IMAGE_SIZE = {
 
 export function tmdbImage(path: string | null | undefined, size: string): string | null {
   if (!path) return null;
+  // Generated catalogue art is served by this site, not TMDB.
+  if (path.startsWith('/art/')) return path;
   return `${TMDB_IMAGE_BASE}${size}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
@@ -53,6 +55,8 @@ export function tmdbLoader({ src, width }: ImageLoaderProps): string {
   if (!match) return src;
   const kind = match[1] as ImageKind;
   const path = match[2] as string;
+  // Local SVG art scales freely; the width param only satisfies next/image's loader contract.
+  if (path.startsWith('/art/')) return `${path}?w=${width}`;
   return `${TMDB_IMAGE_BASE}${nearestSize(kind, width)}${path}`;
 }
 

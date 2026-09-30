@@ -6,6 +6,7 @@ import { getBestLogo, tmdbImage } from '@/lib/tmdb/images';
 import { pickVideos } from '@/lib/tmdb/videos';
 import { safe } from '@/lib/tmdb/safe';
 import { usingFixtures } from '@/lib/tmdb/client';
+import { FIXTURE_MOVIE_IDS } from '@/lib/tmdb/fixtures';
 import { fallbackGlow, filmAccent } from '@/lib/tmdb/color';
 import { truncate } from '@/lib/utils';
 import { SITE_URL } from '@/lib/site';
@@ -35,7 +36,8 @@ function parseId(raw: string): number | null {
 
 /** Pre-render the top 100 trending titles; the rest render on demand (ISR 24h). */
 export async function generateStaticParams() {
-  if (usingFixtures()) return [];
+  // Built-in catalogue: prerender every film.
+  if (usingFixtures()) return FIXTURE_MOVIE_IDS.map((id) => ({ id: String(id) }));
   const pages = await Promise.all(
     [1, 2, 3, 4, 5].map((p) => getTrending('week', p).catch(() => null)),
   );

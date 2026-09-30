@@ -44,7 +44,6 @@ export default async function HomePage() {
 
   return (
     <>
-      {usingFixtures() && <StatusBanner kind="fixtures" floating={!!hero.data?.length} />}
       {down && !usingFixtures() && <StatusBanner kind="down" floating={!!hero.data?.length} />}
       {hero.data && hero.data.length > 0 ? (
         <Hero slides={hero.data} />

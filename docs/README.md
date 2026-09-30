@@ -9,11 +9,13 @@ A cinematic movie-discovery site: trending, top-rated and world cinema (Hindi, T
 ```bash
 corepack enable            # pnpm 9
 pnpm install
-cp .env.example .env.local # add TMDB_READ_TOKEN for real data (optional)
+cp .env.example .env.local # nothing required; see Environment for optional keys
 pnpm dev                   # http://localhost:3000
 ```
 
-With no `TMDB_READ_TOKEN`, the site runs on an **offline demo catalogue** with invented titles and designed image fallbacks, and shows a banner. Add the token and restart to get real posters, backdrops, logos and trailers.
+By default the site runs on its **built-in catalogue**: 90 real films across 12 languages (title, year, language, genres, director, synopsis) with **original generated artwork** — posters, backdrops, gallery stills and director portraits drawn as SVG from each film's data (`src/lib/art/`), prebuilt at `/art/*`. No keys or network needed. Ratings, runtimes and dates are approximate, which the footer states.
+
+Live TMDB data (real posters, cast, trailers, where-to-watch, the release calendar) is opt-in: set `DATA_SOURCE=tmdb` **and** `TMDB_READ_TOKEN`.
 
 With no Supabase variables, the site runs in **guest mode**: profiles, list, ratings, reviews and history live in the browser. Add Supabase to enable accounts (below).
 
@@ -21,7 +23,9 @@ With no Supabase variables, the site runs in **guest mode**: profiles, list, rat
 
 | Variable | Needed for |
 |---|---|
-| `TMDB_READ_TOKEN` | TMDB v4 "API Read Access Token" — themoviedb.org → Settings → API. Server-only; never prefix with `NEXT_PUBLIC_`. |
+| `DATA_SOURCE` | Empty (default) = built-in catalogue. `tmdb` = live TMDB (needs the token below). |
+| `TMDB_READ_TOKEN` | TMDB v4 "API Read Access Token" — themoviedb.org → Settings → API. Server-only; only used with `DATA_SOURCE=tmdb`. |
+| `ANTHROPIC_API_KEY` | Optional: Ask Reelhouse interprets descriptions with Claude (keyword parser otherwise). Server-only. |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Accounts (email/password, magic link, Google). |
 | `NEXT_PUBLIC_SITE_URL` | Canonical URLs, sitemap, OG. |
 | `REVALIDATE_SECRET` | `POST /api/revalidate` (header `x-revalidate-secret`). |

@@ -2,11 +2,16 @@ import 'server-only';
 import { IMAGE_SIZE, tmdbImage } from './images';
 import type { Movie, PosterMeta } from './types';
 import { fallbackGlow } from './color';
+import { artAccentFor, isArtPath } from '@/lib/art/catalogue';
 
 const cache = new Map<string, Promise<PosterMeta>>();
 const MAX_CACHE = 2000;
 
 async function compute(path: string): Promise<PosterMeta> {
+  if (isArtPath(path)) {
+    const id = Number(/\/(\d+)\.svg$/.exec(path)?.[1]);
+    return { color: artAccentFor(id) ?? fallbackGlow(path), blur: null };
+  }
   const url = tmdbImage(path, IMAGE_SIZE.blur);
   if (!url) return { color: fallbackGlow(path), blur: null };
   const res = await fetch(url, { cache: 'force-cache' });

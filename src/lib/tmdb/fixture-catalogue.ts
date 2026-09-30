@@ -932,3 +932,6 @@ export const CATALOGUE_COLLECTIONS: readonly { id: number; name: string; titles:
     titles: ['Baahubali: The Beginning', 'Baahubali 2: The Conclusion'],
   },
 ];
+
+/** Directors in catalogue order (their person ids are 5001 + index). */
+export const CATALOGUE_DIRECTORS: readonly string[] = [...new Set(CATALOGUE.map((r) => r[4]))];

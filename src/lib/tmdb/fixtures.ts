@@ -6,7 +6,8 @@
  */
 import type { Params } from './client';
 import { genreById } from './genres';
-import { CATALOGUE, CATALOGUE_COLLECTIONS } from './fixture-catalogue';
+import { CATALOGUE, CATALOGUE_COLLECTIONS, CATALOGUE_DIRECTORS } from './fixture-catalogue';
+import { artPaths, STILLS_PER_FILM } from '@/lib/art/catalogue';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -20,8 +21,8 @@ const MOVIES = CATALOGUE.map(([title, year, lang, genres, , , rating, overview],
   title,
   original_title: title,
   overview,
-  poster_path: null,
-  backdrop_path: null,
+  poster_path: artPaths.poster(1001 + i),
+  backdrop_path: artPaths.backdrop(1001 + i),
   // Approximate: the year is real, the day isn't (the demo banner says so).
   release_date: `${year}-${pad(1 + Math.floor(rand(i) * 12))}-${pad(1 + Math.floor(rand(i + 7) * 27))}`,
   vote_average: rating,
@@ -33,11 +34,11 @@ const MOVIES = CATALOGUE.map(([title, year, lang, genres, , , rating, overview],
   adult: false,
 }));
 
-const DIRECTORS = [...new Set(CATALOGUE.map((r) => r[4]))];
+const DIRECTORS = CATALOGUE_DIRECTORS;
 const PEOPLE = DIRECTORS.map((name, i) => ({
   id: 5001 + i,
   name,
-  profile_path: null,
+  profile_path: artPaths.profile(5001 + i),
   known_for_department: 'Directing',
   popularity: CATALOGUE.filter((r) => r[4] === name).length * 10 + (DIRECTORS.length - i),
 }));
@@ -67,18 +68,27 @@ const COLLECTIONS = CATALOGUE_COLLECTIONS.map((c) => ({
 
 function collectionOf(id: number) {
   const c = COLLECTIONS.find((x) => x.parts.some((m) => m.id === id));
-  return c ? { id: c.id, name: c.name, poster_path: null, backdrop_path: null } : null;
+  const first = c?.parts[0];
+  return c
+    ? {
+        id: c.id,
+        name: c.name,
+        poster_path: first?.poster_path ?? null,
+        backdrop_path: first?.backdrop_path ?? null,
+      }
+    : null;
 }
 
 function collection(id: number) {
   const c = COLLECTIONS.find((x) => x.id === id);
   if (!c) return null;
+  const first = c.parts[0];
   return {
     id: c.id,
     name: c.name,
     overview: '',
-    poster_path: null,
-    backdrop_path: null,
+    poster_path: first?.poster_path ?? null,
+    backdrop_path: first?.backdrop_path ?? null,
     parts: c.parts,
   };
 }
@@ -131,7 +141,19 @@ function detail(id: number) {
           ]
         : [],
     },
-    images: { backdrops: [], posters: [], logos: [] },
+    images: {
+      backdrops: Array.from({ length: STILLS_PER_FILM }, (_, n) => ({
+        file_path: artPaths.still(id, n + 1),
+        width: 1280,
+        height: 720,
+        aspect_ratio: 16 / 9,
+        iso_639_1: null,
+        vote_average: 0,
+        vote_count: 0,
+      })),
+      posters: [],
+      logos: [],
+    },
     similar: page(similar.slice(12), 1),
     recommendations: page(similar.slice(0, 12), 1),
     release_dates: { results: [] },

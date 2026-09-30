@@ -48,6 +48,7 @@ const json = (body: unknown, status = 200, headers: Record<string, string> = {})
 describe('tmdb client', () => {
   beforeEach(() => {
     vi.stubEnv('TMDB_READ_TOKEN', 'test-token');
+    vi.stubEnv('DATA_SOURCE', 'tmdb');
     vi.stubEnv('TMDB_FIXTURES', '');
   });
   afterEach(() => {
@@ -157,6 +158,7 @@ describe('tmdb endpoints (mocked fetch)', () => {
   beforeEach(() => {
     calls.length = 0;
     vi.stubEnv('TMDB_READ_TOKEN', 'test-token');
+    vi.stubEnv('DATA_SOURCE', 'tmdb');
     vi.stubEnv('TMDB_FIXTURES', '');
     vi.stubGlobal(
       'fetch',

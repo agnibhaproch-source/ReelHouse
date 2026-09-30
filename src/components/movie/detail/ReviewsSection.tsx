@@ -155,7 +155,8 @@ export function ReviewsSection({ movieId, title, tmdbReviews }: Props) {
         onChange={(id) => setTab(id as 'site' | 'tmdb')}
         items={[
           { id: 'site', label: `Reelhouse (${site.length})` },
-          { id: 'tmdb', label: `TMDB (${tmdbReviews.length})` },
+          // TMDB reviews only exist with live data; don't show an empty tab otherwise.
+          ...(tmdbReviews.length ? [{ id: 'tmdb', label: `TMDB (${tmdbReviews.length})` }] : []),
         ]}
       />
       <TabPanel id="site" value={tab} prefix="reviews" className="pt-6">

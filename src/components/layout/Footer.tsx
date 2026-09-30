@@ -20,7 +20,6 @@ const HIDDEN_ON = /^\/(login|signup|forgot-password|profiles)(\/|$)/;
 const LINKS = [
   { href: '/', label: 'Home' },
   { href: '/browse', label: 'Moods & genres' },
-  { href: '/coming-soon', label: 'Coming soon' },
   { href: '/my-list', label: 'My list' },
   { href: '/taste', label: 'Your taste' },
   { href: '/account', label: 'Settings' },
@@ -31,7 +30,7 @@ const LINKS = [
  * of links, languages in their own scripts, the fine print, and an end-credits wordmark a
  * projector beam sweeps across.
  */
-export function Footer() {
+export function Footer({ live = false }: { live?: boolean }) {
   const pathname = usePathname();
   const ref = useRef<HTMLElement>(null);
   const band = useRef<HTMLDivElement>(null);
@@ -139,7 +138,14 @@ export function Footer() {
           data-foot-rise
         >
           <ul className="grid grid-cols-2 gap-x-7 md:flex md:flex-wrap md:gap-y-1">
-            {LINKS.map((l) => (
+            {(live
+              ? [
+                  ...LINKS.slice(0, 2),
+                  { href: '/coming-soon', label: 'Coming soon' },
+                  ...LINKS.slice(2),
+                ]
+              : LINKS
+            ).map((l) => (
               <li key={l.href}>
                 <TransitionLink
                   href={l.href}
@@ -193,18 +199,28 @@ export function Footer() {
 
       {/* Fine print */}
       <div className="px-gutter border-line mx-auto mt-10 flex max-w-7xl flex-col gap-4 border-t pt-6 md:flex-row md:items-center md:justify-between">
-        <p className="text-dim text-[0.75rem]">
-          © {new Date().getFullYear()} Reelhouse · Trailers only, never full films · Availability by{' '}
-          <a
-            href="https://www.justwatch.com/"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-reel underline-offset-4 hover:underline"
-          >
-            JustWatch
-          </a>
-        </p>
-        <TmdbAttribution className="text-[0.75rem]" />
+        {live ? (
+          <>
+            <p className="text-dim text-[0.75rem]">
+              © {new Date().getFullYear()} Reelhouse · Trailers only, never full films ·
+              Availability by{' '}
+              <a
+                href="https://www.justwatch.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-reel underline-offset-4 hover:underline"
+              >
+                JustWatch
+              </a>
+            </p>
+            <TmdbAttribution className="text-[0.75rem]" />
+          </>
+        ) : (
+          <p className="text-dim text-[0.75rem]">
+            © {new Date().getFullYear()} Reelhouse · All artwork is original, generated for
+            Reelhouse — not studio posters · Ratings, runtimes and dates are approximate
+          </p>
+        )}
       </div>
 
       {/* End credits */}

@@ -38,7 +38,7 @@ const HIDDEN_ON = /^\/(login|signup|forgot-password|profiles)(\/|$)/;
 const SOLID_AFTER = 80;
 
 /** Top navigation (spec 20): transparent over hero → glass after 80px; hides on scroll down. */
-export function Navbar() {
+export function Navbar({ live = false }: { live?: boolean }) {
   const pathname = usePathname();
   const ref = useRef<HTMLElement>(null);
   const [solid, setSolid] = useState(false);
@@ -141,7 +141,13 @@ export function Navbar() {
             <MegaMenu label="Languages" items={languageItems} active={activeKey === 'languages'} />
             {activeKey === 'languages' && <Underline />}
           </div>
-          <NavLink href="/coming-soon" label="Coming soon" active={activeKey === '/coming-soon'} />
+          {live && (
+            <NavLink
+              href="/coming-soon"
+              label="Coming soon"
+              active={activeKey === '/coming-soon'}
+            />
+          )}
           <NavLink
             href={links[1]!.href}
             label={links[1]!.label}
@@ -156,7 +162,7 @@ export function Navbar() {
           <div className="max-md:hidden">
             <ProfileMenu />
           </div>
-          <MobileMenu genres={genreItems} languages={languageItems} />
+          <MobileMenu genres={genreItems} languages={languageItems} live={live} />
         </div>
       </div>
     </header>

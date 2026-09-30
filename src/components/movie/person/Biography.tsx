@@ -11,6 +11,7 @@ export function Biography({ text, name }: { text: string; name: string }) {
   const [open, setOpen] = useState(false);
   const { reduced } = useMotionPrefs();
   const long = text.length > 600;
+  if (!text.trim()) return null;
   return (
     <section aria-labelledby="bio-h" className="px-gutter mx-auto max-w-4xl py-10" data-quotable>
       <h2 id="bio-h" className="font-display text-h2 mb-4">

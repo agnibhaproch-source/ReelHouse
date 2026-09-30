@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { getMovieBasic } from '@/lib/tmdb/endpoints';
 import { fallbackGlow } from '@/lib/tmdb/color';
 import { tmdbImage } from '@/lib/tmdb/images';
+import { artDataUri, isArtPath } from '@/lib/art/catalogue';
 import { cleanListName, decodeListIds } from '@/lib/shared-list';
 
 const size = { width: 1200, height: 630 };
@@ -46,7 +47,9 @@ export async function GET(req: NextRequest) {
         }}
       >
         {movies.map((m, i) => {
-          const src = tmdbImage(m.poster_path, 'w342');
+          const src = isArtPath(m.poster_path)
+            ? artDataUri(m.poster_path)
+            : tmdbImage(m.poster_path, 'w342');
           const mid = (n - 1) / 2;
           return (
             <div

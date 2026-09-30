@@ -24,9 +24,16 @@ export interface FetchOptions<S extends z.ZodType> {
   fetchImpl?: typeof fetch;
 }
 
-/** True when running on offline fixture data (no token, or TMDB_FIXTURES=1). */
+/**
+ * True when serving the built-in catalogue (the default). Live TMDB is opt-in: it needs
+ * DATA_SOURCE=tmdb *and* TMDB_READ_TOKEN; TMDB_FIXTURES=1 forces the catalogue (tests).
+ */
 export function usingFixtures(): boolean {
-  return process.env.TMDB_FIXTURES === '1' || !process.env.TMDB_READ_TOKEN;
+  return (
+    process.env.TMDB_FIXTURES === '1' ||
+    process.env.DATA_SOURCE !== 'tmdb' ||
+    !process.env.TMDB_READ_TOKEN
+  );
 }
 
 export function buildUrl(path: string, params: Params, language: string): string {

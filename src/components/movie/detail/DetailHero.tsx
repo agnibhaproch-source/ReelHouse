@@ -240,7 +240,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
             </ul>
           )}
           <div className="rounded-modal border-reel/15 bg-void/45 lit-edge flex w-full max-w-md items-center gap-4 border p-4 backdrop-blur-md max-md:justify-between">
-            <RatingRing value={movie.vote_average} size={56} label="TMDB rating" />
+            <RatingRing value={movie.vote_average} size={56} label="Audience rating" />
             <div className="min-w-0 flex-1 text-left">
               <p className="flex items-center gap-1.5 text-[1.35rem] leading-none font-bold tabular-nums">
                 <Star className="text-amber size-5 fill-current" aria-hidden="true" />
@@ -249,7 +249,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
               </p>
               <p className="text-dim mt-1 text-[0.8rem]">
                 {movie.vote_count
-                  ? `${new Intl.NumberFormat('en', { notation: 'compact' }).format(movie.vote_count)} votes on TMDB`
+                  ? `${new Intl.NumberFormat('en', { notation: 'compact' }).format(movie.vote_count)} votes`
                   : 'Not rated yet'}
               </p>
             </div>

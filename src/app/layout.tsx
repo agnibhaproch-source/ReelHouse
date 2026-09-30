@@ -12,6 +12,7 @@ import { GlobalLayer } from '@/components/layout/GlobalLayer';
 import { BottomTabBar } from '@/components/layout/BottomTabBar';
 import { Preloader } from '@/components/motion/Preloader';
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from '@/lib/site';
+import { usingFixtures } from '@/lib/tmdb/client';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -42,6 +43,8 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // Live TMDB adds the release calendar and TMDB/JustWatch attribution.
+  const live = !usingFixtures();
   return (
     <html lang="en" className={`${fraunces.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
@@ -62,11 +65,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <Providers>
-          <Navbar />
+          <Navbar live={live} />
           <main id="main" tabIndex={-1} className="relative outline-none">
             {children}
           </main>
-          <Footer />
+          <Footer live={live} />
           <BottomTabBar />
           <GlobalLayer />
           <Preloader />

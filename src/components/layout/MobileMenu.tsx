@@ -22,7 +22,15 @@ import type { MegaItem } from './MegaMenu';
  * Mobile (<768px) full-screen menu (spec 20): hamburger lines morph into an X, links reveal
  * through SplitText line masks, focus is trapped while open.
  */
-export function MobileMenu({ genres, languages }: { genres: MegaItem[]; languages: MegaItem[] }) {
+export function MobileMenu({
+  genres,
+  languages,
+  live = false,
+}: {
+  genres: MegaItem[];
+  languages: MegaItem[];
+  live?: boolean;
+}) {
   const open = useUiStore((s) => s.mobileMenuOpen);
   const set = useUiStore((s) => s.set);
   const panel = useRef<HTMLDivElement>(null);
@@ -123,7 +131,7 @@ export function MobileMenu({ genres, languages }: { genres: MegaItem[]; language
                     {[
                       { href: '/', label: 'Home' },
                       { href: '/browse', label: 'Moods & genres' },
-                      { href: '/coming-soon', label: 'Coming soon' },
+                      ...(live ? [{ href: '/coming-soon', label: 'Coming soon' }] : []),
                       { href: '/search', label: 'Search' },
                       { href: '/my-list', label: 'My list' },
                       { href: '/taste', label: 'Your taste' },

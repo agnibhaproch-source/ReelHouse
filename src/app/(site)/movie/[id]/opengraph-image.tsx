@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { getMovie } from '@/lib/tmdb/endpoints';
 import { getBestLogo, tmdbImage } from '@/lib/tmdb/images';
 import { getPosterMeta } from '@/lib/tmdb/meta';
+import { artDataUri, isArtPath } from '@/lib/art/catalogue';
 
 export const alt = 'Movie on Reelhouse';
 export const size = { width: 1200, height: 630 };
@@ -31,7 +32,10 @@ export default async function Image({ params }: { params: Promise<{ id: string }
       size,
     );
   }
-  const backdrop = tmdbImage(movie.backdrop_path, 'w1280');
+  // Generated art is inlined: the OG renderer can't fetch this site's relative URLs.
+  const backdrop = isArtPath(movie.backdrop_path)
+    ? artDataUri(movie.backdrop_path)
+    : tmdbImage(movie.backdrop_path, 'w1280');
   const logo = getBestLogo(movie.images);
   const logoUrl = logo ? tmdbImage(logo.file_path, 'w500') : null;
   const { color } = await getPosterMeta(movie.poster_path);

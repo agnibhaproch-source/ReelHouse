@@ -338,7 +338,9 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
             </p>
           )}
           <p className="text-small text-reel/85 meta-caps flex flex-wrap items-center gap-x-3 gap-y-1 max-md:justify-center">
-            {slide.rating > 0 && <RatingRing value={slide.rating} size={36} label="TMDB rating" />}
+            {slide.rating > 0 && (
+              <RatingRing value={slide.rating} size={36} label="Audience rating" />
+            )}
             {slide.year && <span>{slide.year}</span>}
             {slide.runtime ? <span>{formatRuntime(slide.runtime)}</span> : null}
             {slide.genres.length > 0 && (

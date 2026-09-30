@@ -242,7 +242,7 @@ export function SurpriseMe({
                   <p className="font-display text-h3">{pick.title}</p>
                   <p className="meta-caps text-dim flex items-center gap-3">
                     {pick.vote_average > 0 && (
-                      <RatingRing value={pick.vote_average} size={32} label="TMDB rating" />
+                      <RatingRing value={pick.vote_average} size={32} label="Audience rating" />
                     )}
                     <span>{yearOf(pick.release_date)}</span>
                   </p>
