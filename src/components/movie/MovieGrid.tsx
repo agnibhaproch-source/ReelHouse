@@ -101,11 +101,12 @@ export function MovieGrid({
   // Batch reveal for newly mounted cards (ScrollTrigger.batch).
   useEffect(() => {
     const el = root.current;
+    const armed = revealed.current;
     if (!el) return;
     const fresh = Array.from(el.querySelectorAll<HTMLElement>('[data-flip-id]')).filter((n) => {
       const id = Number(n.dataset.flipId);
-      if (revealed.current.has(id)) return false;
-      revealed.current.add(id);
+      if (armed.has(id)) return false;
+      armed.add(id);
       return true;
     });
     if (!fresh.length || isReducedNow()) return;
@@ -129,7 +130,7 @@ export function MovieGrid({
       triggers.forEach((t) => t.kill());
       // Cards that never entered are still hidden: forget them so the next run re-arms them
       // (otherwise appending a page or a re-render leaves them invisible for good).
-      pending.forEach((n) => revealed.current.delete(Number(n.dataset.flipId)));
+      pending.forEach((n) => armed.delete(Number(n.dataset.flipId)));
     };
   }, [items]);
 

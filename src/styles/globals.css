@@ -66,6 +66,8 @@
 /* ---------- Base ---------- */
 @layer base {
   html {
+    /* body's clip doesn't propagate to the viewport; without this, edge-hugging layers scroll sideways */
+    overflow-x: clip;
     color-scheme: dark;
     background: var(--bg-void);
     color: var(--text-reel);

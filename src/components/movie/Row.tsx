@@ -222,14 +222,8 @@ export function Row({
       if (!el || !list.length) return;
       const titleEl = el.querySelector('[data-row-title]');
       const cards = Array.from(el.querySelectorAll('[data-card]')).slice(0, 12);
-      if (reduced) {
-        gsap.from([titleEl, ...cards], {
-          opacity: 0,
-          duration: DUR.fast,
-          scrollTrigger: { trigger: el, start: 'top bottom-=60', once: true },
-        });
-        return;
-      }
+      // Reduced motion: no entrance at all. A fade that never finishes would hide the content.
+      if (reduced) return;
       const tl = gsap.timeline({
         scrollTrigger: { trigger: el, start: 'top bottom-=60', once: true },
       });
@@ -291,7 +285,7 @@ export function Row({
     <section
       ref={section}
       aria-labelledby={headingId}
-      className={cn('group/row relative py-5 md:py-7', className)}
+      className={cn('group/row relative overflow-x-clip py-5 md:py-7', className)}
     >
       <div className="px-gutter mb-3 flex items-end justify-between gap-4">
         <div className="group/title flex items-baseline gap-4">

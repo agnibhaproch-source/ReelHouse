@@ -36,12 +36,13 @@ export function Reveal({
   useGSAP(
     () => {
       const el = ref.current;
-      if (!el) return;
+      // Reduced motion: no entrance at all. A fade that never finishes would hide the content.
+      if (!el || reduced) return;
       const targets = stagger ? (Array.from(el.children) as HTMLElement[]) : [el];
       const staggered = targets.slice(0, STAGGER.maxItems);
       const rest = targets.slice(STAGGER.maxItems);
-      const from = reduced ? { opacity: 0 } : { opacity: 0, y };
-      const to = { opacity: 1, y: 0, duration: reduced ? DUR.fast : DUR.slow, ease: 'reel', delay };
+      const from = { opacity: 0, y };
+      const to = { opacity: 1, y: 0, duration: DUR.slow, ease: 'reel', delay };
       gsap.set(targets, from);
       const tl = gsap.timeline({ scrollTrigger: { trigger: el, start, once: true } });
       tl.to(staggered, { ...to, stagger: STAGGER.base });

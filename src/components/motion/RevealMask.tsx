@@ -21,14 +21,8 @@ export function RevealMask({
   useGSAP(
     () => {
       if (!ref.current) return;
-      if (reduced) {
-        gsap.from(ref.current, {
-          opacity: 0,
-          duration: DUR.fast,
-          scrollTrigger: { trigger: ref.current, start: 'top 90%', once: true },
-        });
-        return;
-      }
+      // Reduced motion: no entrance at all. A fade that never finishes would hide the content.
+      if (reduced) return;
       gsap.fromTo(
         ref.current,
         { clipPath: direction === 'up' ? 'inset(100% 0% 0% 0%)' : 'inset(0% 100% 0% 0%)' },

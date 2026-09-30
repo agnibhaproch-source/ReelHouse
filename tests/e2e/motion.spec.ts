@@ -9,6 +9,32 @@ test.describe('reduced motion', () => {
     await expect(page.locator('html')).not.toHaveClass(/has-custom-cursor/);
     await expect(page.locator('[data-cursor-root]')).toHaveCount(0);
   });
+
+  // Entrance animations are skipped, never half-run: nothing the reader needs may sit at opacity 0.
+  test('all content is visible without scrolling it into view', async ({ page }) => {
+    const hidden = () =>
+      page.evaluate(() =>
+        [...document.querySelectorAll('main h1, main h2, main p, main li')]
+          .filter(
+            (e) =>
+              e.getBoundingClientRect().width > 0 && !e.closest('[aria-hidden="true"], .sr-only'),
+          )
+          .filter((e) => {
+            for (let n: Element | null = e; n; n = n.parentElement)
+              if (getComputedStyle(n).opacity === '0') return true;
+            return false;
+          })
+          .map((e) => `${e.tagName}: ${(e.textContent ?? '').trim().slice(0, 40)}`),
+      );
+    for (const path of ['/', '/movie/1001', '/person/5001', '/mood/feel-good']) {
+      await page.goto(path);
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(800);
+      expect(await hidden(), path).toEqual([]);
+    }
+    await page.goto('/');
+    await expect(page.locator('[data-hero-overview]')).toBeVisible();
+  });
 });
 
 test('custom cursor mounts on fine pointers and the settings toggle restores the native one', async ({

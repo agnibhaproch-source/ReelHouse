@@ -12,7 +12,7 @@ export function MoodStrip() {
         </h2>
         <TransitionLink
           href="/browse#moods"
-          className="text-small text-dim hover:text-reel duration-fast shrink-0 transition-colors"
+          className="text-small text-dim hover:text-reel duration-fast inline-flex min-h-11 shrink-0 items-center transition-colors"
         >
           All moods
         </TransitionLink>

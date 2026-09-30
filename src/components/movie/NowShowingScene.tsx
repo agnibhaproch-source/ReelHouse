@@ -83,11 +83,14 @@ export function NowShowingScene({ movies }: { movies: Movie[] }) {
         tl.to(bg.current, { backgroundColor: COLORS.void, duration: 0.4 }, 2.4);
       }}
       fallback={(el) => {
-        gsap.from(el.querySelectorAll('[data-ns-card]'), {
-          opacity: 0,
-          y: 30,
-          stagger: 0.05,
-          scrollTrigger: { trigger: el, start: 'top 80%', once: true },
+        // Reduced motion / small screens: no entrance (it could leave posters hidden). On desktop
+        // the cards are absolutely positioned for the scrub, so place them in the final line.
+        if (!window.matchMedia('(min-width: 768px)').matches) return;
+        const cards = el.querySelectorAll<HTMLElement>('[data-ns-card]');
+        const n = cards.length;
+        gsap.set(cards, {
+          xPercent: -50,
+          x: (i) => (i - (n - 1) / 2) * (Math.min(window.innerWidth, 1400) / n),
         });
       }}
     >

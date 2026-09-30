@@ -4,7 +4,19 @@ import { test, expect } from './fixtures';
 // Accessibility (spec 60): zero axe violations on key pages (WCAG 2.2 AA rules).
 test.use({ reducedMotion: 'reduce' });
 
-for (const path of ['/styleguide', '/', '/movie/1001', '/search?q=the', '/browse', '/account']) {
+for (const path of [
+  '/styleguide',
+  '/',
+  '/movie/1001',
+  '/movie/1003', // green per-film accent
+  '/search?q=the',
+  '/browse',
+  '/mood/rainy-sunday',
+  '/account',
+  '/login',
+  '/my-list',
+  '/person/5001',
+]) {
   test(`axe: ${path}`, async ({ page }) => {
     await page.goto(path);
     await page.waitForLoadState('networkidle');

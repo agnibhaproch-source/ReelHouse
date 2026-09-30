@@ -44,16 +44,8 @@ export function SplitHeading({
     (context) => {
       const el = ref.current;
       if (!el) return;
-      if (reduced) {
-        gsap.from(el, {
-          opacity: 0,
-          duration: DUR.fast,
-          delay,
-          scrollTrigger:
-            trigger === 'scroll' ? { trigger: el, start: 'top 90%', once: true } : undefined,
-        });
-        return;
-      }
+      // Reduced motion: no entrance at all. A fade that never finishes would hide the content.
+      if (reduced) return;
       let played = false;
       let cancelled = false;
       void loadSplitText().then((SplitText) => {

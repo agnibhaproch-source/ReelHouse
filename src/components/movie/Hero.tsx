@@ -104,7 +104,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
         cancelIntro();
       };
     },
-    { scope: root, dependencies: [reduced] },
+    { scope: root, dependencies: [reduced], revertOnUpdate: true },
   );
 
   // Scroll parallax: backdrop 0.4×, text 0.8× and fading out by 60%.
@@ -120,7 +120,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
         scrollTrigger: { ...st, end: '60% top' },
       });
     },
-    { scope: root, dependencies: [reduced] },
+    { scope: root, dependencies: [reduced], revertOnUpdate: true },
   );
 
   // Mouse parallax ±12px.

@@ -88,7 +88,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
       window.addEventListener(PAGE_INTRO_EVENT, intro, { once: true });
       return () => window.removeEventListener(PAGE_INTRO_EVENT, intro);
     },
-    { scope: root, dependencies: [reduced] },
+    { scope: root, dependencies: [reduced], revertOnUpdate: true },
   );
 
   const year = yearOf(movie.release_date);
