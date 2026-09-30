@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Fraunces, Manrope } from 'next/font/google';
+import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import '@/styles/globals.css';
@@ -46,13 +47,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://image.tmdb.org" crossOrigin="" />
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
-        <script
-          // Runs before paint: skip the long intro on return visits within the session (spec 36).
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{if(sessionStorage.getItem('intro-seen'))document.documentElement.classList.add('intro-seen')}catch(e){}",
-          }}
-        />
+        {/* Runs before hydration: skip the long intro on return visits within the session (spec 36). */}
+        <Script id="intro-seen" strategy="beforeInteractive">
+          {
+            "try{if(sessionStorage.getItem('intro-seen'))document.documentElement.classList.add('intro-seen')}catch(e){}"
+          }
+        </Script>
         <noscript>
           <style>{'[data-preloader]{display:none!important}'}</style>
         </noscript>

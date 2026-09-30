@@ -43,31 +43,37 @@ export function Footer() {
 
   useGSAP(
     () => {
-      if (reduced || !ref.current) return;
-      // Sign-off line and links rise in; the wordmark is revealed like closing credits.
-      gsap.from('[data-foot-rise]', {
-        y: 28,
-        opacity: 0,
-        duration: 0.9,
-        ease: 'reel',
-        stagger: 0.06,
-        scrollTrigger: { trigger: ref.current, start: 'top 85%', once: true },
-      });
-      gsap.fromTo(
-        '[data-foot-mark]',
-        { yPercent: 40, clipPath: 'inset(0% 0% 100% 0%)' },
-        {
-          yPercent: 0,
-          clipPath: 'inset(0% 0% 0% 0%)',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '[data-foot-mark]',
-            start: 'top bottom',
-            end: 'bottom bottom',
-            scrub: 0.6,
+      const root = ref.current;
+      if (reduced || !root) return;
+      // Real elements, not selector strings: during route changes the footer re-runs and a
+      // string trigger can resolve to nothing, which breaks ScrollTrigger.
+      const rise = gsap.utils.toArray<HTMLElement>(root.querySelectorAll('[data-foot-rise]'));
+      const wordmark = root.querySelector<HTMLElement>('[data-foot-mark]');
+      if (rise.length)
+        gsap.from(rise, {
+          y: 28,
+          opacity: 0,
+          duration: 0.9,
+          ease: 'reel',
+          stagger: 0.06,
+          scrollTrigger: { trigger: root, start: 'top 85%', once: true },
+        });
+      if (wordmark)
+        gsap.fromTo(
+          wordmark,
+          { yPercent: 40, clipPath: 'inset(0% 0% 100% 0%)' },
+          {
+            yPercent: 0,
+            clipPath: 'inset(0% 0% 0% 0%)',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: wordmark,
+              start: 'top bottom',
+              end: 'bottom bottom',
+              scrub: 0.6,
+            },
           },
-        },
-      );
+        );
     },
     { scope: ref, dependencies: [reduced, pathname], revertOnUpdate: true },
   );
