@@ -11,7 +11,7 @@ const csp = [
   "img-src 'self' data: blob: https://image.tmdb.org https://i.ytimg.com",
   "font-src 'self' data:",
   "media-src 'self' blob: data:",
-  `connect-src 'self' https://image.tmdb.org ${supabase} https://*.supabase.co wss://*.supabase.co https://vitals.vercel-insights.com https://*.ingest.sentry.io`,
+  `connect-src 'self' https://image.tmdb.org ${supabase} https://*.supabase.co wss://*.supabase.co https://vitals.vercel-insights.com https://*.sentry.io`,
   'frame-src https://www.youtube-nocookie.com https://www.youtube.com',
   "worker-src 'self' blob:",
   "object-src 'none'",
