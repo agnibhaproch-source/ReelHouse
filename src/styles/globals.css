@@ -295,6 +295,82 @@ html.reduced-motion .footer-mark {
   }
 }
 
+/* Film page: title wall (no-artwork backdrop) — outlined rows drifting in opposite directions. */
+.title-wall-row {
+  display: flex;
+  gap: 0.5em;
+  width: max-content;
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--text-reel) 13%, transparent);
+}
+.title-wall-row > span {
+  padding-right: 0.5em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .title-wall-row {
+    animation: wall-drift 60s linear infinite;
+  }
+  .title-wall-rev {
+    animation-direction: reverse;
+    animation-duration: 75s;
+  }
+  .hero-beam {
+    animation: hero-beam 12s var(--ease-reel) infinite alternate;
+  }
+}
+html.reduced-motion .title-wall-row,
+html.reduced-motion .hero-beam {
+  animation: none;
+}
+@keyframes wall-drift {
+  to {
+    translate: -50% 0;
+  }
+}
+
+/* Film page: projector light cone raking across the hero from the top-left. */
+.hero-beam {
+  background: conic-gradient(
+    from 118deg at -8% -12%,
+    transparent 0deg,
+    color-mix(in oklab, var(--text-reel) 9%, transparent) 10deg,
+    color-mix(in oklab, var(--film-accent, var(--marquee-violet)) 10%, transparent) 18deg,
+    transparent 34deg
+  );
+  transform-origin: -8% -12%;
+  mix-blend-mode: screen;
+}
+@keyframes hero-beam {
+  from {
+    rotate: -4deg;
+    opacity: 0.7;
+  }
+  to {
+    rotate: 5deg;
+    opacity: 1;
+  }
+}
+
+/* Letterbox bars: only when motion is allowed (they part on mount). */
+@media (prefers-reduced-motion: reduce) {
+  .letterbox {
+    display: none;
+  }
+}
+html.reduced-motion .letterbox {
+  display: none;
+}
+
+/* Poster sheen that follows the tilt (--mx/--my from useTilt). */
+.poster-sheen {
+  background: radial-gradient(
+    circle at var(--mx, 30%) var(--my, 20%),
+    rgb(255 255 255 / 0.22),
+    transparent 45%
+  );
+  mix-blend-mode: soft-light;
+}
+
 /* Metadata line (year · runtime · certificate): spaced caps, tabular numbers. */
 .meta-caps {
   text-transform: uppercase;

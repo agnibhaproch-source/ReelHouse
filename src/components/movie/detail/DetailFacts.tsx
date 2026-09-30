@@ -1,6 +1,5 @@
 import type { MovieDetail } from '@/lib/tmdb/types';
-import { formatMoney, formatRuntime } from '@/lib/utils';
-import { languageName } from '@/lib/tmdb/languages';
+import { formatMoney } from '@/lib/utils';
 import { Counter } from '@/components/motion/Counter';
 import { SplitHeading } from '@/components/motion/SplitHeading';
 import { Reveal } from '@/components/motion/Reveal';
@@ -16,9 +15,8 @@ function formatDate(d: string | null | undefined): string {
       );
 }
 
-/** Details (spec 24.5): director, writers, budget, revenue (odometer), dates, language, runtime. */
+/** Details (spec 24.5): writers, budget and box office (odometer), release dates, status. */
 export function DetailFacts({ movie }: { movie: MovieDetail }) {
-  const directors = movie.credits.crew.filter((c) => c.job === 'Director');
   const writers = movie.credits.crew
     .filter((c) => ['Screenplay', 'Writer', 'Story', 'Novel'].includes(c.job))
     .slice(0, 4);
@@ -26,7 +24,7 @@ export function DetailFacts({ movie }: { movie: MovieDetail }) {
     movie.release_dates?.results.find((r) => r.iso_3166_1 === 'IN')?.release_dates[0]
       ?.release_date ?? movie.release_date;
 
-  const people = (list: typeof directors) =>
+  const people = (list: typeof writers) =>
     list.length ? (
       <span className="flex flex-wrap gap-x-2">
         {list.map((p, i) => (
@@ -44,26 +42,28 @@ export function DetailFacts({ movie }: { movie: MovieDetail }) {
       '—'
     );
 
+  // Director, year, runtime and language live in the "At a glance" card above; this section
+  // carries the rest, and skips anything TMDB doesn't have.
+  const releaseDate = formatDate(movie.release_date);
+  const indiaDate = formatDate(released);
   const facts: { label: string; value: React.ReactNode }[] = [
-    { label: directors.length > 1 ? 'Directors' : 'Director', value: people(directors) },
-    { label: 'Writers', value: people(writers) },
+    { label: 'Writers', value: writers.length ? people(writers) : null },
     {
       label: 'Budget',
-      value: movie.budget ? <Counter value={formatMoney(movie.budget)} label="Budget" /> : '—',
+      value: movie.budget ? <Counter value={formatMoney(movie.budget)} label="Budget" /> : null,
     },
     {
-      label: 'Revenue',
-      value: movie.revenue ? <Counter value={formatMoney(movie.revenue)} label="Revenue" /> : '—',
+      label: 'Box office',
+      value: movie.revenue ? <Counter value={formatMoney(movie.revenue)} label="Revenue" /> : null,
     },
-    { label: 'Release date', value: formatDate(movie.release_date) },
-    { label: 'Released in India', value: formatDate(released) },
-    { label: 'Original language', value: languageName(movie.original_language) },
+    { label: 'Release date', value: releaseDate === '—' ? null : releaseDate },
     {
-      label: 'Runtime',
-      value: movie.runtime ? <Counter value={formatRuntime(movie.runtime)} label="Runtime" /> : '—',
+      label: 'Released in India',
+      value: indiaDate === '—' || indiaDate === releaseDate ? null : indiaDate,
     },
-    { label: 'Status', value: movie.status || '—' },
-  ];
+    { label: 'Status', value: movie.status || null },
+  ].filter((f) => Boolean(f.value));
+  if (facts.length < 2) return null;
 
   return (
     <section aria-labelledby="facts-h" className="px-gutter py-12">

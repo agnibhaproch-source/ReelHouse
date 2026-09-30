@@ -23,6 +23,9 @@ import { RateButton } from './RateButton';
 import { ShareButton } from './ShareButton';
 import { WatchCta } from './WatchCta';
 import { RemindButton } from '../RemindButton';
+import { TitleWall } from './TitleWall';
+import { Star } from 'lucide-react';
+import { useTilt } from '@/hooks/useTilt';
 
 const DustField = dynamic(() => import('@/components/gl/DustField').then((m) => m.DustField), {
   ssr: false,
@@ -46,6 +49,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
   const root = useRef<HTMLElement>(null);
   const poster = useRef<HTMLDivElement>(null);
   const { reduced, webglEnabled } = useMotionPrefs();
+  useTilt(poster, 5);
   const snap = toSnapshot(movie);
 
   // Remember poster rect for the reverse flight on back navigation (spec 35).
@@ -69,6 +73,8 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
   useGSAP(
     () => {
       if (reduced || !root.current) return;
+      // Letterbox bars part like a film starting.
+      gsap.to('[data-letterbox]', { scaleY: 0, duration: 1.2, ease: 'projector', delay: 0.15 });
       gsap.fromTo(
         '[data-kenburns]',
         { scale: 1 },
@@ -110,15 +116,20 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
       />
       <div data-detail-backdrop className="absolute inset-0 -z-10">
         <div data-kenburns className="absolute inset-0 origin-[60%_40%]">
-          <TmdbImage
-            path={movie.backdrop_path ?? movie.poster_path}
-            kind={movie.backdrop_path ? 'backdrop' : 'poster'}
-            alt=""
-            sizes="100vw"
-            priority
-            plain
-          />
+          {movie.backdrop_path ? (
+            <TmdbImage
+              path={movie.backdrop_path}
+              kind="backdrop"
+              alt=""
+              sizes="100vw"
+              priority
+              plain
+            />
+          ) : (
+            <TitleWall title={movie.title} color={color} />
+          )}
         </div>
+        <div aria-hidden="true" className="hero-beam pointer-events-none absolute inset-0" />
         <div aria-hidden="true" className="projector-flicker absolute inset-0" />
         <div aria-hidden="true" className="vignette absolute inset-0" />
         <div
@@ -127,6 +138,17 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
         />
       </div>
       {webglEnabled && !reduced && <DustField color={color} />}
+      {/* Opening letterbox (parts on mount; never shown under reduced motion) */}
+      <div
+        aria-hidden="true"
+        data-letterbox
+        className="letterbox bg-ink absolute inset-x-0 top-0 z-20 h-[11vh] origin-top"
+      />
+      <div
+        aria-hidden="true"
+        data-letterbox
+        className="letterbox bg-ink absolute inset-x-0 bottom-0 z-20 h-[11vh] origin-bottom"
+      />
 
       <div className="px-gutter relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-end gap-8 pt-32 pb-14 md:flex-row md:items-end md:gap-12">
         <div
@@ -143,6 +165,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
             priority
             fallbackTitle={movie.title}
           />
+          <span aria-hidden="true" className="poster-sheen pointer-events-none absolute inset-0" />
         </div>
 
         <div
@@ -182,17 +205,26 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
               {movie.tagline}
             </p>
           )}
-          <div className="text-small text-reel/85 meta-caps flex flex-wrap items-center gap-x-4 gap-y-2 max-md:justify-center">
-            <RatingRing value={movie.vote_average} size={52} label="TMDB rating" />
-            {year && <span>{year}</span>}
-            {certification && (
-              <span className="border-reel/40 rounded border px-1.5 text-[0.75rem]">
-                {certification}
-              </span>
-            )}
-            {movie.runtime ? <ScrambleText text={formatRuntime(movie.runtime)} /> : null}
-            <span className="text-dim">{languageName(movie.original_language)}</span>
-          </div>
+          <ul
+            aria-label="At a glance"
+            className="meta-caps flex flex-wrap items-center gap-2 max-md:justify-center"
+          >
+            {[languageName(movie.original_language), year, certification]
+              .filter(Boolean)
+              .map((v) => (
+                <li
+                  key={v}
+                  className="rounded-pill border-reel/25 bg-void/40 border px-3 py-1 backdrop-blur-sm"
+                >
+                  {v}
+                </li>
+              ))}
+            {movie.runtime ? (
+              <li className="rounded-pill border-reel/25 bg-void/40 border px-3 py-1 backdrop-blur-sm">
+                <ScrambleText text={formatRuntime(movie.runtime)} />
+              </li>
+            ) : null}
+          </ul>
           {genreLinks.length > 0 && (
             <ul className="flex flex-wrap gap-2 max-md:justify-center" aria-label="Genres">
               {genreLinks.map((g) => (
@@ -207,13 +239,28 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
               ))}
             </ul>
           )}
+          <div className="rounded-modal border-reel/15 bg-void/45 lit-edge flex w-full max-w-md items-center gap-4 border p-4 backdrop-blur-md max-md:justify-between">
+            <RatingRing value={movie.vote_average} size={56} label="TMDB rating" />
+            <div className="min-w-0 flex-1 text-left">
+              <p className="flex items-center gap-1.5 text-[1.35rem] leading-none font-bold tabular-nums">
+                <Star className="text-amber size-5 fill-current" aria-hidden="true" />
+                {movie.vote_average ? movie.vote_average.toFixed(1) : '—'}
+                <span className="text-dim text-small font-semibold">/10</span>
+              </p>
+              <p className="text-dim mt-1 text-[0.8rem]">
+                {movie.vote_count
+                  ? `${new Intl.NumberFormat('en', { notation: 'compact' }).format(movie.vote_count)} votes on TMDB`
+                  : 'Not rated yet'}
+              </p>
+            </div>
+            <RateButton movieId={movie.id} title={movie.title} tmdbAverage={movie.vote_average} />
+          </div>
           <div className="flex flex-wrap items-center gap-3 max-md:justify-center">
             <WatchCta providers={movie['watch/providers']?.results} title={movie.title} />
             {videos.length > 0 && (
               <PlayTrailerButton movie={snap} videos={videos} color={color} size="lg" />
             )}
             <WatchlistButton movie={snap} size="lg" />
-            <RateButton movieId={movie.id} title={movie.title} tmdbAverage={movie.vote_average} />
             <ShareButton title={movie.title} />
           </div>
           {movie.release_date && movie.release_date > new Date().toISOString().slice(0, 10) && (

@@ -11,6 +11,7 @@ import { truncate } from '@/lib/utils';
 import { SITE_URL } from '@/lib/site';
 import { DetailHero } from '@/components/movie/detail/DetailHero';
 import { DetailOverview } from '@/components/movie/detail/DetailOverview';
+import { SectionTabs } from '@/components/movie/detail/SectionTabs';
 import { CastStrip } from '@/components/movie/detail/CastStrip';
 import { VideoGrid } from '@/components/movie/detail/VideoGrid';
 import { DetailFacts } from '@/components/movie/detail/DetailFacts';
@@ -89,7 +90,7 @@ export default async function MoviePage({ params }: Props) {
       ).slice(0, 20),
     ),
   ]);
-  const color = movie.poster_path ? meta.color : fallbackGlow(movie.id);
+  const color = movie.poster_path ? meta.color : fallbackGlow(movie.title);
   const logo = getBestLogo(movie.images);
   const videos = pickVideos(movie.videos.results);
   const director = movie.credits.crew.find((c) => c.job === 'Director');
@@ -148,7 +149,8 @@ export default async function MoviePage({ params }: Props) {
         blur={meta.blur}
         certification={cert}
       />
-      <DetailOverview overview={movie.overview} tagline={movie.tagline} />
+      <SectionTabs />
+      <DetailOverview movie={movie} />
       <CastStrip cast={movie.credits.cast.slice(0, 20)} movieId={movie.id} />
       <VideoGrid videos={videos} movie={movie} color={color} />
       <DetailFacts movie={movie} />
@@ -161,7 +163,11 @@ export default async function MoviePage({ params }: Props) {
         tmdbAverage={movie.vote_average}
       />
       <Gallery backdrops={movie.images.backdrops.slice(0, 12)} title={movie.title} />
-      {recs.length > 0 && <Row rowKey={`recs-${movie.id}`} title="More like this" items={recs} />}
+      {recs.length > 0 && (
+        <div id="more-like-this">
+          <Row rowKey={`recs-${movie.id}`} title="More like this" items={recs} />
+        </div>
+      )}
     </article>
   );
 }
