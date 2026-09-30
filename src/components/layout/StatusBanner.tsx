@@ -1,11 +1,26 @@
 import { AlertTriangle, FlaskConical } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-/** Data-source banner: demo fixtures, or TMDB unavailable (spec 64). */
-export function StatusBanner({ kind }: { kind: 'fixtures' | 'down' }) {
+/**
+ * Data-source banner: demo fixtures, or TMDB unavailable (spec 64). `floating` lays it over a
+ * full-height hero instead of pushing the hero below the fold.
+ */
+export function StatusBanner({
+  kind,
+  floating = false,
+}: {
+  kind: 'fixtures' | 'down';
+  floating?: boolean;
+}) {
   return (
     <div
       role="status"
-      className="mx-gutter rounded-modal border-amber/40 bg-amber/10 text-small text-reel relative z-[5] mt-[calc(var(--nav-height)+8px)] flex items-start gap-3 border px-4 py-3"
+      className={cn(
+        'mx-gutter rounded-modal border-amber/40 text-small text-reel z-[5] flex items-start gap-3 border px-4 py-3',
+        floating
+          ? 'bg-void/70 absolute inset-x-0 top-[calc(var(--nav-height)+8px)] backdrop-blur-md'
+          : 'bg-amber/10 relative mt-[calc(var(--nav-height)+8px)]',
+      )}
     >
       {kind === 'fixtures' ? (
         <FlaskConical className="text-amber mt-0.5 size-4 shrink-0" aria-hidden="true" />

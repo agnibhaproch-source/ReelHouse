@@ -10,6 +10,7 @@ import {
   discoverQuery,
   filtersToSearch,
   parseFilters,
+  type FixedDiscover,
   type Filters,
 } from '@/lib/filters';
 import { qk } from '@/lib/tmdb/query-keys';
@@ -23,7 +24,7 @@ import { MovieGrid } from './MovieGrid';
 import { FilterPanel } from './FilterPanel';
 
 interface DiscoverGridProps {
-  fixed: { genre?: number; lang?: string };
+  fixed: FixedDiscover;
   initial?: Paginated<Movie>;
   label: string;
 }

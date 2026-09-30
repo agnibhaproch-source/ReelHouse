@@ -71,14 +71,17 @@ export function filtersToSearch(f: Filters, base?: URLSearchParams): URLSearchPa
   return sp;
 }
 
+export interface FixedDiscover {
+  genre?: number;
+  lang?: string;
+  /** Raw TMDB params (a mood's query); the viewer's own filters override them. */
+  extra?: Readonly<Record<string, string>>;
+}
+
 /** TMDB discover params for the proxy. */
-export function discoverQuery(
-  f: Filters,
-  fixed: { genre?: number; lang?: string },
-  page: number,
-): URLSearchParams {
+export function discoverQuery(f: Filters, fixed: FixedDiscover, page: number): URLSearchParams {
   const sort = SORTS.find((s) => s.id === f.sort)?.tmdb ?? 'popularity.desc';
-  const q = new URLSearchParams({ sort_by: sort, page: String(page) });
+  const q = new URLSearchParams({ ...fixed.extra, sort_by: sort, page: String(page) });
   const genre = fixed.genre ?? f.genre;
   const lang = fixed.lang ?? f.lang;
   if (genre) q.set('with_genres', String(genre));

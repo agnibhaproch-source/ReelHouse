@@ -60,6 +60,7 @@ export function discoverParams(p: DiscoverParams): Params {
     params['vote_count.gte'] = 10;
   }
   if (p.sort === 'title.asc') params['vote_count.gte'] = 50;
+  if (p.raw) Object.assign(params, p.raw);
   return p.kids ? { ...params, ...kidsParams(p.region) } : params;
 }
 

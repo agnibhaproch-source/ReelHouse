@@ -225,8 +225,10 @@ function discover(params: Params) {
     .filter(Boolean)
     .map(Number);
   if (genres.length) items = items.filter((m) => genres.some((g) => m.genre_ids.includes(g)));
-  if (params.with_original_language)
-    items = items.filter((m) => m.original_language === params.with_original_language);
+  const langs = String(params.with_original_language ?? '')
+    .split('|')
+    .filter(Boolean);
+  if (langs.length) items = items.filter((m) => langs.includes(m.original_language));
   const without = String(params.without_genres ?? '')
     .split(/[,|]/)
     .filter(Boolean)

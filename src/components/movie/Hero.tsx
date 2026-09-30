@@ -292,6 +292,11 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       />
 
       <div aria-hidden="true" className="vignette absolute inset-0 z-[3]" />
+      {/* Side scrim (desktop): keeps the title legible on bright backdrops and gives depth */}
+      <div
+        aria-hidden="true"
+        className="from-void/85 via-void/35 absolute inset-y-0 left-0 z-[3] w-[65%] bg-gradient-to-r to-transparent max-md:hidden"
+      />
       <div
         aria-hidden="true"
         className="from-void via-void/60 absolute inset-x-0 bottom-0 z-[3] h-2/3 bg-gradient-to-t to-transparent"

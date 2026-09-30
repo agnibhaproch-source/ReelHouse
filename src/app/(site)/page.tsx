@@ -9,6 +9,7 @@ import { Hero } from '@/components/movie/Hero';
 import { Row } from '@/components/movie/Row';
 import { NowShowingScene } from '@/components/movie/NowShowingScene';
 import { GenreWall } from '@/components/movie/GenreWall';
+import { MoodStrip } from '@/components/movie/MoodStrip';
 import { LanguageMarquee } from '@/components/movie/LanguageMarquee';
 import { RecommendationRows } from '@/components/movie/RecommendationRows';
 import { ContinueExploringRow } from '@/components/movie/ContinueExploringRow';
@@ -43,8 +44,8 @@ export default async function HomePage() {
 
   return (
     <>
-      {usingFixtures() && <StatusBanner kind="fixtures" />}
-      {down && !usingFixtures() && <StatusBanner kind="down" />}
+      {usingFixtures() && <StatusBanner kind="fixtures" floating={!!hero.data?.length} />}
+      {down && !usingFixtures() && <StatusBanner kind="down" floating={!!hero.data?.length} />}
       {hero.data && hero.data.length > 0 ? (
         <Hero slides={hero.data} />
       ) : (
@@ -88,6 +89,8 @@ export default async function HomePage() {
           />
         ))}
       </div>
+
+      <MoodStrip />
 
       {nowPlaying.data && <NowShowingScene movies={nowPlaying.data} />}
 

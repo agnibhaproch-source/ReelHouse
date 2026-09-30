@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { encodeSrc, getBestLogo, nearestSize, tmdbImage, tmdbLoader } from '@/lib/tmdb/images';
-import { isAllowedPath } from '@/lib/tmdb/allowlist';
-import { fallbackGlow, hexToRgbTriplet } from '@/lib/tmdb/color';
+import { ALLOWED_PARAMS, isAllowedPath } from '@/lib/tmdb/allowlist';
+import { MOODS, moodBySlug } from '@/lib/moods';
+import { fallbackGlow, filmAccent, hexToRgbTriplet } from '@/lib/tmdb/color';
 import { genreById, genreBySlug, genreNames } from '@/lib/tmdb/genres';
 import { getLanguage, languageName } from '@/lib/tmdb/languages';
 import { bestTrailer, pickVideos } from '@/lib/tmdb/videos';
@@ -117,6 +118,29 @@ describe('colour, genres, languages, videos', () => {
     expect(fallbackGlow('x')).toMatch(/^#[0-9a-f]{6}$/);
     expect(hexToRgbTriplet('#8b5cff')).toBe('139 92 255');
     expect(hexToRgbTriplet('nope')).toBe('139 92 255');
+  });
+  it('film accent keeps the hue but is always legible', () => {
+    const lum = (hex: string) => {
+      const [r, g, b] = hexToRgbTriplet(hex)
+        .split(' ')
+        .map((v) => {
+          const c = Number(v) / 255;
+          return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+        }) as [number, number, number];
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const contrast = (a: string, b: string) => {
+      const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x) as [number, number];
+      return (hi + 0.05) / (lo + 0.05);
+    };
+    for (const poster of ['#3a0d0d', '#0b2a4a', '#f4e04d', '#1f5e2c', '#ff00aa', '#6b3f1f']) {
+      const accent = filmAccent(poster);
+      expect(accent).toMatch(/^#[0-9a-f]{6}$/);
+      expect(contrast(accent, '#08080d')).toBeGreaterThanOrEqual(4.5); // dark text on fill, ring on void
+    }
+    expect(filmAccent('#777777')).toBe('#8b5cff'); // greys keep the brand violet
+    expect(filmAccent(null)).toBe('#8b5cff');
+    expect(filmAccent('#3a0d0d')).not.toBe(filmAccent('#0b2a4a'));
   });
   it('resolves genres and languages', () => {
     expect(genreBySlug('sci-fi')?.id).toBe(878);
@@ -237,6 +261,22 @@ describe('filters ⇄ URL', () => {
     expect(q.get('page')).toBe('2');
     expect(q.get('with_runtime.lte')).toBe('120');
     expect(q.get('primary_release_date.lte')).toMatch(/^\d{4}-/);
+  });
+  it('moods are unique, proxy-safe, and yield to the viewer’s filters', () => {
+    expect(new Set(MOODS.map((m) => m.slug)).size).toBe(MOODS.length);
+    for (const m of MOODS)
+      for (const k of Object.keys(m.query)) expect(ALLOWED_PARAMS.has(k)).toBe(true);
+    const quick = moodBySlug('quick-watch')!;
+    const base = discoverQuery(DEFAULT_FILTERS, { extra: quick.query }, 1);
+    expect(base.get('with_runtime.lte')).toBe('95');
+    const mine = discoverQuery(
+      { ...DEFAULT_FILTERS, runtimeMax: 80, sort: 'top' },
+      { extra: quick.query },
+      1,
+    );
+    expect(mine.get('with_runtime.lte')).toBe('80');
+    expect(mine.get('sort_by')).toBe('vote_average.desc');
+    expect(moodBySlug('nope')).toBeUndefined();
   });
 });
 

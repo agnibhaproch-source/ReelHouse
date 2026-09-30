@@ -69,4 +69,6 @@ export interface DiscoverParams {
   region?: string;
   page?: number;
   kids?: boolean;
+  /** Raw TMDB discover params applied on top (e.g. a mood's query). */
+  raw?: Readonly<Record<string, string>>;
 }

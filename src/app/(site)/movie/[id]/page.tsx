@@ -6,6 +6,7 @@ import { getBestLogo, tmdbImage } from '@/lib/tmdb/images';
 import { pickVideos } from '@/lib/tmdb/videos';
 import { safe } from '@/lib/tmdb/safe';
 import { usingFixtures } from '@/lib/tmdb/client';
+import { fallbackGlow, filmAccent } from '@/lib/tmdb/color';
 import { truncate } from '@/lib/utils';
 import { SITE_URL } from '@/lib/site';
 import { DetailHero } from '@/components/movie/detail/DetailHero';
@@ -86,6 +87,7 @@ export default async function MoviePage({ params }: Props) {
       ).slice(0, 20),
     ),
   ]);
+  const color = movie.poster_path ? meta.color : fallbackGlow(movie.id);
   const logo = getBestLogo(movie.images);
   const videos = pickVideos(movie.videos.results);
   const director = movie.credits.crew.find((c) => c.job === 'Director');
@@ -123,7 +125,13 @@ export default async function MoviePage({ params }: Props) {
   };
 
   return (
-    <article style={{ ['--ambient' as string]: meta.color }}>
+    <article
+      data-film-accent
+      style={{
+        ['--ambient' as string]: color,
+        ['--film-accent' as string]: filmAccent(color),
+      }}
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
@@ -133,13 +141,13 @@ export default async function MoviePage({ params }: Props) {
         movie={movie}
         logo={logo}
         videos={videos}
-        color={meta.color}
+        color={color}
         blur={meta.blur}
         certification={cert}
       />
       <DetailOverview overview={movie.overview} tagline={movie.tagline} />
       <CastStrip cast={movie.credits.cast.slice(0, 20)} />
-      <VideoGrid videos={videos} movie={movie} color={meta.color} />
+      <VideoGrid videos={videos} movie={movie} color={color} />
       <DetailFacts movie={movie} />
       <WatchProviders providers={movie['watch/providers']?.results ?? {}} title={movie.title} />
       <ReviewsSection

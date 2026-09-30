@@ -3,6 +3,7 @@ import { getPopular } from '@/lib/tmdb/endpoints';
 import { usingFixtures } from '@/lib/tmdb/client';
 import { GENRES } from '@/lib/tmdb/genres';
 import { LANGUAGES } from '@/lib/tmdb/languages';
+import { MOODS } from '@/lib/moods';
 import { SITE_URL } from '@/lib/site';
 
 export const revalidate = 86400;
@@ -18,6 +19,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: 'daily' as const,
       priority: 0.7,
+    })),
+    ...MOODS.map((m) => ({
+      url: `${SITE_URL}/mood/${m.slug}`,
+      lastModified: now,
+      changeFrequency: 'daily' as const,
+      priority: 0.6,
     })),
     ...LANGUAGES.map((l) => ({
       url: `${SITE_URL}/language/${l.code}`,

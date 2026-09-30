@@ -219,6 +219,11 @@ export function MovieCard({
                     'radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgb(255 255 255 / 0.45), transparent 55%)',
                 }}
               />
+              {/* Lit edge: a hairline highlight so posters read as objects, not flat tiles */}
+              <span
+                aria-hidden="true"
+                className="rounded-poster ring-reel/[0.07] duration-base group-hover/card:ring-reel/15 pointer-events-none absolute inset-0 shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] ring-1 transition-[box-shadow] ring-inset"
+              />
               {isNew && (
                 <span className="rounded-pill bg-amber text-void absolute top-2 left-2 px-2 py-0.5 text-[0.7rem] font-extrabold">
                   New

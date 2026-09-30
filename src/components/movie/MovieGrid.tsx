@@ -109,20 +109,28 @@ export function MovieGrid({
       return true;
     });
     if (!fresh.length || isReducedNow()) return;
+    const pending = new Set(fresh);
     gsap.set(fresh, { opacity: 0, y: 30 });
     const triggers = ScrollTrigger.batch(fresh, {
       start: 'top 95%',
       once: true,
-      onEnter: (batch) =>
+      onEnter: (batch) => {
+        batch.forEach((n) => pending.delete(n as HTMLElement));
         gsap.to(batch, {
           opacity: 1,
           y: 0,
           duration: DUR.slow,
           ease: 'reel',
           stagger: { each: STAGGER.base, amount: STAGGER.base * STAGGER.maxItems },
-        }),
+        });
+      },
     });
-    return () => triggers.forEach((t) => t.kill());
+    return () => {
+      triggers.forEach((t) => t.kill());
+      // Cards that never entered are still hidden: forget them so the next run re-arms them
+      // (otherwise appending a page or a re-render leaves them invisible for good).
+      pending.forEach((n) => revealed.current.delete(Number(n.dataset.flipId)));
+    };
   }, [items]);
 
   // Infinite scroll sentinel.

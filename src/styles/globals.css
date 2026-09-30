@@ -119,6 +119,12 @@
   }
 }
 
+/* Per-film accent (detail page): the poster's hue, normalised for contrast in lib/tmdb/color. */
+[data-film-accent] {
+  --marquee-violet: var(--film-accent);
+  --focus-ring: 2px solid var(--film-accent);
+}
+
 /* Scrollbar — thin, glows violet on hover. Hidden while Lenis drives scroll. */
 ::-webkit-scrollbar {
   width: 10px;

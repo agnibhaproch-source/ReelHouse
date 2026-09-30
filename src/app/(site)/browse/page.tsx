@@ -3,11 +3,13 @@ import { GENRES } from '@/lib/tmdb/genres';
 import { discover } from '@/lib/tmdb/endpoints';
 import { getRequestPrefs } from '@/lib/prefs.server';
 import { GenreTile } from '@/components/movie/GenreTile';
+import { MoodTile } from '@/components/movie/MoodTile';
+import { MOODS } from '@/lib/moods';
 import { SplitHeading } from '@/components/motion/SplitHeading';
 
 export const metadata: Metadata = {
-  title: 'Browse genres',
-  description: 'Every genre, from action to westerns — pick one and dive in.',
+  title: 'Browse moods and genres',
+  description: 'Pick a mood or a genre, from rainy-Sunday dramas to midnight horror, and dive in.',
   alternates: { canonical: '/browse' },
 };
 
@@ -35,8 +37,21 @@ export default async function BrowseIndexPage() {
         trigger="mount"
         className="font-display text-hero mb-12 leading-[0.9]"
       >
-        Genres
+        Browse
       </SplitHeading>
+      <section id="moods" aria-labelledby="moods-heading" className="mb-20 scroll-mt-28">
+        <h2 id="moods-heading" className="font-display text-h2 mb-6">
+          By mood
+        </h2>
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {MOODS.map((m) => (
+            <li key={m.slug}>
+              <MoodTile mood={m} compact />
+            </li>
+          ))}
+        </ul>
+      </section>
+      <h2 className="font-display text-h2 mb-6">By genre</h2>
       <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {genres.map((g, i) => (
           <li key={g.slug}>
