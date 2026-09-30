@@ -59,13 +59,13 @@ export function MoodTile({ mood, compact = false }: { mood: Mood; compact?: bool
       />
       <span
         className={cn(
-          'font-display leading-none',
-          compact ? 'text-[1.6rem]' : 'text-[clamp(1.9rem,3.6vw,2.6rem)]',
+          'font-display block pr-7',
+          compact ? 'text-[1.6rem]/[1.05]' : 'text-[clamp(1.9rem,3.6vw,2.6rem)]/[1.05]',
         )}
       >
         {mood.name}
       </span>
-      <span className="text-dim text-small mt-2 max-w-[34ch]">{mood.blurb}</span>
+      <span className="text-dim text-small mt-2 block max-w-[34ch]">{mood.blurb}</span>
     </TransitionLink>
   );
 }
