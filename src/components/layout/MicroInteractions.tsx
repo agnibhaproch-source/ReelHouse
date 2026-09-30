@@ -27,6 +27,37 @@ function typingIn(el: EventTarget | null): boolean {
   return el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName);
 }
 
+/** `j` / `k`: move to the next / previous section (rows, film-page sections) and focus its first title. */
+function jumpSection(dir: 1 | -1) {
+  const sections = Array.from(
+    document.querySelectorAll<HTMLElement>('main section[aria-labelledby], main header[data-hero]'),
+  ).filter((s) => s.getBoundingClientRect().height > 0);
+  if (!sections.length) return;
+  const anchor = window.innerHeight * 0.3;
+  const current = sections.findIndex((s) => {
+    const r = s.getBoundingClientRect();
+    return r.top <= anchor && r.bottom > anchor;
+  });
+  const target =
+    sections[Math.min(sections.length - 1, Math.max(0, (current < 0 ? 0 : current) + dir))];
+  if (!target) return;
+  target.scrollIntoView({ behavior: isReducedNow() ? 'auto' : 'smooth', block: 'start' });
+  target
+    .querySelector<HTMLElement>('a[href^="/movie/"], a[href], button')
+    ?.focus({ preventScroll: true });
+}
+
+/** `l`: add/remove the focused film (or this page's film) to My list via its own button. */
+function toggleListForFocus() {
+  const isListButton = (b: Element) =>
+    /(to|from) my list$/i.test(b.getAttribute('aria-label') ?? '');
+  const scope =
+    (document.activeElement as HTMLElement | null)?.closest('[data-card], li, header[data-hero]') ??
+    document.querySelector('main header[data-hero]');
+  const button = scope && Array.from(scope.querySelectorAll('button')).find(isListButton);
+  (button as HTMLButtonElement | undefined)?.click();
+}
+
 /**
  * Global micro-interactions (spec 39): `/` + ⌘K search, `?` shortcuts, Konami → Director's cut,
  * idle 30s on home → house lights down, offline toast, "Intermission" tab title.
@@ -53,6 +84,10 @@ export function MicroInteractions() {
       } else if (e.key === '?') {
         e.preventDefault();
         set('shortcutsOpen', true);
+      } else if ((e.key === 'j' || e.key === 'k') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        jumpSection(e.key === 'j' ? 1 : -1);
+      } else if (e.key === 'l' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        toggleListForFocus();
       }
       seq = [...seq, e.key.length === 1 ? e.key.toLowerCase() : e.key].slice(-KONAMI.length);
       if (seq.join() === KONAMI.join()) {

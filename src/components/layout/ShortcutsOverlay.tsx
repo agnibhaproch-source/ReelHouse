@@ -9,6 +9,8 @@ const SHORTCUTS: [string, string][] = [
   ['?', 'Show keyboard shortcuts'],
   ['← →', 'Change hero slide (when focused) · move between cards in a row'],
   ['Space', 'Open a card preview'],
+  ['J  ·  K', 'Next / previous row or section'],
+  ['L', 'Add the focused film (or this film) to My list'],
   ['Enter', 'Open the focused title'],
   ['Esc', 'Close menus, previews, search and the player'],
   ['↑ ↑ ↓ ↓ ← → ← → B A', 'Director’s cut'],

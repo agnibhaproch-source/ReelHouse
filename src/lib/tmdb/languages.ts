@@ -22,7 +22,7 @@ export const LANGUAGES: readonly LanguageConfig[] = [
   { code: 'en', name: 'English', native: 'English', region: 'US' },
 ];
 
-export const HOME_LANGUAGE_ROWS = ['hi', 'ta', 'te', 'ml', 'ko', 'ja'] as const;
+export const HOME_LANGUAGE_ROWS = ['hi', 'ta', 'te', 'ml', 'kn', 'bn', 'mr', 'ko', 'ja'] as const;
 
 export function getLanguage(code: string): LanguageConfig | undefined {
   return LANGUAGES.find((l) => l.code === code);
