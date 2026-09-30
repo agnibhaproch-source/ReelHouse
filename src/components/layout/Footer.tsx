@@ -1,116 +1,68 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useRef, useState, type PointerEvent } from 'react';
+import { ArrowUp, Sparkles } from 'lucide-react';
 import { gsap, useGSAP } from '@/lib/gsap';
-import { GENRES } from '@/lib/tmdb/genres';
 import { LANGUAGES } from '@/lib/tmdb/languages';
 import { useLenis } from '@/hooks/useLenis';
 import { useMotionPrefs, isReducedNow } from '@/hooks/useMotionPrefs';
 import { useMagnetic } from '@/hooks/useMagnetic';
-import { VariableHover } from '@/components/motion/VariableHover';
-import { Marquee } from '@/components/motion/Marquee';
 import { RollText } from '@/components/motion/RollText';
-import { FilmReelSpinner } from '@/components/ui/FilmReelSpinner';
+import { Button } from '@/components/ui/Button';
+import { SurpriseMe } from '@/components/movie/SurpriseMe';
 import { TransitionLink } from './TransitionLink';
 import { TmdbAttribution } from './TmdbAttribution';
+import { Wordmark } from './Wordmark';
 
 const HIDDEN_ON = /^\/(login|signup|forgot-password|profiles)(\/|$)/;
 
-const COLUMNS: { title: string; links: { href: string; label: string }[] }[] = [
-  {
-    title: 'Browse',
-    links: [
-      { href: '/', label: 'Home' },
-      { href: '/browse', label: 'Moods & genres' },
-      { href: '/coming-soon', label: 'Coming soon' },
-      ...GENRES.slice(0, 4).map((g) => ({ href: `/browse/${g.slug}`, label: g.name })),
-      { href: '/search', label: 'Search' },
-    ],
-  },
-  {
-    title: 'Languages',
-    links: LANGUAGES.slice(0, 7).map((l) => ({ href: `/language/${l.code}`, label: l.name })),
-  },
-  {
-    title: 'Account',
-    links: [
-      { href: '/my-list', label: 'My list' },
-      { href: '/profiles', label: 'Profiles' },
-      { href: '/account', label: 'Settings' },
-      { href: '/login', label: 'Sign in' },
-    ],
-  },
-  {
-    title: 'About',
-    links: [
-      { href: '/styleguide', label: 'Styleguide' },
-      { href: 'https://www.themoviedb.org/', label: 'TMDB' },
-      { href: 'https://www.justwatch.com/', label: 'JustWatch' },
-    ],
-  },
+const LINKS = [
+  { href: '/', label: 'Home' },
+  { href: '/browse', label: 'Moods & genres' },
+  { href: '/coming-soon', label: 'Coming soon' },
+  { href: '/my-list', label: 'My list' },
+  { href: '/taste', label: 'Your taste' },
+  { href: '/account', label: 'Settings' },
 ];
 
-function FooterLink({ href, label }: { href: string; label: string }) {
-  const external = href.startsWith('http');
-  const inner = (
-    <>
-      <RollText>{label}</RollText>
-      <svg
-        viewBox="0 0 16 16"
-        className="duration-fast size-3 opacity-0 transition-opacity group-hover/fl:opacity-100 group-focus-visible/fl:opacity-100"
-        aria-hidden="true"
-      >
-        <path
-          d="M3 13 13 3M6 3h7v7"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          pathLength={1}
-          strokeDasharray="1"
-          className="duration-base ease-reel transition-[stroke-dashoffset] [stroke-dashoffset:1] group-hover/fl:[stroke-dashoffset:0] group-focus-visible/fl:[stroke-dashoffset:0]"
-        />
-      </svg>
-    </>
-  );
-  const cls =
-    'group/fl inline-flex min-h-9 items-center gap-1.5 text-small text-dim transition-colors duration-fast hover:text-reel';
-  return external ? (
-    <a href={href} className={cls} target="_blank" rel="noreferrer">
-      {inner}
-      <span className="sr-only"> (opens in a new tab)</span>
-    </a>
-  ) : (
-    <TransitionLink href={href} className={cls}>
-      {inner}
-    </TransitionLink>
-  );
-}
-
-/** Footer (spec 28): end-credits wordmark reveal, rolling links, TMDB attribution, magnetic back-to-top. */
+/**
+ * Footer (spec 28), as a closing sequence: a sign-off band with a cursor spotlight, one slim row
+ * of links, languages in their own scripts, the fine print, and an end-credits wordmark a
+ * projector beam sweeps across.
+ */
 export function Footer() {
   const pathname = usePathname();
   const ref = useRef<HTMLElement>(null);
-  const mark = useRef<HTMLDivElement>(null);
+  const band = useRef<HTMLDivElement>(null);
   const topBtn = useRef<HTMLButtonElement>(null);
   const { scrollTo } = useLenis();
   const { reduced } = useMotionPrefs();
-  const [spinning, setSpinning] = useState(false);
+  const [lifting, setLifting] = useState(false);
   useMagnetic(topBtn, 0.4);
 
   useGSAP(
     () => {
-      if (reduced || !mark.current || !ref.current) return;
+      if (reduced || !ref.current) return;
+      // Sign-off line and links rise in; the wordmark is revealed like closing credits.
+      gsap.from('[data-foot-rise]', {
+        y: 28,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'reel',
+        stagger: 0.06,
+        scrollTrigger: { trigger: ref.current, start: 'top 85%', once: true },
+      });
       gsap.fromTo(
-        mark.current,
-        { yPercent: 45, clipPath: 'inset(0% 0% 100% 0%)' },
+        '[data-foot-mark]',
+        { yPercent: 40, clipPath: 'inset(0% 0% 100% 0%)' },
         {
           yPercent: 0,
           clipPath: 'inset(0% 0% 0% 0%)',
           ease: 'none',
           scrollTrigger: {
-            trigger: ref.current,
-            start: 'top 90%',
+            trigger: '[data-foot-mark]',
+            start: 'top bottom',
             end: 'bottom bottom',
             scrub: 0.6,
           },
@@ -122,86 +74,141 @@ export function Footer() {
 
   if (HIDDEN_ON.test(pathname)) return null;
 
+  const spotlight = (e: PointerEvent<HTMLDivElement>) => {
+    const el = band.current;
+    if (!el || e.pointerType !== 'mouse') return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--sx', `${e.clientX - r.left}px`);
+    el.style.setProperty('--sy', `${e.clientY - r.top}px`);
+  };
+
   const backToTop = () => {
-    if (isReducedNow()) {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    } else {
-      setSpinning(true);
-      scrollTo(0, { duration: 1.6, onComplete: () => setSpinning(false) });
-      setTimeout(() => setSpinning(false), 1700);
+    if (isReducedNow()) window.scrollTo({ top: 0, behavior: 'instant' });
+    else {
+      setLifting(true);
+      scrollTo(0, { duration: 1.6, onComplete: () => setLifting(false) });
+      setTimeout(() => setLifting(false), 1700);
     }
     document.getElementById('main')?.focus({ preventScroll: true });
   };
 
   return (
-    <footer
-      ref={ref}
-      className="border-line bg-void relative mt-24 overflow-hidden border-t pb-24 md:pb-0"
-    >
-      <Marquee speed={30} label="Credits" className="border-line text-small text-dim border-b py-3">
-        {[
-          'Built by Agni',
-          'Posters & data from TMDB',
-          'Motion by GSAP + Motion',
-          'Smooth scroll by Lenis',
-          'Sound: procedurally generated (CC0)',
-          'Set in Fraunces & Manrope',
-          'No full movies — trailers only',
-        ].map((c) => (
-          <span key={c} className="flex items-center gap-8 px-4 whitespace-nowrap">
-            {c}
-            <span aria-hidden="true" className="text-violet">
-              ✦
-            </span>
-          </span>
-        ))}
-      </Marquee>
-
-      <div className="px-gutter mx-auto grid max-w-7xl gap-10 pt-16 md:grid-cols-[1fr_auto]">
-        <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-          {COLUMNS.map((col) => (
-            <div key={col.title}>
-              <h2 className="font-ui text-small text-reel mb-3 font-bold tracking-normal">
-                {col.title}
-              </h2>
-              <ul className="flex flex-col">
-                {col.links.map((l) => (
-                  <li key={l.href}>
-                    <FooterLink {...l} />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </nav>
-        <div className="flex flex-col items-start gap-6 md:items-end">
-          <button
-            ref={topBtn}
-            type="button"
-            onClick={backToTop}
-            data-cursor="magnetic"
-            className="group rounded-pill border-line text-small duration-fast hover:border-violet hover:text-violet flex min-h-12 items-center gap-3 border px-5 font-semibold transition-colors"
-          >
-            <span data-magnetic-inner className="flex items-center gap-3">
-              <FilmReelSpinner
-                className={spinning ? 'size-5' : 'size-5 [animation-play-state:paused]'}
-              />
-              Back to top
-            </span>
-          </button>
-          <TmdbAttribution />
+    <footer ref={ref} className="bg-void relative mt-28 overflow-hidden pb-24 md:pb-0">
+      {/* Sign-off band */}
+      <div className="px-gutter mx-auto max-w-7xl">
+        <div
+          ref={band}
+          onPointerMove={spotlight}
+          className="footer-band rounded-modal border-line lit-edge relative isolate overflow-hidden border px-6 py-14 md:px-14 md:py-20"
+        >
+          <span aria-hidden="true" className="footer-band-beam absolute inset-0 -z-10" />
+          <p data-foot-rise className="meta-caps text-dim">
+            End of reel
+          </p>
+          <h2 data-foot-rise className="font-display text-h1 mt-3 max-w-3xl">
+            Tonight’s showing is <em className="text-violet font-normal">up to you.</em>
+          </h2>
+          <div data-foot-rise className="mt-8 flex flex-wrap gap-3">
+            <SurpriseMe variant="primary" size="lg" />
+            <Button href="/ask" variant="secondary" size="lg" icon={<Sparkles />} magnetic={false}>
+              Describe a mood
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div
-        ref={mark}
-        className="px-gutter pointer-events-auto mt-10 pb-6 select-none md:pb-10"
-        aria-hidden="true"
+      {/* One slim row: mark · links · back to top */}
+      <div className="px-gutter mx-auto mt-14 flex max-w-7xl flex-wrap items-center gap-x-10 gap-y-6">
+        <TransitionLink
+          href="/"
+          aria-label="Reelhouse home"
+          className="flex min-h-11 items-center"
+          data-foot-rise
+        >
+          <Wordmark />
+        </TransitionLink>
+        <nav
+          aria-label="Footer"
+          className="order-last w-full md:order-none md:w-auto md:flex-1"
+          data-foot-rise
+        >
+          <ul className="grid grid-cols-2 gap-x-7 md:flex md:flex-wrap md:gap-y-1">
+            {LINKS.map((l) => (
+              <li key={l.href}>
+                <TransitionLink
+                  href={l.href}
+                  className="text-small text-dim hover:text-reel duration-fast inline-flex min-h-11 items-center transition-colors"
+                >
+                  <RollText>{l.label}</RollText>
+                </TransitionLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <button
+          ref={topBtn}
+          type="button"
+          onClick={backToTop}
+          data-cursor="magnetic"
+          data-foot-rise
+          aria-label="Back to top"
+          className="group border-line hover:border-violet duration-fast ml-auto grid size-14 place-items-center rounded-full border transition-colors"
+        >
+          <span data-magnetic-inner className="grid place-items-center">
+            <ArrowUp
+              className={`duration-base ease-snap size-5 transition-transform group-hover:-translate-y-1 ${lifting ? '-translate-y-6 opacity-0' : ''}`}
+              aria-hidden="true"
+            />
+          </span>
+        </button>
+      </div>
+
+      {/* Languages in their own scripts */}
+      <nav
+        aria-label="Browse by language"
+        className="px-gutter mx-auto mt-6 max-w-7xl"
+        data-foot-rise
       >
-        <VariableHover
-          text="Reelhouse"
-          className="text-reel/90 block text-center text-[clamp(4rem,19vw,20rem)] leading-[0.8] tracking-[-0.04em]"
-        />
+        <ul className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+          {LANGUAGES.map((l) => (
+            <li key={l.code}>
+              <TransitionLink
+                href={`/language/${l.code}`}
+                lang={l.code}
+                aria-label={`${l.name} films`}
+                className="rounded-pill border-line text-small text-reel/75 hover:border-cyan/60 hover:text-reel inline-flex min-h-10 items-center border px-4 whitespace-nowrap transition-colors"
+              >
+                {l.native}
+              </TransitionLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Fine print */}
+      <div className="px-gutter border-line mx-auto mt-10 flex max-w-7xl flex-col gap-4 border-t pt-6 md:flex-row md:items-center md:justify-between">
+        <p className="text-dim text-[0.75rem]">
+          © {new Date().getFullYear()} Reelhouse · Trailers only, never full films · Availability by{' '}
+          <a
+            href="https://www.justwatch.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-reel underline-offset-4 hover:underline"
+          >
+            JustWatch
+          </a>
+        </p>
+        <TmdbAttribution className="text-[0.75rem]" />
+      </div>
+
+      {/* End credits */}
+      <div aria-hidden="true" className="px-gutter mt-8 overflow-hidden pb-6 select-none md:pb-8">
+        <p
+          data-foot-mark
+          className="footer-mark font-display text-center text-[clamp(4.5rem,21vw,22rem)] leading-[0.78] font-semibold tracking-[-0.045em]"
+        >
+          Reelhouse
+        </p>
       </div>
     </footer>
   );
