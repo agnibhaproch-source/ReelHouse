@@ -111,7 +111,7 @@ export function Modal({
             dragElastic={{ top: 0, bottom: 0.6 }}
             onDragEnd={onDragEnd}
             className={cn(
-              'bg-aisle text-reel absolute overflow-y-auto shadow-2xl outline-none',
+              'bg-aisle text-reel lit-edge absolute overflow-y-auto outline-none',
               effective === 'center' &&
                 'rounded-modal top-1/2 left-1/2 max-h-[88svh] w-[min(92vw,560px)] -translate-x-1/2 -translate-y-1/2 p-6 md:p-8',
               effective === 'sheet' &&

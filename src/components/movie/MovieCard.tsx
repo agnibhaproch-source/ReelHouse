@@ -152,7 +152,7 @@ export function MovieCard({
         <span
           aria-hidden="true"
           data-rank-numeral
-          className="font-display duration-base pointer-events-none -mr-[0.18em] shrink-0 text-[clamp(5rem,11vw,9.5rem)] leading-[0.78] font-black tracking-[-0.08em] text-transparent transition-[-webkit-text-stroke-color] select-none [-webkit-text-stroke:2px_var(--line)] group-hover/card:[-webkit-text-stroke-color:var(--marquee-violet)]"
+          className="font-display duration-base rank-numeral pointer-events-none -mr-[0.18em] shrink-0 text-[clamp(5rem,11vw,9.5rem)] leading-[0.78] font-black tracking-[-0.08em] select-none"
         >
           {rank}
         </span>

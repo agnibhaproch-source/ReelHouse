@@ -21,6 +21,7 @@ import { WatchlistButton } from '../WatchlistButton';
 import { PlayTrailerButton } from '../PlayTrailerButton';
 import { RateButton } from './RateButton';
 import { ShareButton } from './ShareButton';
+import { WatchCta } from './WatchCta';
 
 const DustField = dynamic(() => import('@/components/gl/DustField').then((m) => m.DustField), {
   ssr: false,
@@ -129,7 +130,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
         <div
           ref={poster}
           data-shared-poster={movie.id}
-          className="rounded-poster relative aspect-[2/3] w-[min(46vw,300px)] shrink-0 overflow-hidden shadow-[0_40px_90px_rgb(0_0_0/0.6)] max-md:mx-auto"
+          className="rounded-poster poster-reflect relative aspect-[2/3] w-[min(46vw,300px)] shrink-0 overflow-hidden shadow-[0_40px_90px_rgb(0_0_0/0.6)] max-md:mx-auto"
         >
           <TmdbImage
             path={movie.poster_path}
@@ -179,7 +180,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
               {movie.tagline}
             </p>
           )}
-          <div className="text-small text-reel/85 flex flex-wrap items-center gap-x-4 gap-y-2 max-md:justify-center">
+          <div className="text-small text-reel/85 meta-caps flex flex-wrap items-center gap-x-4 gap-y-2 max-md:justify-center">
             <RatingRing value={movie.vote_average} size={52} label="TMDB rating" />
             {year && <span>{year}</span>}
             {certification && (
@@ -205,6 +206,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
             </ul>
           )}
           <div className="flex flex-wrap items-center gap-3 max-md:justify-center">
+            <WatchCta providers={movie['watch/providers']?.results} title={movie.title} />
             {videos.length > 0 && (
               <PlayTrailerButton movie={snap} videos={videos} color={color} size="lg" />
             )}

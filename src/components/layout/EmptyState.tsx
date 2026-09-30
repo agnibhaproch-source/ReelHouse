@@ -12,7 +12,7 @@ interface EmptyStateProps {
 export function EmptyState({ title, body, action, children }: EmptyStateProps) {
   return (
     <div className="px-gutter mx-auto flex max-w-xl flex-col items-center gap-4 py-20 text-center">
-      <svg viewBox="0 0 64 48" className="text-line w-20" aria-hidden="true">
+      <svg viewBox="0 0 64 48" className="empty-reel text-line w-24" aria-hidden="true">
         <rect
           x="2"
           y="2"
@@ -24,7 +24,7 @@ export function EmptyState({ title, body, action, children }: EmptyStateProps) {
           strokeWidth="2"
         />
         {[8, 20, 32, 44, 56].map((x) => (
-          <g key={x}>
+          <g key={x} className="empty-reel-holes">
             <rect x={x - 2} y="5" width="4" height="4" rx="1" fill="currentColor" />
             <rect x={x - 2} y="39" width="4" height="4" rx="1" fill="currentColor" />
           </g>
@@ -35,6 +35,7 @@ export function EmptyState({ title, body, action, children }: EmptyStateProps) {
           stroke="var(--marquee-violet)"
           strokeWidth="2"
           strokeDasharray="4 3"
+          className="empty-reel-frame"
         />
       </svg>
       <h2 className="font-display text-h3">{title}</h2>

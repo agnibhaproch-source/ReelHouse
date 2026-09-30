@@ -62,7 +62,7 @@ export function ProfileMenu() {
             id={id}
             role="dialog"
             aria-label="Profile menu"
-            className="rounded-modal border-line bg-aisle/95 absolute top-full right-0 mt-2 w-64 origin-top-right border p-2 shadow-2xl backdrop-blur-xl"
+            className="rounded-modal border-line bg-aisle/95 lit-edge absolute top-full right-0 mt-2 w-64 origin-top-right border p-2 backdrop-blur-xl"
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: DUR.instant } }}

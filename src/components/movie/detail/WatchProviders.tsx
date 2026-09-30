@@ -62,7 +62,20 @@ export function WatchProviders({
                           aria-label={`${g.label} ${title} on ${p.provider_name} (opens JustWatch in a new tab)`}
                           className="bg-seat ring-line duration-base ease-snap hover:ring-violet relative block size-14 overflow-hidden rounded-[12px] ring-1 transition-[scale,box-shadow] hover:scale-110"
                         >
-                          <TmdbImage path={p.logo_path} kind="logo" alt="" sizes="56px" />
+                          {p.logo_path ? (
+                            <TmdbImage path={p.logo_path} kind="logo" alt="" sizes="56px" />
+                          ) : (
+                            <span
+                              aria-hidden="true"
+                              className="font-display text-reel grid size-full place-items-center text-[1.05rem] font-semibold"
+                            >
+                              {p.provider_name
+                                .split(/\s+/)
+                                .map((w) => w[0])
+                                .join('')
+                                .slice(0, 3)}
+                            </span>
+                          )}
                         </a>
                       </Tooltip>
                     </li>

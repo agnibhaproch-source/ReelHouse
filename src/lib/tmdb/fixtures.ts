@@ -114,6 +114,29 @@ function rotate<T>(items: T[], by: number): T[] {
   return [...items.slice(k), ...items.slice(0, k)];
 }
 
+const SERVICES = ['Netflix', 'Prime Video', 'JioHotstar', 'Apple TV', 'ZEE5', 'SonyLIV', 'MUBI'];
+
+/** Demo "where to watch": service names only (no logos), deterministic per film; some films have none. */
+function demoProviders(i: number) {
+  if (i % 4 === 3) return {};
+  const pick = (k: number, n: number) =>
+    Array.from({ length: n }, (_, j) => {
+      const idx = (i * 3 + k + j * 2) % SERVICES.length;
+      return {
+        provider_id: 900 + idx,
+        provider_name: SERVICES[idx]!,
+        logo_path: null,
+        display_priority: j,
+      };
+    });
+  const region = {
+    link: 'https://www.justwatch.com/',
+    flatrate: pick(0, 1 + (i % 2)),
+    rent: pick(1, 2),
+  };
+  return { IN: region, US: region };
+}
+
 function detail(id: number) {
   const base = MOVIES.find((m) => m.id === id);
   if (!base) return null;
@@ -178,7 +201,7 @@ function detail(id: number) {
         },
       ],
     },
-    'watch/providers': { results: {} },
+    'watch/providers': { results: demoProviders(i) },
     reviews: {
       page: 1,
       total_pages: 1,

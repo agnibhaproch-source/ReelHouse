@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Film } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { encodeSrc, tmdbLoader, type ImageKind } from '@/lib/tmdb/images';
+import { fallbackGlow } from '@/lib/tmdb/color';
 
 interface TmdbImageProps {
   path: string | null | undefined;
@@ -50,12 +51,46 @@ export function TmdbImage({
   const [state, setState] = useState<'loading' | 'loaded' | 'error'>('loading');
 
   if (!path || state === 'error') {
+    const frame = cn(fill && 'absolute inset-0', className);
+    // Missing poster: a designed title card (seeded colour, title in the display face) rather
+    // than an empty tile — common for regional and older films on TMDB.
+    if (!plain && kind === 'poster' && fallbackTitle) {
+      const glow = fallbackGlow(fallbackTitle);
+      return (
+        <div
+          className={cn('bg-seat @container relative overflow-hidden', frame)}
+          role={alt ? 'img' : undefined}
+          aria-label={alt || undefined}
+          style={style}
+        >
+          <span
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              background: `radial-gradient(130% 75% at 20% 0%, color-mix(in oklab, ${glow} 55%, transparent), transparent 62%), radial-gradient(90% 60% at 100% 100%, color-mix(in oklab, ${glow} 22%, transparent), transparent 70%)`,
+            }}
+          />
+          <span aria-hidden="true" className="sprockets absolute inset-x-0 top-0 opacity-50" />
+          <span aria-hidden="true" className="sprockets absolute inset-x-0 bottom-0 opacity-50" />
+          <span
+            aria-hidden="true"
+            className="absolute inset-x-[9cqw] top-[12cqw] h-px"
+            style={{ background: `color-mix(in oklab, ${glow} 70%, transparent)` }}
+          />
+          <span
+            aria-hidden="true"
+            className="font-display text-reel absolute inset-x-[9cqw] bottom-[14cqw] line-clamp-4 text-[clamp(0.85rem,13cqw,2.4rem)] leading-[0.95] font-semibold [text-wrap:balance] [font-variation-settings:'SOFT'_60]"
+          >
+            {fallbackTitle}
+          </span>
+        </div>
+      );
+    }
     return (
       <div
         className={cn(
           'bg-seat text-dim flex flex-col items-center justify-center gap-2 overflow-hidden p-3 text-center',
-          fill && 'absolute inset-0',
-          className,
+          frame,
         )}
         role={alt ? 'img' : undefined}
         aria-label={alt || undefined}
@@ -65,14 +100,6 @@ export function TmdbImage({
           <>
             <span aria-hidden="true" className="sprockets absolute inset-x-0 top-0 opacity-60" />
             <Film className="size-7 opacity-70" aria-hidden="true" />
-            {fallbackTitle && kind === 'poster' && (
-              <span
-                aria-hidden="true"
-                className="font-display text-small text-reel/80 line-clamp-3 leading-tight"
-              >
-                {fallbackTitle}
-              </span>
-            )}
             <span aria-hidden="true" className="sprockets absolute inset-x-0 bottom-0 opacity-60" />
           </>
         )}

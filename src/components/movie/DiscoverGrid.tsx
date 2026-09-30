@@ -22,6 +22,7 @@ import { GridSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/layout/EmptyState';
 import { MovieGrid } from './MovieGrid';
 import { FilterPanel } from './FilterPanel';
+import { SurpriseMe } from './SurpriseMe';
 
 interface DiscoverGridProps {
   fixed: FixedDiscover;
@@ -49,6 +50,11 @@ export function DiscoverGrid({ fixed, initial, label }: DiscoverGridProps) {
 
   const isDefault = filtersToSearch(filters).toString() === '';
   const paramsKey = useMemo(() => discoverQuery(filters, fixed, 1).toString(), [filters, fixed]);
+  const surpriseQuery = useMemo(() => {
+    const q = discoverQuery(filters, fixed, 1);
+    q.delete('page');
+    return q.toString();
+  }, [filters, fixed]);
 
   const q = useInfiniteQuery({
     queryKey: qk.discover({ fixed, paramsKey }),
@@ -91,11 +97,11 @@ export function DiscoverGrid({ fixed, initial, label }: DiscoverGridProps) {
             </Pill>
           ))}
         </div>
+        <SurpriseMe query={surpriseQuery} className="ml-auto" />
         <Button
           variant="secondary"
           icon={<SlidersHorizontal />}
           onClick={() => setDrawer(true)}
-          className="ml-auto"
           magnetic={false}
           aria-haspopup="dialog"
         >

@@ -121,6 +121,73 @@
   }
 }
 
+/* Top 10 numerals: outlined, with a fill that fades down behind the card; accent on hover. */
+.rank-numeral {
+  color: transparent;
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--text-reel) 16%, transparent),
+    transparent 78%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 2px var(--line);
+  transition: -webkit-text-stroke-color var(--dur-base) var(--ease-reel);
+}
+.group\/card:hover .rank-numeral,
+.group\/card:focus-within .rank-numeral {
+  -webkit-text-stroke-color: var(--marquee-violet);
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--marquee-violet) 38%, transparent),
+    transparent 80%
+  );
+}
+
+/* Raised panels (menus, modals, overlays): a hairline of light along the top edge. */
+.lit-edge {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--text-reel) 9%, transparent),
+    0 24px 60px rgb(0 0 0 / 0.45);
+}
+
+/* Detail poster standing on a glossy floor (desktop; on mobile it would run into the text). */
+@media (min-width: 768px) {
+  .poster-reflect {
+    -webkit-box-reflect: below 6px linear-gradient(transparent 70%, rgb(255 255 255 / 0.22));
+  }
+}
+
+/* Empty-state film frame: drifts, and its dashed frame "marches" like a loading reel. */
+@media (prefers-reduced-motion: no-preference) {
+  .empty-reel {
+    animation: empty-float 5s var(--ease-reel) infinite alternate;
+  }
+  .empty-reel-frame {
+    animation: empty-march 1.2s linear infinite;
+  }
+}
+@keyframes empty-float {
+  to {
+    translate: 0 -6px;
+    rotate: -2deg;
+  }
+}
+@keyframes empty-march {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+/* Metadata line (year · runtime · certificate): spaced caps, tabular numbers. */
+.meta-caps {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-feature-settings: 'tnum';
+}
+
 /* Per-film accent (detail page): the poster's hue, normalised for contrast in lib/tmdb/color. */
 [data-film-accent] {
   --marquee-violet: var(--film-accent);

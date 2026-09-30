@@ -289,7 +289,7 @@ export function SearchOverlay() {
             role="dialog"
             aria-modal="true"
             aria-label="Search"
-            className="rounded-modal border-line bg-aisle/95 absolute top-[11vh] left-1/2 flex max-h-[78vh] w-[min(94vw,720px)] -translate-x-1/2 flex-col overflow-hidden border shadow-2xl"
+            className="rounded-modal border-line bg-aisle/95 lit-edge absolute top-[11vh] left-1/2 flex max-h-[78vh] w-[min(94vw,720px)] -translate-x-1/2 flex-col overflow-hidden border"
             initial={reduced ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, transition: { duration: DUR.fast } }}
