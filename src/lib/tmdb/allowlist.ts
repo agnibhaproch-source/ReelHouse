@@ -7,6 +7,7 @@ const ALLOWED: readonly RegExp[] = [
   /^movie\/\d+\/(recommendations|similar)$/,
   /^movie\/\d+$/,
   /^genre\/movie\/list$/,
+  /^person\/\d+\/movie_credits$/,
 ];
 
 /** Query params the proxy forwards. */

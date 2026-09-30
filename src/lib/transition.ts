@@ -28,6 +28,14 @@ type Listener = (req: TransitionRequest) => void;
 let listener: Listener | null = null;
 let readyWaiters: Array<(path: string) => void> = [];
 let busy = false;
+let navigated = false;
+/** The path this page load landed on (the module first evaluates during initial hydration). */
+const landingPath = typeof window === 'undefined' ? null : window.location.pathname;
+
+/** True when the current route was reached by in-app navigation (any link), not a page load. */
+export function hasClientNavigated(): boolean {
+  return navigated || (landingPath !== null && window.location.pathname !== landingPath);
+}
 
 /** Last detail poster rect — used for the reverse flight on back navigation. */
 export const lastDetail: { id: number | null; rect: DOMRect | null; src: string | null } = {
@@ -54,6 +62,7 @@ export function setTransitioning(v: boolean): void {
 /** Ask the layer to run a transition. Returns false when one is already running (no stacking). */
 export function requestTransition(req: TransitionRequest): boolean {
   if (busy) return false;
+  navigated = true;
   if (!listener) {
     req.push(req.href);
     return true;

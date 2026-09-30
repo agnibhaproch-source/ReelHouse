@@ -4,7 +4,12 @@ import { ALLOWED_PARAMS, isAllowedPath } from '@/lib/tmdb/allowlist';
 import { isTmdbError } from '@/lib/tmdb/errors';
 import { kidsParams, searchMulti } from '@/lib/tmdb/endpoints';
 import { withMeta } from '@/lib/tmdb/meta';
-import { MovieDetailSchema, MovieListSchema, GenreListSchema } from '@/lib/tmdb/schemas';
+import {
+  MovieDetailSchema,
+  MovieListSchema,
+  GenreListSchema,
+  PersonSchema,
+} from '@/lib/tmdb/schemas';
 import { PREFS_COOKIES } from '@/lib/rows';
 import { KIDS_EXCLUDED_GENRES } from '@/lib/tmdb/genres';
 
@@ -55,6 +60,24 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ path: strin
           language,
         },
       );
+    } else if (/^person\/\d+\/movie_credits$/.test(path)) {
+      // "Known for" peek: the three most popular acting credits (kids-filtered).
+      const credits = await tmdbFetch(
+        `/${path}`,
+        {},
+        {
+          schema: PersonSchema.shape.movie_credits,
+          revalidate: REVALIDATE.details,
+          language,
+        },
+      );
+      const excluded = KIDS_EXCLUDED_GENRES as readonly number[];
+      body = {
+        cast: credits.cast
+          .filter((m) => !m.adult && !(kids && m.genre_ids.some((g) => excluded.includes(g))))
+          .sort((a, b) => b.popularity - a.popularity)
+          .slice(0, 6),
+      };
     } else if (path === 'genre/movie/list') {
       body = await tmdbFetch(
         `/${path}`,

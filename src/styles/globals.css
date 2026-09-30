@@ -179,6 +179,57 @@
   }
 }
 
+/* Projector flicker over hero images: a dark veil breathing by a few percent, irregularly. */
+.projector-flicker {
+  pointer-events: none;
+  background: var(--bg-void);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .projector-flicker {
+    animation: projector-flicker 7s steps(1, end) infinite;
+  }
+}
+html.reduced-motion .projector-flicker {
+  animation: none;
+}
+@keyframes projector-flicker {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  7% {
+    opacity: 0.05;
+  }
+  8% {
+    opacity: 0.015;
+  }
+  23% {
+    opacity: 0.035;
+  }
+  24% {
+    opacity: 0;
+  }
+  51% {
+    opacity: 0.045;
+  }
+  52% {
+    opacity: 0.01;
+  }
+  53% {
+    opacity: 0.04;
+  }
+  54% {
+    opacity: 0;
+  }
+  78% {
+    opacity: 0.03;
+  }
+  79% {
+    opacity: 0;
+  }
+}
+
 /* Metadata line (year · runtime · certificate): spaced caps, tabular numbers. */
 .meta-caps {
   text-transform: uppercase;
@@ -272,7 +323,8 @@ html.reduced-motion .rm-fade {
   height: 200%;
   pointer-events: none;
   z-index: var(--z-overlay);
-  opacity: var(--grain-opacity);
+  /* Thickens while scrolling fast, like a film running through the gate. */
+  opacity: calc(var(--grain-opacity) * (1 + var(--scroll-speed, 0) * 1.6));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain-shift 0.6s steps(6) infinite;
   transition: opacity var(--dur-slow) var(--ease-reel);

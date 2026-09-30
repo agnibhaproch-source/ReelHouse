@@ -86,6 +86,37 @@ export function TmdbImage({
         </div>
       );
     }
+    // Missing portrait: initials on the person's seeded colour.
+    if (!plain && kind === 'profile' && fallbackTitle) {
+      const glow = fallbackGlow(fallbackTitle);
+      const initials = fallbackTitle
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((w) => w[0])
+        .slice(0, 2)
+        .join('');
+      return (
+        <div
+          className={cn(
+            'bg-seat @container relative grid place-items-center overflow-hidden',
+            frame,
+          )}
+          role={alt ? 'img' : undefined}
+          aria-label={alt || undefined}
+          style={{
+            ...style,
+            background: `radial-gradient(circle at 30% 20%, color-mix(in oklab, ${glow} 45%, var(--bg-seat)), var(--bg-seat) 75%)`,
+          }}
+        >
+          <span
+            aria-hidden="true"
+            className="font-display text-reel text-[clamp(1rem,36cqw,3rem)] leading-none font-semibold"
+          >
+            {initials}
+          </span>
+        </div>
+      );
+    }
     return (
       <div
         className={cn(

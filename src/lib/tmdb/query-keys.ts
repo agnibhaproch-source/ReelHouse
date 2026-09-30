@@ -1,6 +1,7 @@
 /** TanStack Query key factory. */
 export const qk = {
   movie: (id: number) => ['movie', id] as const,
+  personCredits: (id: number) => ['person-credits', id] as const,
   search: (q: string) => ['search', q] as const,
   searchPage: (q: string, filters: Record<string, string>) => ['search-page', q, filters] as const,
   discover: (params: Record<string, unknown>) => ['discover', params] as const,

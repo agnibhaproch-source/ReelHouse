@@ -6,6 +6,7 @@ export const test = base.extend({
     await page.addInitScript(() => {
       try {
         sessionStorage.setItem('intro-seen', 'true');
+        sessionStorage.setItem('leader-seen', '1');
       } catch {
         /* ignore */
       }

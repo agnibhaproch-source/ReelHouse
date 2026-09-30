@@ -43,6 +43,66 @@ function burst(from: HTMLElement) {
   }
 }
 
+/** Visible "My list" link (navbar on desktop, bottom tab on mobile), if any is on screen. */
+function listTarget(): HTMLElement | null {
+  for (const a of document.querySelectorAll<HTMLElement>('a[href="/my-list"]')) {
+    const r = a.getBoundingClientRect();
+    if (r.width > 0 && r.bottom > 0 && r.top < window.innerHeight) return a;
+  }
+  return null;
+}
+
+/**
+ * The poster (or a film-frame chip when there isn't one nearby) flies in an arc into the
+ * My list link, which pulses as it lands.
+ */
+function flyToList(from: HTMLElement) {
+  if (isReducedNow()) return;
+  const target = listTarget();
+  if (!target) return;
+  const source = from
+    .closest('[data-card], li, header, article, [role="dialog"]')
+    ?.querySelector<HTMLElement>('[data-poster], [data-shared-poster]');
+  const r = (source ?? from).getBoundingClientRect();
+  const w = source ? Math.min(r.width, 120) : 28;
+  const h = source ? w * 1.5 : 40;
+  const ghost = source
+    ? (source.cloneNode(true) as HTMLElement)
+    : Object.assign(document.createElement('span'), { className: 'bg-violet rounded-[4px]' });
+  ghost.removeAttribute('data-poster');
+  ghost.removeAttribute('data-shared-poster');
+  ghost.classList.remove('poster-reflect');
+  ghost.setAttribute('aria-hidden', 'true');
+  Object.assign(ghost.style, {
+    position: 'fixed',
+    left: `${r.left + r.width / 2 - w / 2}px`,
+    top: `${r.top + r.height / 2 - h / 2}px`,
+    width: `${w}px`,
+    height: `${h}px`,
+    margin: '0',
+    zIndex: 'var(--z-toast)',
+    pointerEvents: 'none',
+    borderRadius: 'var(--radius-poster)',
+    overflow: 'hidden',
+    boxShadow: '0 20px 40px rgb(0 0 0 / 0.5)',
+  });
+  document.body.appendChild(ghost);
+  const t = target.getBoundingClientRect();
+  const dx = t.left + t.width / 2 - (r.left + r.width / 2);
+  const dy = t.top + t.height / 2 - (r.top + r.height / 2);
+  const tl = gsap.timeline({ onComplete: () => ghost.remove() });
+  tl.to(ghost, { x: dx, duration: 0.75, ease: 'power1.inOut' }, 0)
+    .to(ghost, { y: dy, duration: 0.75, ease: 'back.in(1.6)' }, 0)
+    .to(ghost, { scale: 0.12, rotation: 12, duration: 0.75, ease: 'power2.in' }, 0)
+    .to(ghost, { opacity: 0, duration: 0.12 }, 0.66)
+    .fromTo(
+      target,
+      { scale: 1 },
+      { scale: 1.18, duration: 0.14, yoyo: true, repeat: 1, ease: 'power2.out' },
+      0.72,
+    );
+}
+
 interface WatchlistButtonProps {
   movie: MovieSnapshot;
   variant?: 'secondary' | 'primary';
@@ -94,7 +154,10 @@ export function WatchlistButton({
       disabled={toggle.isPending}
       className={cn(inList && variant !== 'primary' && 'text-cyan', className)}
       onClick={() => {
-        if (!inList && ref.current) burst(ref.current);
+        if (!inList && ref.current) {
+          burst(ref.current);
+          flyToList(ref.current);
+        }
         toggle.mutate({ movie, add: !inList });
       }}
     >

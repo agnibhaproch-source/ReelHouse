@@ -314,6 +314,8 @@ export function fixtureResponse(path: string, params: Params): unknown {
   }
   if ((m = /^\/movie\/(\d+)$/.exec(path))) return detail(Number(m[1]));
   if ((m = /^\/person\/(\d+)$/.exec(path))) return personDetail(Number(m[1]));
+  if ((m = /^\/person\/(\d+)\/movie_credits$/.exec(path)))
+    return personDetail(Number(m[1]))?.movie_credits ?? null;
   return null;
 }
 

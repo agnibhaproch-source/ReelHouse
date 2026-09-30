@@ -291,6 +291,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
         className="bg-void absolute inset-x-0 bottom-0 z-[2] h-1/2 origin-bottom scale-y-0"
       />
 
+      <div aria-hidden="true" className="projector-flicker absolute inset-0 z-[2]" />
       <div aria-hidden="true" className="vignette absolute inset-0 z-[3]" />
       {/* Side scrim (desktop): keeps the title legible on bright backdrops and gives depth */}
       <div

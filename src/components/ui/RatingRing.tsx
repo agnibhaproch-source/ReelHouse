@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { DUR_MS } from '@/lib/tokens';
+import { isReducedNow } from '@/hooks/useMotionPrefs';
 
 interface RatingRingProps {
   /** 0–10 score. */
@@ -25,6 +27,8 @@ export function RatingRing({
   const ref = useRef<SVGSVGElement>(null);
   const [visible, setVisible] = useState(false);
   const pct = Math.round(Math.max(0, Math.min(10, value)) * 10);
+  const [shown, setShown] = useState<number | null>(null);
+  const counted = useRef(false);
   const r = 16;
   const c = 2 * Math.PI * r;
 
@@ -32,14 +36,24 @@ export function RatingRing({
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(([e]) => {
-      if (e?.isIntersecting) {
-        setVisible(true);
-        io.disconnect();
-      }
+      if (!e?.isIntersecting) return;
+      io.disconnect();
+      setVisible(true);
+      // Count up in step with the stroke drawing in (once; reduced motion shows the value).
+      if (counted.current || isReducedNow()) return;
+      counted.current = true;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / DUR_MS.cinematic);
+        setShown(t < 1 ? Math.round(pct * (1 - (1 - t) ** 3)) : null);
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      setShown(0);
+      requestAnimationFrame(tick);
     });
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [pct]);
 
   return (
     <span
@@ -78,7 +92,7 @@ export function RatingRing({
         className="duration-fast ease-snap relative text-[0.7rem] font-extrabold tabular-nums transition-transform group-hover/ring:scale-115"
         style={{ fontSize: size * 0.27 }}
       >
-        {pct ? pct : '—'}
+        {pct ? (shown ?? pct) : '—'}
         {pct ? <sup className="text-[0.55em]">%</sup> : null}
       </span>
     </span>

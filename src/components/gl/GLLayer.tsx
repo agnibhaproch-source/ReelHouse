@@ -68,7 +68,9 @@ export function GLLayer() {
     const id = setInterval(() => {
       if (document.hidden) return;
       uniforms.uTime.value = (performance.now() - start) / 1000;
-      uniforms.uIntensity.value = (intensity.current / 100) * 0.22;
+      // Grain thickens while the reel is moving (scroll speed 0–1).
+      const speed = Number(document.documentElement.style.getPropertyValue('--scroll-speed')) || 0;
+      uniforms.uIntensity.value = (intensity.current / 100) * 0.22 * (1 + speed * 1.2);
       renderer.render(scene, camera);
     }, 1000 / FPS);
     return () => {

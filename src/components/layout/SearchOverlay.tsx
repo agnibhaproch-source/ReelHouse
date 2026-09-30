@@ -216,7 +216,13 @@ export function SearchOverlay() {
           {o.kind === 'person' && (
             <>
               <span className="bg-seat relative size-10 shrink-0 overflow-hidden rounded-full">
-                <TmdbImage path={o.person.profile_path} kind="profile" alt="" sizes="40px" />
+                <TmdbImage
+                  path={o.person.profile_path}
+                  kind="profile"
+                  alt=""
+                  sizes="40px"
+                  fallbackTitle={o.person.name}
+                />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-semibold">{o.person.name}</span>

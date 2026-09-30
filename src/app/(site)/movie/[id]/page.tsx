@@ -18,6 +18,7 @@ import { WatchProviders } from '@/components/movie/detail/WatchProviders';
 import { ReviewsSection } from '@/components/movie/detail/ReviewsSection';
 import { Gallery } from '@/components/movie/detail/Gallery';
 import { DetailTracker } from '@/components/movie/detail/DetailTracker';
+import { FilmLeader } from '@/components/motion/FilmLeader';
 import { Row } from '@/components/movie/Row';
 import { StatusBanner } from '@/components/layout/StatusBanner';
 
@@ -137,6 +138,7 @@ export default async function MoviePage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
       <DetailTracker movie={movie} genreIds={movie.genres.map((g) => g.id)} />
+      <FilmLeader />
       <DetailHero
         movie={movie}
         logo={logo}
@@ -146,7 +148,7 @@ export default async function MoviePage({ params }: Props) {
         certification={cert}
       />
       <DetailOverview overview={movie.overview} tagline={movie.tagline} />
-      <CastStrip cast={movie.credits.cast.slice(0, 20)} />
+      <CastStrip cast={movie.credits.cast.slice(0, 20)} movieId={movie.id} />
       <VideoGrid videos={videos} movie={movie} color={color} />
       <DetailFacts movie={movie} />
       <WatchProviders providers={movie['watch/providers']?.results ?? {}} title={movie.title} />

@@ -118,6 +118,7 @@ export function DetailHero({ movie, logo, videos, color, blur, certification }: 
             plain
           />
         </div>
+        <div aria-hidden="true" className="projector-flicker absolute inset-0" />
         <div aria-hidden="true" className="vignette absolute inset-0" />
         <div
           aria-hidden="true"

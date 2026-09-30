@@ -31,7 +31,9 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     const onScroll = (x: Lenis) => {
       ScrollTrigger.update();
-      root.style.setProperty('--scroll-velocity', clamp(x.velocity / 40, -1, 1).toFixed(3));
+      const v = clamp(x.velocity / 40, -1, 1);
+      root.style.setProperty('--scroll-velocity', v.toFixed(3));
+      root.style.setProperty('--scroll-speed', Math.abs(v).toFixed(3));
     };
     l.on('scroll', onScroll);
     const tick = (t: number) => l.raf(t * 1000);
@@ -44,6 +46,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       gsap.ticker.lagSmoothing(500, 33);
       l.destroy();
       root.style.setProperty('--scroll-velocity', '0');
+      root.style.setProperty('--scroll-speed', '0');
       setLenis(null);
     };
   }, [smoothScroll]);
@@ -56,7 +59,9 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     const loop = () => {
       const y = window.scrollY;
-      root.style.setProperty('--scroll-velocity', clamp((y - last) / 40, -1, 1).toFixed(3));
+      const v = clamp((y - last) / 40, -1, 1);
+      root.style.setProperty('--scroll-velocity', v.toFixed(3));
+      root.style.setProperty('--scroll-speed', Math.abs(v).toFixed(3));
       last = y;
       frame = requestAnimationFrame(loop);
     };
